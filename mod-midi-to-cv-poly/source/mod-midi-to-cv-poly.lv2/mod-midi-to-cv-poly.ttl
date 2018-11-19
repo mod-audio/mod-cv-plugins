@@ -27,7 +27,7 @@ doap:maintainer [
     ];
 
     lv2:minorVersion 1;
-    lv2:microVersion 1;
+    lv2:microVersion 0;
 
 rdfs:comment """
 convert a midi message to polyphonic control voltages 1/12 volt per note
