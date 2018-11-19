@@ -27,7 +27,7 @@ doap:maintainer [
     ];
 
     lv2:minorVersion 1;
-    lv2:microVersion 1;
+    lv2:microVersion 0;
 
 rdfs:comment """
 Three cv inputs to either one cv output.
