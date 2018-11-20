@@ -1,0 +1,63 @@
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#>.
+@prefix doap: <http://usefulinc.com/ns/doap#>.
+@prefix epp: <http://lv2plug.in/ns/ext/port-props#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix mod: <http://moddevices.com/ns/modgui#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix atom: <http://lv2plug.in/ns/ext/atom#> .
+@prefix midi: <http://lv2plug.in/ns/ext/midi#> .
+@prefix urid: <http://lv2plug.in/ns/ext/urid#> .
+
+<http://moddevices.com/plugins/mod-devel/midi-to-cv-mono> 
+a lv2:Plugin, lv2:SimulatorPlugin;
+
+doap:name "MIDI to CV mono";
+
+doap:developer [
+    foaf:name "Jarno Verheesen";
+    foaf:homepage <>;
+    foaf:mbox <mailto:j.verheesen@hotmail.nl>;
+    ];
+
+doap:maintainer [
+    foaf:name "MOD";
+    foaf:homepage <http://moddevices.com>;
+    foaf:mbox <mailto:jarno@moddevices.com>;
+    ];
+
+    lv2:minorVersion 1;
+    lv2:microVersion 1;
+
+rdfs:comment """
+convert a midi message to monophonic control voltage 1/12 volt per note
+""";
+
+lv2:port
+[
+    a lv2:InputPort, atom:AtomPort;
+    atom:bufferType atom:Sequence;    
+    atom:supports midi:MidiEvent;
+    lv2:designation lv2:control;
+    lv2:index 0;
+    lv2:symbol "In";
+    lv2:name "Input";
+],
+[
+    a lv2:OutputPort, lv2:CVPort;
+    lv2:index 1;
+    lv2:symbol "CV1";
+    lv2:name "CV Output";
+],
+[
+    a lv2:OutputPort, lv2:CVPort;
+    lv2:index 2;
+    lv2:symbol "vel";
+    lv2:name "Velocity";
+],
+[
+    a lv2:OutputPort, lv2:CVPort;
+    lv2:index 3;
+    lv2:symbol "trig";
+    lv2:name "Trigger";
+].
