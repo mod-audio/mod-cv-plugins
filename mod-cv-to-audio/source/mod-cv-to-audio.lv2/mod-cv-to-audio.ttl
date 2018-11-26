@@ -38,12 +38,12 @@ lv2:port
     a lv2:InputPort, lv2:CVPort;
     lv2:index 0;
     lv2:symbol "CVIn";
-    lv2:name "CV In";
+    lv2:name "CV Input";
 ],
 [
     a lv2:OutputPort, lv2:AudioPort;
     lv2:index 1;
     lv2:symbol "AudioOut";
-    lv2:name "Audio Out";
+    lv2:name "Audio Output";
 ]
 .
