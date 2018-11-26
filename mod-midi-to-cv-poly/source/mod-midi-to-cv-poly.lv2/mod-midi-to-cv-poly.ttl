@@ -104,8 +104,8 @@ lv2:port
     lv2:symbol "Octave" ;
     lv2:name "Octave";
     lv2:default 0 ;
-    lv2:minimum -4 ;
-    lv2:maximum 4 ;
+    lv2:minimum -3 ;
+    lv2:maximum 3 ;
     lv2:portProperty lv2:integer;
 ],
 [
