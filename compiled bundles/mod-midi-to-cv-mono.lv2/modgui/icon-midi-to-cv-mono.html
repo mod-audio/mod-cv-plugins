@@ -17,10 +17,20 @@
         {{/effect.ports.midi.input}}
     </div>
     <div class="mod-pedal-output">
-        {{#effect.ports.cv.output}}
+        {{#effect.ports.cv.output.0}}
         <div class="mod-output mod-output-disconnected" title="{{name}}" mod-role="output-cv-port" mod-port-symbol="{{symbol}}">
             <div class="mod-pedal-output-image"></div>
         </div>
-        {{/effect.ports.cv.output}}
+        {{/effect.ports.cv.output.0}}
+        {{#effect.ports.cv.output.2}}
+        <div class="mod-output mod-output-disconnected" title="{{name}}" mod-role="output-cv-port" mod-port-symbol="{{symbol}}">
+            <div class="mod-pedal-output-image"></div>
+        </div>
+        {{/effect.ports.cv.output.2}}
+        {{#effect.ports.cv.output.1}}
+        <div class="mod-output mod-output-disconnected" title="{{name}}" mod-role="output-cv-port" mod-port-symbol="{{symbol}}">
+            <div class="mod-pedal-output-image"></div>
+        </div>
+        {{/effect.ports.cv.output.1}}
     </div>
 </div>
