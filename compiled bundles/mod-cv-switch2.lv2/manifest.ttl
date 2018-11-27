@@ -6,3 +6,4 @@
 	lv2:binary <mod-cv-switch2.so> ;
 	rdfs:seeAlso <mod-cv-switch2.ttl> ;
 	lv2:optionalFeature lv2:hardRTCapable .
+<http://moddevices.com/plugins/mod-devel/mod-cv-switch2> rdfs:seeAlso <modgui.ttl> .
