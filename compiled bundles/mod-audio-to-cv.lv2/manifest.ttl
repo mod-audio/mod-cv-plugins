@@ -6,3 +6,4 @@
 	lv2:binary <mod-audio-to-cv.so> ;
 	rdfs:seeAlso <mod-audio-to-cv.ttl> ;
 	lv2:optionalFeature lv2:hardRTCapable .
+<http://moddevices.com/plugins/mod-devel/mod-audio-to-cv> rdfs:seeAlso <modgui.ttl> .

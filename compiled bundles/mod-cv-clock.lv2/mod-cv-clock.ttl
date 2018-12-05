@@ -10,7 +10,7 @@
 @prefix urid: <http://lv2plug.in/ns/ext/urid#> .
 @prefix time: <http://lv2plug.in/ns/ext/time#> .
 
-<http://moddevices.com/plugins/mod-devel/mod-cv-clock> 
+<http://moddevices.com/plugins/mod-devel/mod-cv-clock>
 a lv2:Plugin, lv2:UtilityPlugin;
 
 doap:name "CV Clock";
@@ -27,7 +27,7 @@ doap:maintainer [
     foaf:mbox <mailto:jarno@moddevices.com>;
     ];
 
-    lv2:minorVersion 1;
+    lv2:minorVersion 2;
     lv2:microVersion 0;
 
 rdfs:comment """
