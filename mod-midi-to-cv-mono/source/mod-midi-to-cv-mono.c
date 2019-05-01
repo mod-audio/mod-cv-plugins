@@ -19,10 +19,14 @@ typedef enum {IN, CV1, VELOCITY, TRIGGER,OCTAVE,SEMITONE,CENT}PortIndex;
 typedef struct
 {
     // keep track of active notes
+    uint8_t activeNotesList[4];
     uint8_t activeNotes;
     uint8_t newNotes;
     uint8_t activeVelocity;
     uint8_t newVelocity;
+    uint8_t notesPressed;
+    uint8_t prevMsg[2];
+    size_t  notesIndex;
     bool activePorts;
 
     LV2_URID urid_midiEvent;    
@@ -79,13 +83,17 @@ const LV2_Feature* const* features)
     // Map URIs
     self->urid_midiEvent = map->map(map->handle, LV2_MIDI__MidiEvent);
 
-    // use for arrays memset(self->activeNotes, 0, sizeof(uint8_t)*1);
-    self->activeNotes = 0;    
+    memset(self->activeNotesList, 200, sizeof(uint8_t)*4);
+    self->activeNotes = 0;
     self->activeVelocity = 0;
     self->activePorts = false;
     self->newNotes = 0;
     self->newVelocity = 0;    
-
+    self->notesPressed = 0;
+    self->notesIndex = 0;
+    self->prevMsg[0] = 200;
+    self->prevMsg[1] = 200;
+    
     return self; 
 }
 /**********************************************************************************************************************************************************/
@@ -126,54 +134,76 @@ void activate(LV2_Handle instance)
 /**********************************************************************************************************************************************************/
 void run(LV2_Handle instance, uint32_t n_samples)
 {
-    Midicv* self = (Midicv*)instance;
+  Midicv* self = (Midicv*)instance;
 
-    float *pitch = self->pitch;
-    float *velocity = self->velocity;
-    float *trigger = self->trigger;
-    float  oC = *self->octave;
-    float  sC = *self->semitone;
-    float  cC = *self->cent;
+  float *pitch = self->pitch;
+  float *velocity = self->velocity;
+  float *trigger = self->trigger;
+  float  oC = *self->octave;
+  float  sC = *self->semitone;
+  float  cC = *self->cent;
 
-    for(uint32_t i=0;i<n_samples;i++)
+  // Read incoming events
+  LV2_ATOM_SEQUENCE_FOREACH(self->port_events_in, ev)
+  {
+    if (ev->body.type == self->urid_midiEvent)
     {
-         // Read incoming events
-        LV2_ATOM_SEQUENCE_FOREACH(self->port_events_in, ev)
+      const uint8_t* const msg = (const uint8_t*)(ev + 1);
+      //const uint8_t channel = msg[0] & 0x0F;
+      const uint8_t status  = msg[0] & 0xF0;
+      if (msg[1] != self->prevMsg[0] || (msg[1] == self->prevMsg[0] && msg[2] != self->prevMsg[1])) {
+        switch (status)
         {
-            if (ev->body.type == self->urid_midiEvent)
+          case LV2_MIDI_MSG_NOTE_ON:
+            self->notesPressed++;
+            self->activeNotesList[self->notesIndex++ % 4] = msg[1];
+            if (self->notesPressed > 0)
             {
-                    const uint8_t* const msg = (const uint8_t*)(ev + 1);
-                    //const uint8_t channel = msg[0] & 0x0F;
-                    const uint8_t status  = msg[0] & 0xF0;
-                    switch (status)
-                    {
-                    case LV2_MIDI_MSG_NOTE_ON:
-                        if (self->activePorts != true)
-                        {
-                            self->activeNotes = msg[1];
-                            self->activeVelocity = msg[2];
-                            self->activePorts = true;
-                            self->triggerState = true;
-                        }
-                    break;
-                    case LV2_MIDI_MSG_NOTE_OFF:
-                        if (msg[1] == self->activeNotes)
-                        {
-                            self->activeNotes = 0;
-                            self->activePorts = false;
-                            self->activeVelocity = 0;
-                            self->triggerState = false;
-                        }
-                    break;
-                    default:
-                    break;
-                    }
+              self->activeNotes = msg[1];
+              self->activeVelocity = msg[2];
+              self->activePorts = true;
+              self->triggerState = true;
             }
+            break;
+          case LV2_MIDI_MSG_NOTE_OFF:
+            self->notesPressed--;
+            for (size_t notesIndex = 0; notesIndex < 4; notesIndex++) {
+              if (msg[1] == self->activeNotesList[notesIndex]) {
+                self->activeNotesList[notesIndex] = 200;
+              }
+            }
+            if (self->notesPressed <= 0)
+            {
+              self->activeNotes = 0;
+              self->activePorts = false;
+              self->activeVelocity = 0;
+              self->triggerState = false;
+            } else {
+              size_t notesIndex = 0;
+              bool noteFound = false;
+              while (!noteFound && notesIndex < 4) {
+                if (self->activeNotesList[notesIndex] < 200){
+                  noteFound = true;
+                  self->activeNotes = self->activeNotesList[notesIndex];
+                }
+                notesIndex++;
+              }
+            }
+            break;
+          default:
+            break;
         }
-        pitch[i] = (0.0f + (float)((oC) + (sC/12.0f)+(cC/1200.0f)) + ((float)self->activeNotes * 1/12.0f));
-        velocity[i] = (0.0f + ((float)self->activeVelocity * 1/12.0f));
-        trigger[i] = ((self->triggerState == true) ? 10.0f : 0.0f);
+        self->prevMsg[0] = msg[1];
+        self->prevMsg[1] = msg[2];
+      }
     }
+  }
+  for(uint32_t i=0;i<n_samples;i++)
+  {
+    pitch[i] = (0.0f + (float)((oC) + (sC/12.0f)+(cC/1200.0f)) + ((float)self->activeNotes * 1/12.0f));
+    velocity[i] = (0.0f + ((float)self->activeVelocity * 1/12.0f));
+    trigger[i] = ((self->triggerState == true) ? 10.0f : 0.0f);
+  }
 }
 
 /**********************************************************************************************************************************************************/
