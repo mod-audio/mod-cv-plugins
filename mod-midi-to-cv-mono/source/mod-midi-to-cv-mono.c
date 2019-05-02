@@ -17,7 +17,6 @@
 #include <lv2/lv2plug.in/ns/lv2core/lv2.h>
 
 
-//#define PLUGIN_URI "http://moddevices.com/plugins/mod-devel/midi-to-cv-mono"
 
 typedef enum {
   IN = 0, 
@@ -62,7 +61,6 @@ typedef struct {
     float *cent;
 
     bool triggerState;
-    bool firstNote;
 
 //===========================================
 } Data;
@@ -108,7 +106,6 @@ static LV2_Handle instantiate(const LV2_Descriptor*     descriptor,
     self->notesPressed = 0;
     self->notesIndex = 0;
     self->triggerState = false;
-    self->firstNote = true;
 //===========================================
     return self;
 }
@@ -199,8 +196,7 @@ static void run(LV2_Handle instance, uint32_t sample_count)
           }
           if (self->notesPressed <= 0)
           {
-            self->firstNote = true;
-            self->activeNotes = 0;
+            // self->activeNotes = 0;
             self->activePorts = false;
             self->activeVelocity = 0;
             self->triggerState = false;
