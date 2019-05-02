@@ -9,7 +9,7 @@
 @prefix midi: <http://lv2plug.in/ns/ext/midi#> .
 @prefix urid: <http://lv2plug.in/ns/ext/urid#> .
 
-<http://moddevices.com/plugins/mod-devel/mod-cv-control> 
+<http://moddevices.com/plugins/mod-devel/mod-cv-control>
 a lv2:Plugin, lv2:UtilityPlugin;
 
 doap:name "Control to CV";

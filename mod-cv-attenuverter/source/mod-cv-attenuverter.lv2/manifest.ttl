@@ -6,3 +6,4 @@
 	lv2:binary <mod-cv-attenuverter.so> ;
 	rdfs:seeAlso <mod-cv-attenuverter.ttl> ;
 	lv2:optionalFeature lv2:hardRTCapable .
+<http://moddevices.com/plugins/mod-devel/mod-cv-attenuverter> rdfs:seeAlso <modgui.ttl> .

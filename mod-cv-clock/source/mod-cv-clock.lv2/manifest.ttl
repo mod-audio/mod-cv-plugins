@@ -6,3 +6,4 @@
 	lv2:binary <mod-cv-clock.so> ;
 	rdfs:seeAlso <mod-cv-clock.ttl> ;
 	lv2:optionalFeature lv2:hardRTCapable .
+<http://moddevices.com/plugins/mod-devel/mod-cv-clock> rdfs:seeAlso <modgui.ttl> .
