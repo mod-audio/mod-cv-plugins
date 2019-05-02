@@ -43,9 +43,10 @@ typedef struct {
 //===========================================
 
     // keep track of active notes
-    uint8_t activeNotesList[4];
+    uint8_t activeNotesList[8];
     uint8_t activeNotes;
     uint8_t newNotes;
+    uint8_t holdNote;
     uint8_t activeVelocity;
     uint8_t newVelocity;
     uint8_t prevMsg[2];
@@ -61,6 +62,7 @@ typedef struct {
     float *cent;
 
     bool triggerState;
+    bool firstNote;
 
 //===========================================
 } Data;
@@ -97,7 +99,7 @@ static LV2_Handle instantiate(const LV2_Descriptor*     descriptor,
     self->notesPressed = 0;
 
 //===========================================
-    memset(self->activeNotesList, 200, sizeof(uint8_t)*4);
+    memset(self->activeNotesList, 200, sizeof(uint8_t)*8);
     self->activeNotes = 0;
     self->activeVelocity = 0;
     self->activePorts = false;
@@ -105,9 +107,8 @@ static LV2_Handle instantiate(const LV2_Descriptor*     descriptor,
     self->newVelocity = 0;    
     self->notesPressed = 0;
     self->notesIndex = 0;
-    self->prevMsg[0] = 200;
-    self->prevMsg[1] = 200;
     self->triggerState = false;
+    self->firstNote = true;
 //===========================================
     return self;
 }
@@ -156,6 +157,7 @@ static void run(LV2_Handle instance, uint32_t sample_count)
   float  oC = *self->octave;
   float  sC = *self->semitone;
   float  cC = *self->cent;
+  int storedNotes = 8;
   // Read incoming events
   LV2_ATOM_SEQUENCE_FOREACH(self->port_events_in, ev)
   {
@@ -170,7 +172,16 @@ static void run(LV2_Handle instance, uint32_t sample_count)
       {
         case LV2_MIDI_MSG_NOTE_ON:
           self->notesPressed++;
-          self->activeNotesList[self->notesIndex++ % 4] = msg[1];
+          int storeN = 0;
+          bool emptySlot = false;
+          while (!emptySlot && storeN < storedNotes) {
+            if (self->activeNotesList[storeN] == 200) {
+              self->activeNotesList[storeN] = msg[1];
+              emptySlot = true;
+            }
+            storeN++;
+          }
+
           if (self->notesPressed > 0)
           {
             self->activeNotes = msg[1];
@@ -181,26 +192,27 @@ static void run(LV2_Handle instance, uint32_t sample_count)
           break;
         case LV2_MIDI_MSG_NOTE_OFF:
           self->notesPressed--;
-          for (size_t notesIndex = 0; notesIndex < 4; notesIndex++) {
+          for (int notesIndex = 0; notesIndex < storedNotes; notesIndex++) {
             if (msg[1] == self->activeNotesList[notesIndex]) {
               self->activeNotesList[notesIndex] = 200;
             }
           }
           if (self->notesPressed <= 0)
           {
+            self->firstNote = true;
             self->activeNotes = 0;
             self->activePorts = false;
             self->activeVelocity = 0;
             self->triggerState = false;
           } else {
-            size_t notesIndex = 0;
+            int notesIndex = storedNotes - 1;
             bool noteFound = false;
-            while (!noteFound && notesIndex < 4) {
-              if (self->activeNotesList[notesIndex] < 200){
-                noteFound = true;
+            while (!noteFound && notesIndex >= 0) {
+               if (self->activeNotesList[notesIndex] < 200){
                 self->activeNotes = self->activeNotesList[notesIndex];
+                noteFound = true;
               }
-              notesIndex++;
+              notesIndex--;
             }
           }
           break;
