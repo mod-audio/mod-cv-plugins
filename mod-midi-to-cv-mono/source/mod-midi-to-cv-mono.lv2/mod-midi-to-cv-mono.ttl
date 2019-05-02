@@ -9,7 +9,7 @@
 @prefix midi: <http://lv2plug.in/ns/ext/midi#> .
 @prefix urid: <http://lv2plug.in/ns/ext/urid#> .
 
-<http://moddevices.com/plugins/mod-devel/midi-to-cv-mono> 
+<http://moddevices.com/plugins/mod-devel/midi-to-cv-mono>
 a lv2:Plugin, lv2:UtilityPlugin;
 
 doap:name "MIDI to CV mono";
@@ -26,7 +26,7 @@ doap:maintainer [
     foaf:mbox <mailto:jarno@moddevices.com>;
     ];
 
-    lv2:minorVersion 1;
+    lv2:minorVersion 2;
     lv2:microVersion 0;
 
 rdfs:comment """
@@ -36,7 +36,7 @@ convert a midi message to monophonic control voltage 1/12 volt per note
 lv2:port
 [
     a lv2:InputPort, atom:AtomPort;
-    atom:bufferType atom:Sequence;    
+    atom:bufferType atom:Sequence;
     atom:supports midi:MidiEvent;
     lv2:designation lv2:control;
     lv2:index 0;

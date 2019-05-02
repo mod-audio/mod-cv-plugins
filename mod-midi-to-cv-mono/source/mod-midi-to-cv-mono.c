@@ -93,6 +93,7 @@ const LV2_Feature* const* features)
     self->notesIndex = 0;
     self->prevMsg[0] = 200;
     self->prevMsg[1] = 200;
+    self->triggerState = false;
     
     return self; 
 }
@@ -142,7 +143,7 @@ void run(LV2_Handle instance, uint32_t n_samples)
   float  oC = *self->octave;
   float  sC = *self->semitone;
   float  cC = *self->cent;
-
+  //TODO check double triggers
   // Read incoming events
   LV2_ATOM_SEQUENCE_FOREACH(self->port_events_in, ev)
   {
