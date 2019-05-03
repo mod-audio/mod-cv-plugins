@@ -25,7 +25,8 @@ typedef enum {
   TRIGGER,
   OCTAVE,
   SEMITONE,
-  CENT
+  CENT,
+  RETRIGGER
 } PortEnum;
 
 
@@ -43,13 +44,16 @@ typedef struct {
 
     // keep track of active notes
     uint8_t activeNotesList[8];
+    uint8_t triggerIndex;
     uint8_t activeNotes;
     uint8_t newNotes;
     uint8_t holdNote;
     uint8_t activeVelocity;
     uint8_t newVelocity;
     uint8_t prevMsg[2];
+    uint8_t reTriggered;
     size_t  notesIndex;
+    uint8_t reTriggerBuffer[8];
     bool activePorts;
 
     
@@ -59,6 +63,7 @@ typedef struct {
     float *octave;
     float *semitone;
     float *cent;
+    float *reTrigger;
 
     bool triggerState;
 
@@ -98,6 +103,9 @@ static LV2_Handle instantiate(const LV2_Descriptor*     descriptor,
 
 //===========================================
     memset(self->activeNotesList, 200, sizeof(uint8_t)*8);
+    memset(self->reTriggerBuffer, 0, sizeof(uint8_t)*8);
+    self->triggerIndex = 0;
+    self->reTriggered = 200;
     self->activeNotes = 0;
     self->activeVelocity = 0;
     self->activePorts = false;
@@ -137,12 +145,22 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data)
       case CENT:
         self->cent = (float*) data;
         break;
+      case RETRIGGER:
+        self->reTrigger = (float*) data;
+        break;
     }
 }
 
 static void activate(LV2_Handle instance)
 {
     Data* self = (Data*)instance;
+}
+
+static void
+setPortState(Data* self, int status)
+{
+  self->activePorts = status;
+  self->triggerState = status;
 }
 
 static void run(LV2_Handle instance, uint32_t sample_count)
@@ -155,6 +173,11 @@ static void run(LV2_Handle instance, uint32_t sample_count)
   float  sC = *self->semitone;
   float  cC = *self->cent;
   int storedNotes = 8;
+  bool retrigger = true;
+
+  if (self->notesPressed > 0) {
+    setPortState(self, 1);
+  }
   // Read incoming events
   LV2_ATOM_SEQUENCE_FOREACH(self->port_events_in, ev)
   {
@@ -178,14 +201,11 @@ static void run(LV2_Handle instance, uint32_t sample_count)
             }
             storeN++;
           }
-
-          if (self->notesPressed > 0)
-          {
-            self->activeNotes = msg[1];
-            self->activeVelocity = msg[2];
-            self->activePorts = true;
-            self->triggerState = true;
-          }
+          self->activeNotes = msg[1];
+          self->activeVelocity = msg[2];
+          self->triggerIndex = (self->triggerIndex + 1) % 8;
+          self->reTriggerBuffer[self->triggerIndex] = 1;
+          self->reTriggered = msg[1];
           break;
         case LV2_MIDI_MSG_NOTE_OFF:
           self->notesPressed--;
@@ -196,16 +216,19 @@ static void run(LV2_Handle instance, uint32_t sample_count)
           }
           if (self->notesPressed <= 0)
           {
-            // self->activeNotes = 0;
-            self->activePorts = false;
+            setPortState(self, 0);
             self->activeVelocity = 0;
-            self->triggerState = false;
           } else {
             int notesIndex = storedNotes - 1;
             bool noteFound = false;
             while (!noteFound && notesIndex >= 0) {
                if (self->activeNotesList[notesIndex] < 200){
                 self->activeNotes = self->activeNotesList[notesIndex];
+                if(retrigger && self->activeNotes != self->reTriggered){
+                  self->triggerIndex = (self->triggerIndex + 1) % 8;
+                  self->reTriggerBuffer[self->triggerIndex] = 1;
+                  self->reTriggered = msg[1];
+                }
                 noteFound = true;
               }
               notesIndex--;
@@ -222,6 +245,10 @@ static void run(LV2_Handle instance, uint32_t sample_count)
     pitch[i] = (0.0f + (float)((oC) + (sC/12.0f)+(cC/1200.0f)) + ((float)self->activeNotes * 1/12.0f));
     velocity[i] = (0.0f + ((float)self->activeVelocity * 1/12.0f));
     trigger[i] = ((self->triggerState == true) ? 10.0f : 0.0f);
+    if (self->reTriggerBuffer[self->triggerIndex] == 1 && *self->reTrigger == 1.0) {
+      self->reTriggerBuffer[self->triggerIndex] = 0;
+      trigger[i] = 0.0f;
+    }
   }
 }
 
