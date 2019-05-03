@@ -26,6 +26,7 @@ instantiate(const LV2_Descriptor*     descriptor,
 {
 	Control* self = (Control*)malloc(sizeof(Control));
 
+  self->z1 = 0.0;
   double frequency = 440.0 / rate;
   self->b1 = exp(-2.0 * M_PI * frequency);
   self->a0 = 1.0 - self->b1;

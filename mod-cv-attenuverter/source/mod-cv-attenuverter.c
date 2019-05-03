@@ -14,7 +14,10 @@ typedef enum {
 typedef struct {
 	float*       input;
 	float*       output;
-    float*       level;
+  float*       level;
+  double a0;
+  double b1;
+  double z1;
 } Attenuverter;
 
 static LV2_Handle
@@ -25,6 +28,11 @@ instantiate(const LV2_Descriptor*     descriptor,
 {
 	Attenuverter* self = (Attenuverter*)malloc(sizeof(Attenuverter));
 
+  self->z1 = 0.0;
+  double frequency = 440.0 / rate;
+  self->b1 = exp(-2.0 * M_PI * frequency);
+  self->a0 = 1.0 - self->b1;
+  
 	return (LV2_Handle)self;
 }
 
@@ -53,15 +61,23 @@ activate(LV2_Handle instance)
 {
 }
 
+static double
+lowPassProcess(Attenuverter* self, float input)
+{
+  return self->z1 = input * self->a0 + self->z1 * self->b1; 
+}
+
+
 static void
 run(LV2_Handle instance, uint32_t n_samples)
 {
   Attenuverter* self = (Attenuverter*) instance;
   float coef = *self->level;
-    for ( uint32_t i = 0; i < n_samples; i++)
-    {
-      self->output[i] = (self->input[i] * coef); 
-    }
+  coef = lowPassProcess(self, coef);
+  for ( uint32_t i = 0; i < n_samples; i++)
+  {
+    self->output[i] = (self->input[i] * coef); 
+  }
 }
 
 static void
