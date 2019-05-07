@@ -71,6 +71,7 @@ typedef struct {
   double          samplerate;
 	LV2_Atom_Sequence* control;
 	int*   		    	  sync;
+  int            prevSync;
 	// Variables to keep track of the tempo information sent by the host
 	float        	       bpm; // Beats per minute (tempo)
 	uint32_t    	       pos;
@@ -78,6 +79,7 @@ typedef struct {
 	uint32_t	  h_wavelenght;
 
 	float   	         speed; // Transport speed (usually 0=stop, 1=play)
+  float              beatInMeasure;
 
 	float 	   elapsed_len; // Frames since the start of the last click
 	uint32_t 	   wave_offset; // Current play offset in the wave
@@ -126,7 +128,7 @@ activate(LV2_Handle instance)
 	self->bpm = *self->changeBpm;
 	self->divisions =*self->changedDiv;
 	self->pos = 0;
-	self->period = (uint32_t)(48000.0f * (60.0f / (self->bpm * (self->divisions / 2.0f))));
+	self->period = (uint32_t)(self->samplerate * (60.0f / (self->bpm * (self->divisions / 2.0f))));
 	self->h_wavelenght = (self->period/2.0f);
 }
 
@@ -181,7 +183,8 @@ instantiate(const LV2_Descriptor*     descriptor,
 	self->decay_len  = (uint32_t)(decay_s * rate);
 	self->state      = STATE_OFF;
   self->samplerate = rate;
-
+  self->prevSync   = 0; 
+  self->beatInMeasure = 0;
 	return (LV2_Handle)self;
 }
 
@@ -219,33 +222,41 @@ update_position(Clock* self, const LV2_Atom_Object* obj)
 			const float frames_per_beat = (self->samplerate * (60.0f / (self->bpm * self->divisions)));
 			const float bar_beats       = (((LV2_Atom_Float*)beat)->body * self->divisions);
 			const float beat_beats      = bar_beats - floorf(bar_beats);
+      self->beatInMeasure         = ((LV2_Atom_Float*)beat)->body; 
 			self->elapsed_len           = beat_beats * frames_per_beat;
 			self->h_wavelenght 	        = (uint32_t)(frames_per_beat/2.0f);
-
-			if (self->elapsed_len < self->attack_len)
-			{
-				self->state = STATE_ATTACK;
-			} else if (self->elapsed_len >= self->attack_len && self->elapsed_len < self->h_wavelenght)
-			{
-				self->state = STATE_HOLD;
-			} else if (self->elapsed_len >= self->h_wavelenght && self->elapsed_len < (self->h_wavelenght - self->decay_len))
-			{
-				self->state = STATE_DECAY;
-			}
-			else
-			{
-				self->state = STATE_OFF;
-			} 
 	}
 }
+
+static uint32_t 
+resetPhase(Clock* self)
+{
+  //fmod?
+  uint32_t pos = (uint32_t)fmod(self->samplerate * (60.0f / self->bpm) * self->beatInMeasure, (self->samplerate * (60.0f / (self->bpm * (self->divisions / 2.0f)))));
+  debug_print("pos in resetPhase = %i\n", pos);
+  return pos;
+}
+
 
 static void
 run(LV2_Handle instance, uint32_t n_samples)
 {
   Clock* self = (Clock*)instance;
-  self->bpm = *self->changeBpm;
+  float bpm;
+
+  if (!*self->sync) {
+    self->bpm = *self->changeBpm;
+  } else {
+    self->bpm = self->bpm;
+  }
+
+  if (*self->sync != self->prevSync) {
+    self->pos = resetPhase(self);
+    self->prevSync = *self->sync;
+  }
+
   self->divisions = *self->changedDiv;
-  self->period = (uint32_t)(48000.0f * (60.0f / (self->bpm * (self->divisions / 2.0f))));
+  self->period = (uint32_t)(self->samplerate * (60.0f / (self->bpm * (self->divisions / 2.0f))));
   self->h_wavelenght = (self->period/2.0f);
 
   const ClockURIs* uris = &self->uris;
