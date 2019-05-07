@@ -76,8 +76,9 @@ typedef struct {
 	float        	       bpm; // Beats per minute (tempo)
 	uint32_t    	       pos;
 	uint32_t   	        period;
-	uint32_t	  h_wavelenght;
+	uint32_t	  h_wavelength;
 
+  bool printed;
 	float   	         speed; // Transport speed (usually 0=stop, 1=play)
   float              beatInMeasure;
 
@@ -128,8 +129,8 @@ activate(LV2_Handle instance)
 	self->bpm = *self->changeBpm;
 	self->divisions =*self->changedDiv;
 	self->pos = 0;
-	self->period = (uint32_t)(self->samplerate * (60.0f / (self->bpm * (self->divisions / 2.0f))));
-	self->h_wavelenght = (self->period/2.0f);
+	//self->period = (uint32_t)(self->samplerate * (60.0f / (self->bpm * (self->divisions / 2.0f))));
+	//self->h_wavelength = (self->period/2.0f);
 }
 
 static LV2_Handle
@@ -185,6 +186,7 @@ instantiate(const LV2_Descriptor*     descriptor,
   self->samplerate = rate;
   self->prevSync   = 0; 
   self->beatInMeasure = 0;
+  self->printed = false;
 	return (LV2_Handle)self;
 }
 
@@ -224,7 +226,7 @@ update_position(Clock* self, const LV2_Atom_Object* obj)
 			const float beat_beats      = bar_beats - floorf(bar_beats);
       self->beatInMeasure         = ((LV2_Atom_Float*)beat)->body; 
 			self->elapsed_len           = beat_beats * frames_per_beat;
-			self->h_wavelenght 	        = (uint32_t)(frames_per_beat/2.0f);
+			//self->h_wavelength 	        = (uint32_t)(frames_per_beat/2.0f);
 	}
 }
 
@@ -257,7 +259,7 @@ run(LV2_Handle instance, uint32_t n_samples)
 
   self->divisions = *self->changedDiv;
   self->period = (uint32_t)(self->samplerate * (60.0f / (self->bpm * (self->divisions / 2.0f))));
-  self->h_wavelenght = (self->period/2.0f);
+  self->h_wavelength = (self->period/2.0f);
 
   const ClockURIs* uris = &self->uris;
   const LV2_Atom_Sequence* in     = self->control;
@@ -281,14 +283,20 @@ run(LV2_Handle instance, uint32_t n_samples)
 
   for(uint32_t i = 0; i < n_samples; i ++) {
     if(self->pos >= self->period && i < n_samples) {
+      self->printed = false;
       self->squareOutput[i] = 2.0f;
       self->pulseOutput[i] = 2.0f;
       self->pos = 0;
     } else {
-      if(self->pos < self->h_wavelenght) {
+      if(self->pos < self->h_wavelength) {
         self->squareOutput[i] = 2.0f;
-      }
-      else {
+      } else {
+        if (!self->printed) {
+          debug_print("self->h_waveLength = %i\n", self->h_wavelength);
+          debug_print("self->period = %i\n", self->period);
+          debug_print("pos in switch to zero = %i\n", self->pos);
+          self->printed = true;
+        }
         self->squareOutput[i] = 0.0f;
       }
       self->pulseOutput[i] = 0.0f;
@@ -361,9 +369,9 @@ lv2_descriptor(uint32_t index)
 //			break;
 //		case STATE_DECAY:
 //			// Amplitude decreases from 1..0 until attack_len + decay_len
-//			output[i] = 2.0f * (1 - ((self->elapsed_len - self->h_wavelenght) / (float)self->decay_len));
+//			output[i] = 2.0f * (1 - ((self->elapsed_len - self->h_wavelength) / (float)self->decay_len));
 //			self->pulseOutput[i] = 0.0f;
-//			if (self->elapsed_len >= self->h_wavelenght + self->decay_len)
+//			if (self->elapsed_len >= self->h_wavelength + self->decay_len)
 //			{
 //				self->state = STATE_OFF;
 //			}
@@ -375,7 +383,7 @@ lv2_descriptor(uint32_t index)
 //		case STATE_HOLD:
 //			output[i] = 2.0f;
 //			self->pulseOutput[i] = 0.0f;
-//			if(self->elapsed_len > self->h_wavelenght)
+//			if(self->elapsed_len > self->h_wavelength)
 //			{
 //				self->state = STATE_DECAY;
 //			}
