@@ -225,8 +225,8 @@ static void run(LV2_Handle instance, uint32_t sample_count)
                if (self->activeNotesList[notesIndex] < 200){
                 self->activeNotes = self->activeNotesList[notesIndex];
                 if(retrigger && self->activeNotes != self->reTriggered){
-                  self->triggerIndex = (self->triggerIndex + 1) % 8;
-                  self->reTriggerBuffer[self->triggerIndex] = 1;
+                  //self->triggerIndex = (self->triggerIndex + 1) % 8;
+                  //self->reTriggerBuffer[self->triggerIndex] = 1;
                   self->reTriggered = msg[1];
                 }
                 noteFound = true;

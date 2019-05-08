@@ -15,7 +15,7 @@
         rdfs:comment """
 convert a midi message to monophonic control voltage 1/12 volt per note
 """ ;
-        lv2:minorVersion 2 ;
+        lv2:minorVersion 3 ;
         lv2:microVersion 0 ;
         lv2:optionalFeature lv2:hardRTCapable ;
         lv2:port [
