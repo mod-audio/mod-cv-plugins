@@ -12,6 +12,13 @@
 #include "lv2/lv2plug.in/ns/ext/time/time.h"
 #include <lv2/lv2plug.in/ns/ext/urid/urid.h>
 
+#ifndef DEBUG
+#define DEBUG 0
+#endif
+#define debug_print(...) \
+((void)((DEBUG) ? fprintf(stderr, __VA_ARGS__) : 0))
+
+
 #ifndef M_PI
 #    define M_PI 3.14159265
 #endif
@@ -61,15 +68,20 @@ typedef struct {
 	float   	     divisions;
 	float*          changedDiv;
 	float 	     *squareOutput;
+  double          samplerate;
 	LV2_Atom_Sequence* control;
 	int*   		    	  sync;
+  int            prevSync;
 	// Variables to keep track of the tempo information sent by the host
 	float        	       bpm; // Beats per minute (tempo)
 	uint32_t    	       pos;
 	uint32_t   	        period;
-	uint32_t	  h_wavelenght;
+	uint32_t	  h_wavelength;
 
+  bool printed;
 	float   	         speed; // Transport speed (usually 0=stop, 1=play)
+  float              prevSpeed;
+  float              beatInMeasure;
 
 	float 	   elapsed_len; // Frames since the start of the last click
 	uint32_t 	   wave_offset; // Current play offset in the wave
@@ -118,8 +130,6 @@ activate(LV2_Handle instance)
 	self->bpm = *self->changeBpm;
 	self->divisions =*self->changedDiv;
 	self->pos = 0;
-	self->period = (uint32_t)(48000.0f * (60.0f / (self->bpm * (self->divisions / 2.0f))));
-	self->h_wavelenght = (self->period/2.0f);
 }
 
 static LV2_Handle
@@ -168,70 +178,18 @@ instantiate(const LV2_Descriptor*     descriptor,
 	uris->time_beatsPerMinute = map->map(map->handle, LV2_TIME__beatsPerMinute);
 	uris->time_speed          = map->map(map->handle, LV2_TIME__speed);
 
+  debug_print("DEBUGING");
 	self->attack_len = (uint32_t)(attack_s * rate);
 	self->decay_len  = (uint32_t)(decay_s * rate);
 	self->state      = STATE_OFF;
-
+  self->samplerate = rate;
+  self->prevSync   = 0; 
+  self->beatInMeasure = 0;
+  self->printed = false;
+  self->prevSpeed = 0;
 	return (LV2_Handle)self;
 }
 
-static void
-play(Clock* self, uint32_t begin, uint32_t end)
-{
-	float* const   output          = self->squareOutput;
-	const uint32_t frames_per_beat = (48000.0f * (60.0f / (self->bpm * (self->divisions / 1.0f))));
-	if (self->speed == 0.0f)
-	{
-		//self->pos = 0;
-		memset(output, 0.0f, (end - begin) * sizeof(float));
-		return;
-	}
-	for (uint32_t i = begin; i < end; ++i)
-	{
-		switch (self->state)
-		{
-		case STATE_ATTACK:
-			// Amplitude increases from 0..1 until attack_len
-			output[i] = 2.0f *self->elapsed_len / (float)self->attack_len;
-			self->pulseOutput[i] = 2.0f;
-			if (self->elapsed_len >= self->attack_len)
-			{
-				self->state = STATE_HOLD;
-			}
-			break;
-		case STATE_DECAY:
-			// Amplitude decreases from 1..0 until attack_len + decay_len
-			output[i] = 2.0f * (1 - ((self->elapsed_len - self->h_wavelenght) / (float)self->decay_len));
-			self->pulseOutput[i] = 0.0f;
-			if (self->elapsed_len >= self->h_wavelenght + self->decay_len)
-			{
-				self->state = STATE_OFF;
-			}
-			break;
-		case STATE_OFF:
-			output[i] = 0.0f;
-			self->pulseOutput[i] = 0.0f;
-			break;
-		case STATE_HOLD:
-			output[i] = 2.0f;
-			self->pulseOutput[i] = 0.0f;
-			if(self->elapsed_len > self->h_wavelenght)
-			{
-				self->state = STATE_DECAY;
-			}
-			break;
-		default:
-		break;
-		}
-
-		// Update elapsed time and start attack if necessary
-		if (++self->elapsed_len == frames_per_beat)
-		{
-			self->state       = STATE_ATTACK;
-			self->elapsed_len = 0;
-		}
-	}
-}
 
 
 // Update the current position based on a host message.  This is called by
@@ -263,122 +221,95 @@ update_position(Clock* self, const LV2_Atom_Object* obj)
 	{
 			// Received a beat position, synchronise
 			// This hard sync may cause clicks, a real plugin would be more graceful
-			const float frames_per_beat = (48000.0f * (60.0f / (self->bpm * self->divisions)));
+			const float frames_per_beat = (self->samplerate * (60.0f / (self->bpm * self->divisions)));
 			const float bar_beats       = (((LV2_Atom_Float*)beat)->body * self->divisions);
 			const float beat_beats      = bar_beats - floorf(bar_beats);
+      self->beatInMeasure         = ((LV2_Atom_Float*)beat)->body; 
 			self->elapsed_len           = beat_beats * frames_per_beat;
-			self->h_wavelenght 	        = (uint32_t)(frames_per_beat/2.0f);
-
-			if (self->elapsed_len < self->attack_len)
-			{
-				self->state = STATE_ATTACK;
-			} else if (self->elapsed_len >= self->attack_len && self->elapsed_len < self->h_wavelenght)
-			{
-				self->state = STATE_HOLD;
-			} else if (self->elapsed_len >= self->h_wavelenght && self->elapsed_len < (self->h_wavelenght - self->decay_len))
-			{
-				self->state = STATE_DECAY;
-			}
-			else
-			{
-				self->state = STATE_OFF;
-			} 
 	}
 }
+
+static uint32_t 
+resetPhase(Clock* self)
+{
+  uint32_t pos = (uint32_t)fmod(self->samplerate * (60.0f / self->bpm) * self->beatInMeasure, (self->samplerate * (60.0f / (self->bpm * (self->divisions / 2.0f)))));
+
+  return pos;
+}
+
 
 static void
 run(LV2_Handle instance, uint32_t n_samples)
 {
-	Clock* self = (Clock*)instance;
-	const ClockURIs* uris = &self->uris;
+  Clock* self = (Clock*)instance;
 
-if(!*self->sync) //no host sync. Plugin is in free running mode
-	{
+  const ClockURIs* uris = &self->uris;
+  const LV2_Atom_Sequence* in     = self->control;
 
-			self->bpm = *self->changeBpm;
-			self->divisions = *self->changedDiv;
-			self->period = (uint32_t)(48000.0f * (60.0f / (self->bpm * (self->divisions / 2.0f))));
-			self->h_wavelenght = (self->period/2.0f);
+  for (const LV2_Atom_Event* ev = lv2_atom_sequence_begin(&in->body);
+      !lv2_atom_sequence_is_end(&in->body, in->atom.size, ev);
+      ev = lv2_atom_sequence_next(ev)) {
 
-		for(uint32_t i = 0; i < n_samples; i ++)
-		{
-			if(self->pos >= self->period && i < n_samples)
-			{
-				self->squareOutput[i] = 2.0f;
-				self->pulseOutput[i] = 2.0f;
-				self->pos = 0;
-			}
-			else
-			{
-				if(self->pos < self->h_wavelenght)
-				{
-					self->squareOutput[i] = 2.0f;
-				}
-				else
-				{
-					self->squareOutput[i] = 0.0f;
-				}
-				self->pulseOutput[i] = 0.0f;
-			}
-			self->pos = self->pos + 1;
-		}
-		for(uint32_t i = 0; i < n_samples; i ++)
-		{
-			if(self->pos >= self->period && i < n_samples)
-			{
-				self->squareOutput[i] = 2.0f;
-				self->pulseOutput[i] = 2.0f;
-				self->pos = 0;
-			}
-			else
-			{
-				if(self->pos < self->h_wavelenght)
-				{
-					self->squareOutput[i] = 2.0f;
-				}
-				else
-				{
-					self->squareOutput[i] = 0.0f;
-				}
-				self->pulseOutput[i] = 0.0f;
-			}
-			self->pos += 1;
-		}
-	}
-	else //plugin syncs with the host
-	{
-		if(self->divisions != *self->changedDiv)
-		{
-			self->divisions = *self->changedDiv;
-		}
-		// Work forwards in time frame by frame, handling events as we go
-		const LV2_Atom_Sequence* in     = self->control;
-		uint32_t                 last_t = 0;
-		for (const LV2_Atom_Event* ev = lv2_atom_sequence_begin(&in->body);
-		     !lv2_atom_sequence_is_end(&in->body, in->atom.size, ev);
-		     ev = lv2_atom_sequence_next(ev))
-			{
+    if (ev->body.type == uris->atom_Object ||
+        ev->body.type == uris->atom_Blank) {
+      const LV2_Atom_Object* obj = (const LV2_Atom_Object*)&ev->body;
+      if (obj->body.otype == uris->time_Position) {
+        update_position(self, obj);
+      }
+    }
+  }
 
-			// Play the click for the time slice from last_t until now
-			play(self, last_t, ev->time.frames);	
 
-			// Check if this event is an Object
-			// (or deprecated Blank to tolerate old hosts)
-			if (ev->body.type == uris->atom_Object || ev->body.type == uris->atom_Blank)
-			{
-				const LV2_Atom_Object* obj = (const LV2_Atom_Object*)&ev->body;
-				if (obj->body.otype == uris->time_Position)
-				{
-					// Received position information, update
-					update_position(self, obj);
-				}
-			}
-			// Update time for next iteration and move to next event
-			last_t = ev->time.frames;
-		}
-	// Play for remainder of cycle
-	play(self, last_t, n_samples);
-	}
+  for(uint32_t i = 0; i < n_samples; i ++) {
+    //map bpm to host or to bpm parameter
+    if (!*self->sync) {
+      self->bpm = *self->changeBpm;
+    } else {
+      self->bpm = self->bpm;
+    }
+    //reset phase when playing starts or stops
+    if (self->speed != self->prevSpeed) {
+      self->pos = resetPhase(self);
+      self->prevSpeed = self->speed;
+      debug_print("transport changed\n");
+    }
+    //reset phase when sync is turned on
+    if (*self->sync != self->prevSync) {
+      self->pos = resetPhase(self);
+      self->prevSync = *self->sync;
+      debug_print("Sync changed\n");
+    }
+    //reset phase when there is a new division
+    if (self->divisions != *self->changedDiv) {
+      self->divisions = *self->changedDiv;
+      self->pos = resetPhase(self);
+      debug_print("Division changed\n");
+    }
+
+    self->period = (uint32_t)(self->samplerate * (60.0f / (self->bpm * (self->divisions / 2.0f))));
+    self->h_wavelength = (self->period/2.0f);
+
+    if(self->pos >= self->period && i < n_samples) {
+      self->printed = false;
+      self->squareOutput[i] = 2.0f;
+      self->pulseOutput[i] = 2.0f;
+      self->pos = 0;
+    } else {
+      if(self->pos < self->h_wavelength) {
+        self->squareOutput[i] = 2.0f;
+      } else {
+        if (!self->printed) {
+          //debug_print("self->h_waveLength = %i\n", self->h_wavelength);
+          //debug_print("self->period = %i\n", self->period);
+          //debug_print("pos in switch to zero = %i\n", self->pos);
+          self->printed = true;
+        }
+        self->squareOutput[i] = 0.0f;
+      }
+      self->pulseOutput[i] = 0.0f;
+    }
+    self->pos += 1;
+  }
 }
 
 static void
@@ -418,3 +349,4 @@ lv2_descriptor(uint32_t index)
 	default: return NULL;
 	}
 }
+

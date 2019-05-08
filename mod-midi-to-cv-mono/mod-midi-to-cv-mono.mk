@@ -10,7 +10,7 @@ MOD_MIDI_TO_CV_MONO_SITE = $($(PKG)_PKGDIR)/
 
 # even though this is a local build, we still need a version number
 # bump this number if you need to force a rebuild
-MOD_MIDI_TO_CV_MONO_VERSION = 1
+MOD_MIDI_TO_CV_MONO_VERSION = 3
 
 # dependencies (list of other buildroot packages, separated by space)
 MOD_MIDI_TO_CV_MONO_DEPENDENCIES =

@@ -9,10 +9,10 @@
 @prefix midi: <http://lv2plug.in/ns/ext/midi#> .
 @prefix urid: <http://lv2plug.in/ns/ext/urid#> .
 
-<http://moddevices.com/plugins/mod-devel/midi-to-cv-poly> 
+<http://moddevices.com/plugins/mod-devel/midi-to-cv-poly>
 a lv2:Plugin, lv2:UtilityPlugin;
 
-doap:name "MIDI to CV Poly";
+doap:name "MIDI to CV Polyphonic";
 
 doap:developer [
     foaf:name "Jarno Verheesen";
@@ -36,7 +36,7 @@ convert a midi message to polyphonic control voltages 1/12 volt per note
 lv2:port
 [
     a lv2:InputPort, atom:AtomPort;
-    atom:bufferType atom:Sequence;    
+    atom:bufferType atom:Sequence;
     atom:supports midi:MidiEvent;
     lv2:designation lv2:control;
     lv2:index 0;
