@@ -22,5 +22,9 @@
             lv2:index 2 ;
             lv2:symbol "Cent" ;
             lv2:name "Cent" ;
+        ] , [
+            lv2:index 3 ;
+            lv2:symbol "Retrigger" ;
+            lv2:name "Retrigger" ;
         ] ;
     ] .

@@ -95,3 +95,32 @@
     width: 53px;
     margin: 0 auto;
 }
+
+.mod-midi-to-cv-mono{{{cns}}} .mod-control-group .mod-knob.mod-midi-to-cv-mono-Octave .mod-knob-image {
+    background-image: url(/resources/mod_midi_to_cv_mono_sprite_sheets/medium_knob_3_7frames.png{{{ns}}});
+}
+
+.mod-midi-to-cv-mono{{{cns}}} .mod-control-group .mod-knob.mod-midi-to-cv-mono-Semitone .mod-knob-image {
+    background-image: url(/resources/mod_midi_to_cv_mono_sprite_sheets/medium_knob_3_25frames.png{{{ns}}});
+}
+
+.mod-midi-to-cv-mono{{{cns}}} .mod-control-group .mod-knob.mod-midi-to-cv-mono-Cent .mod-knob-image {
+    background-image: url(/resources/mod_midi_to_cv_mono_sprite_sheets/medium_knob_3_70frames.png{{{ns}}});
+}
+
+/* RETRIGGER SWITCH */
+.mod-midi-to-cv-mono{{{cns}}} .mod-retrigger-switch {
+  position: absolute;
+  z-index: 30;
+  cursor: pointer;
+  right: 8px;
+  top: 284px;
+}
+
+.mod-midi-to-cv-mono{{{cns}}} .mod-retrigger-switch .mod-retrigger-switch-image {
+    background-image: url(/resources/mod_midi_to_cv_mono_sprite_sheets/switch.png{{{ns}}});
+    background-repeat: no-repeat;
+    height: 14px;
+    width: 48px;
+    margin: 0 auto;
+}
