@@ -153,7 +153,6 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data)
 
 static void activate(LV2_Handle instance)
 {
-    Data* self = (Data*)instance;
 }
 
 static void
@@ -185,7 +184,7 @@ static void run(LV2_Handle instance, uint32_t sample_count)
     {
       const uint8_t* const msg = (const uint8_t*)(ev + 1);
 
-      const uint8_t channel = msg[0] & 0x0F;
+      //const uint8_t channel = msg[0] & 0x0F;
       const uint8_t status  = msg[0] & 0xF0;
 
       switch (status)
