@@ -12,7 +12,7 @@
 @prefix time: <http://lv2plug.in/ns/ext/time#> .
 
 <http://moddevices.com/plugins/mod-devel/mod-cv-clock>
-a lv2:Plugin, mod:ControlVoltage;
+a lv2:Plugin, mod:ControlVoltagePlugin;
 
 doap:name "CV Clock";
 

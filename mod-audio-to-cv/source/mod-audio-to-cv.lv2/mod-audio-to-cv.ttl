@@ -11,7 +11,7 @@
 @prefix urid: <http://lv2plug.in/ns/ext/urid#> .
 
 <http://moddevices.com/plugins/mod-devel/mod-audio-to-cv>
-a lv2:Plugin, mod:ControlVoltage;
+a lv2:Plugin, mod:ControlVoltagePlugin;
 
 doap:name "Audio to CV";
 

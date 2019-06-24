@@ -9,7 +9,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 <http://moddevices.com/plugins/mod-devel/midi-to-cv-mono>
-a lv2:Plugin, mod:ControlVoltage;
+a lv2:Plugin, mod:ControlVoltagePlugin;
         doap:name "MIDI to CV mono" ;
         rdfs:comment """
 convert a midi message to monophonic control voltage 1/12 volt per note
