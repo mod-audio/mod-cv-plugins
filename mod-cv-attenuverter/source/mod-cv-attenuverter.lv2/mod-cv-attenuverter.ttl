@@ -16,7 +16,7 @@ a lv2:Plugin, mod:ControlVoltagePlugin;
 doap:name "Attenuverter Booster";
 
 doap:developer [
-    foaf:name "Jarno Verheesen";
+    foaf:name "Jarno Verheesen & Bram Giesen";
     foaf:homepage <>;
     foaf:mbox <mailto:j.verheesen@hotmail.nl>;
     ];
