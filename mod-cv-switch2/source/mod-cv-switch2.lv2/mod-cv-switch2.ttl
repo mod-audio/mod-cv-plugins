@@ -31,7 +31,7 @@ doap:maintainer [
     lv2:microVersion 0;
 
 rdfs:comment """
-Either one of the two cv inputs to one output.
+CV Switchbox 2-1 routes either one of the two cv inputs to one cv output. 
 """;
 
 lv2:port

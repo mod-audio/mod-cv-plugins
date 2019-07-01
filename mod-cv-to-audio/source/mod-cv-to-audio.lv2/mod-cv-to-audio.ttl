@@ -31,7 +31,7 @@ doap:maintainer [
     lv2:microVersion 0;
 
 rdfs:comment """
-This plugin converts a control voltage signal to an audio signal.
+Audio to CV converts an audio signal to a control voltage signal. 
 """;
 
 lv2:port

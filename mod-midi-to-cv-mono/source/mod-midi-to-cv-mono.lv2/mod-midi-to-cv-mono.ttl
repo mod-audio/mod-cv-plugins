@@ -12,7 +12,7 @@
 a lv2:Plugin, mod:ControlVoltagePlugin;
         doap:name "MIDI to CV mono" ;
         rdfs:comment """
-convert a midi message to monophonic control voltage 1/12 volt per note
+MIDI to CV mono converts a midi message to monophonic control voltage, 1/12 volt per note. It also features a retrigger knob, which retriggers the gate when it switches back to a previous voice that is still active. This is particularly useful when combined with short envelopes. 
 """ ;
         lv2:minorVersion 3 ;
         lv2:microVersion 0 ;
@@ -87,7 +87,7 @@ convert a midi message to monophonic control voltage 1/12 volt per note
         ] ;
 
         doap:developer [
-            foaf:name "Jarbi Verheesen" ;
+            foaf:name "Bram Giesen & Jarno Verheesen" ;
             foaf:homepage <> ;
             foaf:mbox <mailto:j.verheesen@hotmail.nl> ;
         ] ;

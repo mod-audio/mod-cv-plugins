@@ -31,7 +31,7 @@ doap:maintainer [
     lv2:microVersion 0;
 
 rdfs:comment """
-convert a midi message to polyphonic control voltages 1/12 volt per note
+MIDI to CV poly enables you to convert a midi message to polyphonic control voltages, 1/12 volt per note.
 """;
 
 lv2:port

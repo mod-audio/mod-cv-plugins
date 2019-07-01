@@ -17,7 +17,7 @@ a lv2:Plugin, mod:ControlVoltagePlugin;
 doap:name "CV Clock";
 
 doap:developer [
-    foaf:name "Jarno Verheesen";
+    foaf:name "Bram Giesen & Jarno Verheesen";
     foaf:homepage <>;
     foaf:mbox <mailto:j.verheesen@hotmail.nl>;
     ];
@@ -32,7 +32,7 @@ doap:maintainer [
     lv2:microVersion 0;
 
 rdfs:comment """
-This plugin can generate a CV clock pulses.
+CV Clock generates CV clock pulses or square waves in multiple divisions. The clock can run in free mode or be signed with the host tempo. 
 """;
 
 lv2:port
