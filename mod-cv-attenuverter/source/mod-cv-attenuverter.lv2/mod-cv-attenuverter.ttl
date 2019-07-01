@@ -2,7 +2,8 @@
 @prefix doap: <http://usefulinc.com/ns/doap#>.
 @prefix epp: <http://lv2plug.in/ns/ext/port-props#>.
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
-@prefix mod: <http://moddevices.com/ns/modgui#>.
+@prefix modgui: <http://moddevices.com/ns/modgui#>.
+@prefix mod: <http://moddevices.com/ns/mod#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix atom: <http://lv2plug.in/ns/ext/atom#> .
@@ -10,12 +11,12 @@
 @prefix urid: <http://lv2plug.in/ns/ext/urid#> .
 
 <http://moddevices.com/plugins/mod-devel/mod-cv-attenuverter>
-a lv2:Plugin, lv2:UtilityPlugin;
+a lv2:Plugin, mod:ControlVoltagePluginPlugin;
 
 doap:name "Attenuverter Booster";
 
 doap:developer [
-    foaf:name "Jarno Verheesen";
+    foaf:name "Jarno Verheesen & Bram Giesen";
     foaf:homepage <>;
     foaf:mbox <mailto:j.verheesen@hotmail.nl>;
     ];
