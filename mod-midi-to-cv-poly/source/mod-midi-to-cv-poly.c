@@ -14,15 +14,16 @@
 /**********************************************************************************************************************************************************/
 #define PLUGIN_URI "http://moddevices.com/plugins/mod-devel/midi-to-cv-poly"
 #define MAX_NOTES 3
-
+#define NUM_PORTS 4
 typedef enum {IN, CV1, CV2, CV3, CV4, VELOCITY, TRIGGER1, TRIGGER2, TRIGGER3, TRIGGER4, OCTAVE, PITCH, SEMITONE}PortIndex;
 
 typedef struct
 {
     // keep track of active notes
-    uint8_t activeNotes[4];
+    uint8_t activeNotes[NUM_PORTS];
     uint8_t activeVelocity;
-    bool activePorts[4];
+    bool activePorts[NUM_PORTS];
+    int steal_voice;
 
     LV2_URID urid_midiEvent;    
     //ports
@@ -84,15 +85,12 @@ const LV2_Feature* const* features)
     // use for arrays
     //memset(self->activeNotes, 0, sizeof(uint8_t)*4);
     //memset(self->activePorts, 0, sizeof(bool)*4);
-    self->activeNotes[0] = 0;
-    self->activeNotes[1] = 0;  
-    self->activeNotes[2] = 0;  
-    self->activeNotes[3] = 0;
-    self->activePorts[0] = false;
-    self->activePorts[1] = false;
-    self->activePorts[2] = false;
-    self->activePorts[3] = false;      
+    for (unsigned port = 0; port < NUM_PORTS; port++) {
+    self->activeNotes[port] = 0;
+    self->activePorts[port] = false;
+    }
     self->activeVelocity = 0;
+    self->steal_voice = 0;
 
     return self; 
 }
@@ -168,85 +166,69 @@ void run(LV2_Handle instance, uint32_t n_samples)
     float cB = *self->pitchC;
     float cC = *self->semitoneC;
 
-    for(uint32_t i=0;i<n_samples;i++)
+    // Read incoming events
+    LV2_ATOM_SEQUENCE_FOREACH(self->port_events_in, ev)
     {
-        // Read incoming events
-        LV2_ATOM_SEQUENCE_FOREACH(self->port_events_in, ev)
+        if (ev->body.type == self->urid_midiEvent)
         {
-            if (ev->body.type == self->urid_midiEvent)
+            const uint8_t* const msg = (const uint8_t*)(ev + 1);
+            //const uint8_t channel = msg[0] & 0x0F;
+            const uint8_t status  = msg[0] & 0xF0;
+
+            bool free_port_found = false;
+            int search_port = 0;
+            bool port_freed = false;
+            
+            switch (status)
             {
-                    const uint8_t* const msg = (const uint8_t*)(ev + 1);
-                    //const uint8_t channel = msg[0] & 0x0F;
-                    const uint8_t status  = msg[0] & 0xF0;
-                    switch (status)
-                    {
-                    case LV2_MIDI_MSG_NOTE_ON:
-                        if (self->activePorts[0] != true && self->activeNotes[1] != msg[1] && self->activeNotes[2] != msg[1] && self->activeNotes[3] != msg[1])
+                case LV2_MIDI_MSG_NOTE_ON:
+                    while (!free_port_found && search_port < NUM_PORTS) {
+                        if (self->activePorts[search_port] != true)
                         {
-                            self->activeNotes[0] = msg[1];
+                            self->activeNotes[search_port] = msg[1];
                             self->activeVelocity = msg[2];
-                            self->activePorts[0] = true;
+                            self->activePorts[search_port] = true;
+                            free_port_found = true;
                         }
-                        else if (self->activePorts[1] != true && self->activeNotes[0] != msg[1]&& self->activeNotes[2] != msg[1] && self->activeNotes[3] != msg[1])
-                        {
-                            self->activeNotes[1] = msg[1];
-                            self->activeVelocity = msg[2];
-                            self->activePorts[1] = true;
-                        }
-                        else if (self->activePorts[2] != true && self->activeNotes[0] != msg[1]&& self->activeNotes[1] != msg[1] && self->activeNotes[3] != msg[1])
-                        {
-                            self->activeNotes[2] = msg[1];
-                            self->activeVelocity = msg[2];
-                            self->activePorts[2] = true;
-                        }
-                        else if (self->activePorts[3] != true && self->activeNotes[0] != msg[1]&& self->activeNotes[1] != msg[1] && self->activeNotes[2] != msg[1])
-                        {
-                            self->activeNotes[3] = msg[1];
-                            self->activeVelocity = msg[2];
-                            self->activePorts[3] = true;
-                        }
-                    break;
-                    case LV2_MIDI_MSG_NOTE_OFF:  
-                        if (self->activeNotes[0] == msg[1])
-                        {
-                            self->activeNotes[0] = 0;
-                            self->activePorts[0] = false;
-                        }
-                        else if (self->activeNotes[1] == msg[1])
-                        {
-                            self->activeNotes[1] = 0;
-                            self->activePorts[1] = false;
-                        }
-                        else if (self->activeNotes[2] == msg[1])
-                        {
-                            self->activeNotes[2] = 0;
-                            self->activePorts[2] = false;
-                        }
-                        else if (self->activeNotes[3] == msg[1])
-                        {
-                            self->activeNotes[3] = 0;
-                            self->activePorts[3] = false;
-                        }
-                    break;
-                    default:
-                    break;
+                        search_port++;
                     }
+                    if (!free_port_found) {
+                        self->activeNotes[self->steal_voice] = msg[1];
+                        self->activeVelocity = msg[2];
+                        self->activePorts[self->steal_voice] = true;
+                        self->steal_voice = (self->steal_voice + 1) % NUM_PORTS;
+                    }
+                    break;
+                case LV2_MIDI_MSG_NOTE_OFF:  
+                    while (!port_freed && search_port < NUM_PORTS) {
+                        if (self->activeNotes[search_port] == msg[1])
+                        {
+                            self->activeNotes[search_port] = 0;
+                            self->activePorts[search_port] = false;
+                            port_freed = true;
+                        }
+                        search_port++;
+                    }
+                    break;
+                default:
+                    break;
             }
         }
     }
-        if(self->activePorts[0] == false)
+    if(self->activePorts[0] == false)
+    {
+        if(self->activePorts[1] == false)
         {
-            if(self->activePorts[1] == false)
+            if(self->activePorts[2] == false)
             {
-                if(self->activePorts[2] == false)
+                if(self->activePorts[3] == false)
                 {
-                    if(self->activePorts[3] == false)
-                    {
-                        self->activeVelocity = 0;
-                    }
+                    self->activeVelocity = 0;
+                    self->steal_voice = 0;
                 }
             }
         }
+    }
     for(uint32_t z = 0; z < n_samples; z++)
     {
         cv1[z] = 0.0f + (cA + (cB * 1/12.0f) + (cC * 1/1200.0f) + (float)(self->activeNotes[0] * 1/12.0f));
