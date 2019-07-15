@@ -13,7 +13,7 @@
 <http://moddevices.com/plugins/mod-devel/midi-to-cv-poly>
 a lv2:Plugin, mod:ControlVoltagePlugin;
 
-doap:name "MIDI to CV Polyphonic";
+doap:name "MIDI to CV Poly";
 
 doap:developer [
     foaf:name "Jarno Verheesen";
