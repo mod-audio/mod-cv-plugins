@@ -65,7 +65,7 @@ lv2:port
     lv2:name "Divisions";
     lv2:default 4 ;
     lv2:minimum 0.05 ;
-    lv2:maximum 32 ;
+    lv2:maximum 16 ;
     lv2:scalePoint [ rdfs:label "10 Notes";     rdf:value 0.05; ] ;
     lv2:scalePoint [ rdfs:label "8 Notes";      rdf:value 0.0625; ] ;
     lv2:scalePoint [ rdfs:label "6 Notes";      rdf:value 0.0937; ] ;
