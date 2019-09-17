@@ -1,11 +1,11 @@
 /* = CONTAINER
 ================================================ */
-.mod-control-to-cv{{{cns}}} {
-    background-image: url(/resources/mod_control_to_cv_bg2.png{{{ns}}});
+.mod-cv-meter{{{cns}}} {
+    background-image: url(/resources/mod_cv_meter_bg.png{{{ns}}});
     background-position: center center;
     background-repeat: no-repeat;
-    background-size: 227px 316px;
-    height: 316px;
+    background-size: 227px 378px;
+    height: 378px;
     position: absolute;
     width: 227px;
 }
@@ -13,15 +13,15 @@
 /* PORTS
 ================================================ */
 
-.mod-control-to-cv{{{cns}}} .mod-pedal-input,
-.mod-control-to-cv{{{cns}}} .mod-pedal-output {
+.mod-cv-meter{{{cns}}} .mod-pedal-input,
+.mod-cv-meter{{{cns}}} .mod-pedal-output {
     top: 130px;
 }
 
 /* RESET
 ================================================ */
 
-.mod-control-to-cv{{{cns}}} .mod-footswitch {
+.mod-cv-meter{{{cns}}} .mod-footswitch {
     background-image:url(/resources/footswitch.png{{{ns}}});
     background-position:top center;
     background-repeat:no-repeat;
@@ -34,17 +34,17 @@
     position:absolute;
 }
 
-.mod-control-to-cv{{{cns}}} .mod-footswitch.on {
+.mod-cv-meter{{{cns}}} .mod-footswitch.on {
     background-position:top center;
 }
 
-.mod-control-to-cv{{{cns}}} .mod-footswitch.off {
+.mod-cv-meter{{{cns}}} .mod-footswitch.off {
     background-position:bottom center;
 }
 
-.mod-control-to-cv{{{cns}}} .mod-display-group {
+.mod-cv-meter{{{cns}}} .mod-display-group {
     background-color:#aacc66;
-    margin:30px 11px 0 10px !important;
+    margin:60px 11px 0 10px !important;
     position:relative;
     text-align:center;
     z-index:0;
@@ -52,13 +52,13 @@
     box-shadow: 2px 2px 2px 0px #000 inset, -1px -1px 1px 1px #888 inset;
 }
 
-.mod-control-to-cv{{{cns}}} .mod-display-group div {
+.mod-cv-meter{{{cns}}} .mod-display-group div {
     padding:0;
     line-height:1.25em;
     vertical-align:middle;
 }
 
-.mod-control-to-cv{{{cns}}} .mod-display-group .min_level {
+.mod-cv-meter{{{cns}}} .mod-display-group .min_level {
     font-size:20px;
     line-height:1.5em;
     width:60px;
@@ -68,9 +68,9 @@
     margin: 4px 0 2px 0;
 }
 
-.mod-control-to-cv{{{cns}}} .mod-display-max {
+.mod-cv-meter{{{cns}}} .mod-display-max {
     background-color:#aacc66;
-    margin:30px 11px 0 10px !important;
+    margin:40px 11px 0 10px !important;
     position:relative;
     text-align:center;
     z-index:0;
@@ -78,25 +78,25 @@
     box-shadow: 2px 2px 2px 0px #000 inset, -1px -1px 1px 1px #888 inset;
 }
 
-.mod-control-to-cv{{{cns}}} .mod-display-max div {
+.mod-cv-meter{{{cns}}} .mod-display-max div {
     padding:0;
     line-height:1.25em;
     vertical-align:middle;
 }
 
-.mod-control-to-cv{{{cns}}} .mod-display-max .max_level {
+.mod-cv-meter{{{cns}}} .mod-display-max .max_level {
     font-size:20px;
     line-height:1.5em;
-    width:60px;
+    width:50px;
     display:inline-block;
     text-align:right;
     z-index:6;
     margin: 4px 0 2px 0;
 }
 
-.mod-control-to-cv{{{cns}}} .mod-display-current {
+.mod-cv-meter{{{cns}}} .mod-display-current {
     background-color:#aacc66;
-    margin:30px 11px 0 10px !important;
+    margin:40px 11px 0 10px !important;
     position:relative;
     text-align:center;
     z-index:0;
@@ -104,13 +104,13 @@
     box-shadow: 2px 2px 2px 0px #000 inset, -1px -1px 1px 1px #888 inset;
 }
 
-.mod-control-to-cv{{{cns}}} .mod-display-current div {
+.mod-cv-meter{{{cns}}} .mod-display-current div {
     padding:0;
     line-height:1.25em;
     vertical-align:middle;
 }
 
-.mod-control-to-cv{{{cns}}} .mod-display-current .current_level {
+.mod-cv-meter{{{cns}}} .mod-display-current .current_level {
     font-size:20px;
     line-height:1.5em;
     width:60px;

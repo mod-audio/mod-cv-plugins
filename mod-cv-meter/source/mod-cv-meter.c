@@ -33,6 +33,7 @@ typedef struct {
     float  current_value;
     float  min_value;
     float  max_value;
+    bool   calibrated;
 } Meter;
 
 static LV2_Handle
@@ -44,6 +45,7 @@ instantiate(const LV2_Descriptor*     descriptor,
     Meter* self = (Meter*)malloc(sizeof(Meter));
 
     self->current_value = 0;
+    self->calibrated = false;
 
     return (LV2_Handle)self;
 }
@@ -88,6 +90,14 @@ activate(LV2_Handle instance)
 
 
 static void
+calibrate(Meter* self)
+{
+    self->max_value = *self->input;
+    self->min_value = *self->input;
+
+}
+
+static void
 run(LV2_Handle instance, uint32_t n_samples)
 {
     Meter* self = (Meter*) instance;
@@ -105,6 +115,11 @@ run(LV2_Handle instance, uint32_t n_samples)
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {
+        if (*self->input != 0 && !self->calibrated) {
+            calibrate(self);
+            self->calibrated = true;
+        }
+
         if (*self->reset == 1) {
            self->max_value = *self->input;
            self->min_value = *self->input;
