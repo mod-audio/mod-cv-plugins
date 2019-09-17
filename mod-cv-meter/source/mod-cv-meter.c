@@ -44,10 +44,11 @@ instantiate(const LV2_Descriptor*     descriptor,
 {
     Meter* self = (Meter*)malloc(sizeof(Meter));
 
-    self->current_value = 0;
-    self->min_value = 0;
-    self->max_value = 0;
+    self->current_value = 0.2f;
+    self->min_value = 0.2f;
+    self->max_value = 0.2f;
     self->calibrated = false;
+
 
     return (LV2_Handle)self;
 }
@@ -100,51 +101,47 @@ run(LV2_Handle instance, uint32_t n_samples)
 {
     Meter* self = (Meter*) instance;
 
-    if (self->calibrated) {
+    if (self->calibrated)
         self->current_value = *self->input;
-        *self->min_level = self->min_value;
-        *self->max_level = self->max_value;
-        *self->level = self->current_value;
-    } else {
-        *self->min_level = 0;
-        *self->max_level = 0;
-        *self->level     = 0;
-    }
+
+    *self->min_level = self->min_value;
+    *self->max_level = self->max_value;
+    *self->level = self->current_value;
+
     for ( uint32_t i = 0; i < n_samples; i++)
     {
         if (*self->input != 0 && !self->calibrated) {
             calibrate(self);
             self->calibrated = true;
         }
-
-        if (*self->reset == 1) {
-           self->max_value = *self->input;
-           self->min_value = *self->input;
+        if (self->calibrated) {
+            if (*self->reset == 1) {
+                self->max_value = *self->input;
+                self->min_value = *self->input;
+            }
+            if (*self->input > self->max_value) {
+                self->max_value = *self->input;
+            }
+            else if (*self->input < self->min_value) {
+                self->min_value = *self->input;
+            }
         }
-        if (*self->input > self->max_value) {
-
-            self->max_value = *self->input;
-        }
-        else if (*self->input < self->min_value) {
-            self->min_value = *self->input;
-        }
-
         self->output[i] = self->input[i];
     }
 }
 
-    static void
+static void
 deactivate(LV2_Handle instance)
 {
 }
 
-    static void
+static void
 cleanup(LV2_Handle instance)
 {
     free(instance);
 }
 
-    static const void*
+static const void*
 extension_data(const char* uri)
 {
     return NULL;
