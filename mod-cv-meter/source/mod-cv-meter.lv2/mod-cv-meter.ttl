@@ -27,11 +27,11 @@ doap:maintainer [
     foaf:mbox <mailto:bram@moddevices.com>;
     ];
 
-    lv2:minorVersion 3;
-    lv2:microVersion 0;
+    lv2:minorVersion 0;
+    lv2:microVersion 1;
 
 rdfs:comment """
-Control to CV enables you to generate a control voltage signal from a control value. 
+This plugins displays the value of the current incoming CV signal plus the lowest and highest value measured. 
 """;
 
 lv2:port
