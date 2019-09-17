@@ -27,7 +27,6 @@ function (event) {
 	}
 
 	function handle_event (symbol, value) {
-        console.log(value);
 		switch (symbol) {
 			case 'min_level':
 				var min_level = value;
@@ -39,7 +38,6 @@ function (event) {
 				break;
 			case 'level':
 				var current_level = value;
-                console.log(current_level);
 				event.icon.find ('[mod-role=current_level]').text (current_level);
 				break;
 			default:
