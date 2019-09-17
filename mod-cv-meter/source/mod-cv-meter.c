@@ -45,6 +45,8 @@ instantiate(const LV2_Descriptor*     descriptor,
     Meter* self = (Meter*)malloc(sizeof(Meter));
 
     self->current_value = 0;
+    self->min_value = 0;
+    self->max_value = 0;
     self->calibrated = false;
 
     return (LV2_Handle)self;
@@ -82,10 +84,6 @@ connect_port(LV2_Handle instance,
 static void
 activate(LV2_Handle instance)
 {
-    Meter* self = (Meter*) instance;
-
-    self->max_value = *self->input;
-    self->min_value = *self->input;
 }
 
 
@@ -102,16 +100,12 @@ run(LV2_Handle instance, uint32_t n_samples)
 {
     Meter* self = (Meter*) instance;
 
-    self->current_value = *self->input;
+    if (self->calibrated)
+        self->current_value = *self->input;
 
     *self->min_level = self->min_value;
     *self->max_level = self->max_value;
     *self->level = self->current_value;
-
-    debug_print("LEVEL = %f\n", *self->level);
-    debug_print("min_value = %f\n", self->min_value);
-    debug_print("max_value = %f\n", self->max_value);
-
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {
