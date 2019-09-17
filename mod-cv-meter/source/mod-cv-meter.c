@@ -100,13 +100,16 @@ run(LV2_Handle instance, uint32_t n_samples)
 {
     Meter* self = (Meter*) instance;
 
-    if (self->calibrated)
+    if (self->calibrated) {
         self->current_value = *self->input;
-
-    *self->min_level = self->min_value;
-    *self->max_level = self->max_value;
-    *self->level = self->current_value;
-
+        *self->min_level = self->min_value;
+        *self->max_level = self->max_value;
+        *self->level = self->current_value;
+    } else {
+        *self->min_level = 0;
+        *self->max_level = 0;
+        *self->level     = 0;
+    }
     for ( uint32_t i = 0; i < n_samples; i++)
     {
         if (*self->input != 0 && !self->calibrated) {
