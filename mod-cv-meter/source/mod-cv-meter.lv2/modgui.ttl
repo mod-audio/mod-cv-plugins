@@ -1,0 +1,15 @@
+@prefix modgui: <http://moddevices.com/ns/modgui#> .
+@prefix lv2:    <http://lv2plug.in/ns/lv2core#> .
+
+<http://moddevices.com/plugins/mod-devel/mod-cv-meter>
+    modgui:gui [
+        modgui:resourcesDirectory <modgui> ;
+        modgui:iconTemplate <modgui/icon-control-to-cv.html> ;
+        modgui:stylesheet <modgui/stylesheet-control-to-cv.css> ;
+        modgui:screenshot <modgui/mod_control_to_cv_ss.png> ;
+        modgui:thumbnail <modgui/mod_control_to_cv_tn.png> ;
+        modgui:brand "MOD" ;
+        modgui:label "CV Meter" ;
+        modgui:javascript <modgui/script-mod-cv-meter.js> ;
+        modgui:monitoredOutputs [ lv2:symbol "min_level" ] , [ lv2:symbol "max_level" ] , [ lv2:symbol "level" ] ;
+    ] .

@@ -1,0 +1,121 @@
+/* = CONTAINER
+================================================ */
+.mod-control-to-cv{{{cns}}} {
+    background-image: url(/resources/mod_control_to_cv_bg2.png{{{ns}}});
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 227px 316px;
+    height: 316px;
+    position: absolute;
+    width: 227px;
+}
+
+/* PORTS
+================================================ */
+
+.mod-control-to-cv{{{cns}}} .mod-pedal-input,
+.mod-control-to-cv{{{cns}}} .mod-pedal-output {
+    top: 130px;
+}
+
+/* RESET
+================================================ */
+
+.mod-control-to-cv{{{cns}}} .mod-footswitch {
+    background-image:url(/resources/footswitch.png{{{ns}}});
+    background-position:top center;
+    background-repeat:no-repeat;
+    background-size:auto 132px;
+    bottom: 35px;
+    cursor:pointer;
+    height:66px;
+    width: 66px;
+    left: 87px !important;
+    position:absolute;
+}
+
+.mod-control-to-cv{{{cns}}} .mod-footswitch.on {
+    background-position:top center;
+}
+
+.mod-control-to-cv{{{cns}}} .mod-footswitch.off {
+    background-position:bottom center;
+}
+
+.mod-control-to-cv{{{cns}}} .mod-display-group {
+    background-color:#aacc66;
+    margin:30px 11px 0 10px !important;
+    position:relative;
+    text-align:center;
+    z-index:0;
+    color:black;
+    box-shadow: 2px 2px 2px 0px #000 inset, -1px -1px 1px 1px #888 inset;
+}
+
+.mod-control-to-cv{{{cns}}} .mod-display-group div {
+    padding:0;
+    line-height:1.25em;
+    vertical-align:middle;
+}
+
+.mod-control-to-cv{{{cns}}} .mod-display-group .min_level {
+    font-size:20px;
+    line-height:1.5em;
+    width:60px;
+    display:inline-block;
+    text-align:right;
+    z-index:6;
+    margin: 4px 0 2px 0;
+}
+
+.mod-control-to-cv{{{cns}}} .mod-display-max {
+    background-color:#aacc66;
+    margin:30px 11px 0 10px !important;
+    position:relative;
+    text-align:center;
+    z-index:0;
+    color:black;
+    box-shadow: 2px 2px 2px 0px #000 inset, -1px -1px 1px 1px #888 inset;
+}
+
+.mod-control-to-cv{{{cns}}} .mod-display-max div {
+    padding:0;
+    line-height:1.25em;
+    vertical-align:middle;
+}
+
+.mod-control-to-cv{{{cns}}} .mod-display-max .max_level {
+    font-size:20px;
+    line-height:1.5em;
+    width:60px;
+    display:inline-block;
+    text-align:right;
+    z-index:6;
+    margin: 4px 0 2px 0;
+}
+
+.mod-control-to-cv{{{cns}}} .mod-display-current {
+    background-color:#aacc66;
+    margin:30px 11px 0 10px !important;
+    position:relative;
+    text-align:center;
+    z-index:0;
+    color:black;
+    box-shadow: 2px 2px 2px 0px #000 inset, -1px -1px 1px 1px #888 inset;
+}
+
+.mod-control-to-cv{{{cns}}} .mod-display-current div {
+    padding:0;
+    line-height:1.25em;
+    vertical-align:middle;
+}
+
+.mod-control-to-cv{{{cns}}} .mod-display-current .current_level {
+    font-size:20px;
+    line-height:1.5em;
+    width:60px;
+    display:inline-block;
+    text-align:right;
+    z-index:6;
+    margin: 4px 0 2px 0;
+}
