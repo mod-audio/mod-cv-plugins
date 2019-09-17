@@ -44,11 +44,10 @@ instantiate(const LV2_Descriptor*     descriptor,
 {
     Meter* self = (Meter*)malloc(sizeof(Meter));
 
-    self->current_value = 0.2f;
-    self->min_value = 0.2f;
-    self->max_value = 0.2f;
-    self->calibrated = false;
-
+    self->current_value = 0.0;
+    self->min_value     = 0.0;
+    self->max_value     = 0.0;
+    self->calibrated    = false;
 
     return (LV2_Handle)self;
 }
@@ -106,7 +105,7 @@ run(LV2_Handle instance, uint32_t n_samples)
 
     *self->min_level = self->min_value;
     *self->max_level = self->max_value;
-    *self->level = self->current_value;
+    *self->level     = self->current_value;
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {
