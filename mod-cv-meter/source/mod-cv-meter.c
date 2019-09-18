@@ -88,10 +88,10 @@ activate(LV2_Handle instance)
 
 
 static void
-calibrate(Meter* self)
+calibrate(Meter* self, uint32_t index)
 {
-    self->max_value = *self->input;
-    self->min_value = *self->input;
+    self->max_value = self->input[index];
+    self->min_value = self->input[index];
 
 }
 
@@ -100,32 +100,29 @@ run(LV2_Handle instance, uint32_t n_samples)
 {
     Meter* self = (Meter*) instance;
 
-    if (self->calibrated)
-        self->current_value = *self->input;
-
-    *self->min_level = self->min_value;
-    *self->max_level = self->max_value;
-    *self->level     = self->current_value;
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {
-        if (*self->input != 0 && !self->calibrated) {
-            calibrate(self);
+        if (self->input[i] != 0 && !self->calibrated) {
+            calibrate(self, i);
             self->calibrated = true;
         }
-        if (self->calibrated) {
-            if (*self->reset == 1) {
-                self->max_value = *self->input;
-                self->min_value = *self->input;
-            }
-            if (*self->input > self->max_value) {
-                self->max_value = *self->input;
-            }
-            else if (*self->input < self->min_value) {
-                self->min_value = *self->input;
-            }
+        if (*self->reset == 1) {
+            self->max_value = self->input[i];
+            self->min_value = self->input[i];
+        }
+        if (self->input[i] > self->max_value) {
+            self->max_value = *self->input;
+        }
+        else if (self->input[i] < self->min_value) {
+            self->min_value = self->input[i];
         }
         self->output[i] = self->input[i];
+
+        self->current_value = self->input[i];
+        *self->min_level    = self->min_value;
+        *self->max_level    = self->max_value;
+        *self->level        = self->current_value;
     }
 }
 
