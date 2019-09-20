@@ -16,7 +16,7 @@
 #include <lv2/lv2plug.in/ns/ext/urid/urid.h>
 #include <lv2/lv2plug.in/ns/lv2core/lv2.h>
 
-
+#define NUM_NOTESBUFFER 8
 
 typedef enum {
   IN = 0, 
@@ -26,7 +26,8 @@ typedef enum {
   OCTAVE,
   SEMITONE,
   CENT,
-  RETRIGGER
+  RETRIGGER,
+  PANIC
 } PortEnum;
 
 
@@ -43,17 +44,13 @@ typedef struct {
 //===========================================
 
     // keep track of active notes
-    uint8_t activeNotesList[8];
+    uint8_t activeNotesList[NUM_NOTESBUFFER];
+    uint8_t reTriggerBuffer[NUM_NOTESBUFFER];
     uint8_t triggerIndex;
     uint8_t activeNotes;
-    uint8_t newNotes;
-    uint8_t holdNote;
     uint8_t activeVelocity;
-    uint8_t newVelocity;
-    uint8_t prevMsg[2];
     uint8_t reTriggered;
     size_t  notesIndex;
-    uint8_t reTriggerBuffer[8];
     bool activePorts;
 
     
@@ -64,6 +61,7 @@ typedef struct {
     float *semitone;
     float *cent;
     float *reTrigger;
+    float *panicParam;
 
     bool triggerState;
 
@@ -102,15 +100,13 @@ static LV2_Handle instantiate(const LV2_Descriptor*     descriptor,
     self->notesPressed = 0;
 
 //===========================================
-    memset(self->activeNotesList, 200, sizeof(uint8_t)*8);
-    memset(self->reTriggerBuffer, 0, sizeof(uint8_t)*8);
+    memset(self->activeNotesList, 200, sizeof(uint8_t)*NUM_NOTESBUFFER);
+    memset(self->reTriggerBuffer, 0, sizeof(uint8_t)*NUM_NOTESBUFFER);
     self->triggerIndex = 0;
     self->reTriggered = 200;
     self->activeNotes = 0;
     self->activeVelocity = 0;
     self->activePorts = false;
-    self->newNotes = 0;
-    self->newVelocity = 0;    
     self->notesPressed = 0;
     self->notesIndex = 0;
     self->triggerState = false;
@@ -148,11 +144,33 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data)
       case RETRIGGER:
         self->reTrigger = (float*) data;
         break;
+      case PANIC:
+        self->panicParam = (float*) data;
+        break;
     }
 }
 
 static void activate(LV2_Handle instance)
 {
+}
+
+
+static void panic(Data* self)
+{
+    for (unsigned i = 0; i < NUM_NOTESBUFFER; i++) {
+        self->activeNotesList[i] = 200;
+    }
+    for (unsigned i = 0; i < NUM_NOTESBUFFER; i++) {
+        self->reTriggerBuffer[i] = 0;
+    }
+    self->triggerIndex = 0;
+    self->reTriggered = 200;
+    self->activeNotes = 0;
+    self->activeVelocity = 0;
+    self->activePorts = false;
+    self->notesPressed = 0;
+    self->notesIndex = 0;
+    self->triggerState = false;
 }
 
 static void
@@ -171,9 +189,11 @@ static void run(LV2_Handle instance, uint32_t sample_count)
   float  oC = *self->octave;
   float  sC = *self->semitone;
   float  cC = *self->cent;
-  int storedNotes = 8;
   bool retrigger = true;
 
+  if (*self->panicParam == 1) {
+      panic(self);
+  }
   // Read incoming events
   LV2_ATOM_SEQUENCE_FOREACH(self->port_events_in, ev)
   {
@@ -184,13 +204,13 @@ static void run(LV2_Handle instance, uint32_t sample_count)
 
       int storeN = 0;
       bool emptySlot = false;
-      int notesIndex = storedNotes - 1;
+      int notesIndex = NUM_NOTESBUFFER - 1;
       bool noteFound = false;
 
       switch (status)
       {
         case LV2_MIDI_MSG_NOTE_ON:
-          while (!emptySlot && storeN < storedNotes) {
+          while (!emptySlot && storeN < NUM_NOTESBUFFER) {
             if (self->activeNotesList[storeN] == 200) {
               self->activeNotesList[storeN] = msg[1];
               emptySlot = true;
@@ -205,7 +225,7 @@ static void run(LV2_Handle instance, uint32_t sample_count)
           break;
         case LV2_MIDI_MSG_NOTE_OFF:
           self->notesPressed--;
-          for (int notesIndex = 0; notesIndex < storedNotes; notesIndex++) {
+          for (int notesIndex = 0; notesIndex < NUM_NOTESBUFFER; notesIndex++) {
               if (msg[1] == self->activeNotesList[notesIndex]) {
                   self->activeNotesList[notesIndex] = 200;
               }
@@ -228,7 +248,7 @@ static void run(LV2_Handle instance, uint32_t sample_count)
   }
   int checked_note = 0;
   bool active_notes_found = false;
-  while(!active_notes_found && checked_note < storedNotes) {
+  while(!active_notes_found && checked_note < NUM_NOTESBUFFER) {
       if (self->activeNotesList[checked_note] != 200)
           active_notes_found = true;
       checked_note++;

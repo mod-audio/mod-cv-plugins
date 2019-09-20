@@ -130,4 +130,15 @@ lv2:port
     lv2:minimum -100 ;
     lv2:maximum 100 ;
     lv2:portProperty lv2:integer;
+],
+[  
+    a lv2:InputPort,
+    lv2:ControlPort ;
+    lv2:index 13;
+    lv2:symbol "Panic";
+    lv2:name "Panic";
+    lv2:default 0;
+    lv2:minimum 0;
+    lv2:maximum 1;
+    lv2:portProperty lv2:integer, lv2:toggled, epp:trigger ;
 ].

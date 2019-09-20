@@ -15,7 +15,23 @@
 #define PLUGIN_URI "http://moddevices.com/plugins/mod-devel/midi-to-cv-poly"
 #define MAX_NOTES 3
 #define NUM_PORTS 4
-typedef enum {IN, CV1, CV2, CV3, CV4, VELOCITY, TRIGGER1, TRIGGER2, TRIGGER3, TRIGGER4, OCTAVE, PITCH, SEMITONE}PortIndex;
+typedef enum 
+{
+    IN, 
+    CV1, 
+    CV2, 
+    CV3, 
+    CV4, 
+    VELOCITY, 
+    TRIGGER1, 
+    TRIGGER2, 
+    TRIGGER3, 
+    TRIGGER4, 
+    OCTAVE, 
+    PITCH, 
+    SEMITONE,
+    PANIC
+}PortIndex;
 
 typedef struct
 {
@@ -40,6 +56,7 @@ typedef struct
     float *octaveC;
     float *pitchC;
     float *semitoneC;
+    float *panicParam;
 }Midicv;
 
 // Struct for a 3 byte MIDI event
@@ -86,14 +103,15 @@ const LV2_Feature* const* features)
     //memset(self->activeNotes, 0, sizeof(uint8_t)*4);
     //memset(self->activePorts, 0, sizeof(bool)*4);
     for (unsigned port = 0; port < NUM_PORTS; port++) {
-    self->activeNotes[port] = 0;
-    self->activePorts[port] = false;
+        self->activeNotes[port] = 0;
+        self->activePorts[port] = false;
     }
     self->activeVelocity = 0;
     self->steal_voice = 0;
 
     return self; 
 }
+
 /**********************************************************************************************************************************************************/
 static void connect_port(LV2_Handle instance, uint32_t port, void *data)
 {
@@ -140,6 +158,9 @@ static void connect_port(LV2_Handle instance, uint32_t port, void *data)
         case SEMITONE:
             self->semitoneC = (float*) data;
         break;
+        case PANIC:
+            self->panicParam = (float*) data;
+        break;
     }
 }
 /**********************************************************************************************************************************************************/
@@ -148,6 +169,15 @@ void activate(LV2_Handle instance)
     
 }
 
+static void panic(Midicv* self)
+{
+    for (unsigned port = 0; port < NUM_PORTS; port++) {
+        self->activeNotes[port] = 0;
+        self->activePorts[port] = false;
+    }
+    self->activeVelocity = 0;
+    self->steal_voice = 0;
+}
 /**********************************************************************************************************************************************************/
 void run(LV2_Handle instance, uint32_t n_samples)
 {
@@ -166,6 +196,9 @@ void run(LV2_Handle instance, uint32_t n_samples)
     float cB = *self->pitchC;
     float cC = *self->semitoneC;
 
+    if (*self->panicParam == 1) {
+        panic(self);
+    }
     // Read incoming events
     LV2_ATOM_SEQUENCE_FOREACH(self->port_events_in, ev)
     {
