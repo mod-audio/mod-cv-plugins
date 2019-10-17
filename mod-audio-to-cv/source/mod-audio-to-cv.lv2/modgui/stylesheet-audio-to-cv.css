@@ -74,7 +74,7 @@
     background-image: url(/resources/mod_audio_to_cv_sprite_sheets/Big_knob_3_70frames.png{{{ns}}});
     height: 83px;
     width: 83px;
-    margin: 0 auto;
+    margin: 0 22px;
 }
 
 .mod-audio-to-cv{{{cns}}} .mod-control-group .mod-knob {
