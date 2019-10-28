@@ -71,7 +71,7 @@ activate(LV2_Handle instance)
 static double
 lowPassProcess(Attenuverter* self, float input)
 {
-    return self->z1 = input * self->a0 + self->z1 * self->b1; 
+    return self->z1 = input * self->a0 + self->z1 * self->b1;
 }
 
 
@@ -81,13 +81,13 @@ run(LV2_Handle instance, uint32_t n_samples)
     Attenuverter* self = (Attenuverter*) instance;
 
     float direction = (*self->level >= 0 ) ? 1 : -1;
-    float coef = pow(abs(*self->level), 2);
+    float coef = pow(fabs(*self->level), 2);
     coef = (coef * direction) / 10;
     coef = lowPassProcess(self, coef);
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {
-        self->output[i] = (self->input[i] * coef); 
+        self->output[i] = (self->input[i] * coef);
     }
 }
 
