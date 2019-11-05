@@ -11,6 +11,7 @@ all:
 	$(MAKE) -C mod-midi-to-cv-mono/source
 	$(MAKE) -C mod-midi-to-cv-poly/source
 	$(MAKE) -C mod-cv-meter/source
+	$(MAKE) -C mod-cv-slew/source
 
 install: all
 	mkdir bundles
@@ -27,6 +28,7 @@ install: all
 	cp -r mod-midi-to-cv-mono/source/mod-midi-to-cv-mono.lv2 bundles/
 	cp -r mod-midi-to-cv-poly/source/mod-midi-to-cv-poly.lv2 bundles/
 	cp -r mod-cv-meter/source/mod-cv-meter.lv2 bundles/
+	cp -r mod-cv-slew/source/mod-cv-slew.lv2 bundles/
 
 clean:
 	$(MAKE) clean -C mod-cv-clock/source
