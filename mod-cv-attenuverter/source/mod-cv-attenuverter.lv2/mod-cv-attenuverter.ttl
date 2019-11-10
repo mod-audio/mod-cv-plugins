@@ -61,8 +61,8 @@ lv2:port
      a lv2:InputPort ,
      lv2:ControlPort ;
      lv2:index 3 ;
-     lv2:symbol "BYPASS" ;
-     lv2:name "BYPASS" ;
+     lv2:symbol "PluginEnabled" ;
+     lv2:name "PluginEnabled" ;
      lv2:default 1.0 ;
      lv2:minimum 0.0 ;
      lv2:maximum 1.0 ;

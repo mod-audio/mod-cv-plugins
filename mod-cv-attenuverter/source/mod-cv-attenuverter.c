@@ -11,7 +11,7 @@ typedef enum {
     L_INPUT   = 0,
     L_OUTPUT  = 1,
     L_LEVEL   = 2,
-    L_BYPASS  = 3
+    L_ENABLE  = 3
 } PortIndex;
 
 
@@ -19,7 +19,7 @@ typedef struct {
     float* input;
     float* output;
     float* level;
-    float* bypass;
+    float* plugin_enabled;
     double a0;
     double b1;
     double z1;
@@ -60,8 +60,8 @@ connect_port(LV2_Handle instance,
         case L_LEVEL:
             self->level = (float*)data;
             break;
-        case L_BYPASS:
-            self->bypass = (float*)data;
+        case L_ENABLE:
+            self->plugin_enabled = (float*)data;
             break;
     }
 }
@@ -92,7 +92,7 @@ run(LV2_Handle instance, uint32_t n_samples)
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {
-        if ((int)*self->bypass == 1) {
+        if ((int)*self->plugin_enabled == 1) {
         self->output[i] = (self->input[i] * coef);
         } else {
             self->output[i] = self->input[i];
