@@ -31,7 +31,10 @@ doap:maintainer [
     lv2:microVersion 1;
 
 rdfs:comment """
-This plugins displays the value of the current incoming CV signal. Aside from this, it also shows the lowest and highest value measured. 
+The CV Meter displays the value of the current incoming CV signal and the lowest and highest measured value over time.
+
+Features:
+Plugin by MOD Devices
 """;
 
 lv2:port
