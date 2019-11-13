@@ -14,7 +14,7 @@
 a lv2:Plugin, mod:ControlVoltagePlugin;
 
 doap:name "Attenuverter Booster";
-
+doap:license "GPL v2+";
 doap:developer [
     foaf:name "Jarno Verheesen & Bram Giesen";
     foaf:homepage <>;
