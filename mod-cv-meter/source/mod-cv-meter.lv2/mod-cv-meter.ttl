@@ -12,7 +12,8 @@
 <http://moddevices.com/plugins/mod-devel/mod-cv-meter>
 a lv2:Plugin, mod:ControlVoltagePlugin;
 
-doap:name "CV meter";
+    doap:name "CV meter";
+    doap:license "GPL v2+" ;
 
 doap:developer [
     foaf:name "Bram Giesen";
