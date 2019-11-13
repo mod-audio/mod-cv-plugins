@@ -4,7 +4,6 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 @prefix mod: <http://moddevices.com/ns/mod#>.
 @prefix modgui: <http://moddevices.com/ns/modgui#>.
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix atom: <http://lv2plug.in/ns/ext/atom#> .
 @prefix midi: <http://lv2plug.in/ns/ext/midi#> .
@@ -24,7 +23,6 @@ doap:developer [
 doap:maintainer [
     foaf:name "MOD";
     foaf:homepage <http://moddevices.com>;
-    foaf:mbox <mailto:bram@moddevices.com>;
     ];
 
     lv2:minorVersion 1;
