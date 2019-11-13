@@ -88,5 +88,17 @@ lv2:port
     lv2:default 0.00000 ;
     lv2:minimum 0.00000 ;
     lv2:maximum 1.00000 ;
+],
+[
+     a lv2:InputPort ,
+     lv2:ControlPort ;
+     lv2:index 6 ;
+     lv2:symbol "PluginEnabled" ;
+     lv2:name "PluginEnabled" ;
+     lv2:default 1.0 ;
+     lv2:minimum 0.0 ;
+     lv2:maximum 1.0 ;
+     lv2:designation lv2:enabled;
+     lv2:portProperty lv2:toggled;
 ]
 .

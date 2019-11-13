@@ -15,12 +15,13 @@
 #define PLUGIN_URI "http://moddevices.com/plugins/mod-devel/mod-cv-meter"
 
 typedef enum {
-    INPUT     = 0,
-    OUTPUT    = 1,
-    MIN_LEVEL = 2,
-    MAX_LEVEL = 3,
-    LEVEL     = 4,
-    RESET     = 5
+    INPUT          = 0,
+    OUTPUT         = 1,
+    MIN_LEVEL      = 2,
+    MAX_LEVEL      = 3,
+    LEVEL          = 4,
+    RESET          = 5,
+    PLUGIN_ENABLED = 6
 } PortIndex;
 
 typedef struct {
@@ -30,10 +31,12 @@ typedef struct {
     float* min_level;
     float* max_level;
     float* level;
+    float* plugin_enabled;
     float  current_value;
     float  min_value;
     float  max_value;
     bool   calibrated;
+    float  previous_enabled;
 } Meter;
 
 static LV2_Handle
@@ -44,10 +47,11 @@ instantiate(const LV2_Descriptor*     descriptor,
 {
     Meter* self = (Meter*)malloc(sizeof(Meter));
 
-    self->current_value = 0.0;
-    self->min_value     = 0.0;
-    self->max_value     = 0.0;
-    self->calibrated    = false;
+    self->current_value    = 0.0;
+    self->min_value        = 0.0;
+    self->max_value        = 0.0;
+    self->previous_enabled = 0.0;
+    self->calibrated       = false;
 
     return (LV2_Handle)self;
 }
@@ -78,6 +82,9 @@ connect_port(LV2_Handle instance,
         case RESET:
             self->reset = (float*)data;
             break;
+        case PLUGIN_ENABLED:
+            self->plugin_enabled = (float*)data;
+            break;
     }
 }
 
@@ -103,26 +110,37 @@ run(LV2_Handle instance, uint32_t n_samples)
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {
-        if (self->input[i] != 0 && !self->calibrated) {
-            calibrate(self, i);
-            self->calibrated = true;
-        }
-        if (*self->reset == 1) {
-            self->max_value = self->input[i];
-            self->min_value = self->input[i];
-        }
-        if (self->input[i] > self->max_value) {
-            self->max_value = *self->input;
-        }
-        else if (self->input[i] < self->min_value) {
-            self->min_value = self->input[i];
+        if (*self->plugin_enabled == 1) {
+            if (self->input[i] != 0 && !self->calibrated) {
+                calibrate(self, i);
+                self->calibrated = true;
+            }
+            if (*self->plugin_enabled != self->previous_enabled) {
+                self->max_value = self->input[i];
+                self->min_value = self->input[i];
+                self->previous_enabled = *self->plugin_enabled;
+            }
+            if (*self->reset == 1) {
+                self->max_value = self->input[i];
+                self->min_value = self->input[i];
+            }
+            if (self->input[i] > self->max_value) {
+                self->max_value = *self->input;
+            }
+            else if (self->input[i] < self->min_value) {
+                self->min_value = self->input[i];
+            }
+            self->current_value = self->input[i];
+            *self->min_level    = self->min_value;
+            *self->max_level    = self->max_value;
+            *self->level        = self->current_value;
+        } else {
+            *self->min_level       = 0.0;
+            *self->max_level       = 0.0;
+            *self->level           = 0.0;
+            self->previous_enabled = *self->plugin_enabled;
         }
         self->output[i] = self->input[i];
-
-        self->current_value = self->input[i];
-        *self->min_level    = self->min_value;
-        *self->max_level    = self->max_value;
-        *self->level        = self->current_value;
     }
 }
 
