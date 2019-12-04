@@ -13,7 +13,7 @@
 <http://moddevices.com/plugins/mod-devel/mod-cv-slew>
 a lv2:Plugin, mod:ControlVoltagePlugin;
 
-doap:name "CV slide";
+doap:name "Slew Rate Limiter";
 
 doap:developer [
     foaf:name "Ward Slager, Bram Giesen";
@@ -27,11 +27,11 @@ doap:maintainer [
     foaf:mbox <mailto:bram@moddevices.com>;
     ];
 
-    lv2:minorVersion 3;
+    lv2:minorVersion 1;
     lv2:microVersion 0;
 
 rdfs:comment """
-Audio to CV converts an audio signal to a control voltage signal. 
+Plugin to limit the speed of the rise and fall times of a CV signal.
 """;
 
 lv2:port

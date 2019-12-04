@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-# Makefile for mod-audio-to-cvs.lv2 #
+# Makefile for mod-cv-slew.lv2 #
 # --------------------------------- #
 
 include Makefile.mk
