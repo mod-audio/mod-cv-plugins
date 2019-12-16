@@ -36,7 +36,7 @@ Random CV generator. It uses a gate input to trigger the next random value
 
 lv2:port
 [
-    a lv2:OutputPort, lv2:CVPort;
+    a lv2:InputPort, lv2:CVPort;
     lv2:index 0;
     lv2:symbol "GateIn";
     lv2:name "Gate In";
