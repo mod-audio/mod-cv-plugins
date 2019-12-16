@@ -83,7 +83,7 @@ run(LV2_Handle instance, uint32_t n_samples)
     for ( uint32_t i = 0; i < n_samples; i++)
     {
       if(*self->plugin_enabled == 1) {
-          if (*self->gate == 1 && !self->triggered) {
+          if (*self->gate >= 1 && !self->triggered) {
               float scale = rand() / *self->max;
               self->rand_value = *self->min + scale * (*self->max - *self->min);
               self->triggered = true;
