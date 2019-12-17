@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
 
@@ -70,10 +71,23 @@ connect_port(LV2_Handle instance,
 	}
 }
 
+
 static void
 activate(LV2_Handle instance)
 {
+    srand((unsigned int)time(NULL));
 }
+
+
+static float
+random_number(float min, float max)
+{
+    float scale = ((float)rand()/(float)(RAND_MAX));
+    float rand = min + scale * ( max - min );
+
+    return rand;
+}
+
 
 static void
 run(LV2_Handle instance, uint32_t n_samples)
@@ -84,8 +98,7 @@ run(LV2_Handle instance, uint32_t n_samples)
     {
       if(*self->plugin_enabled == 1) {
           if (*self->gate >= 1 && !self->triggered) {
-              float scale = rand() / *self->max;
-              self->rand_value = *self->min + scale * (*self->max - *self->min);
+              self->rand_value = random_number(*self->min, *self->max);
               self->triggered = true;
           }
           else if (*self->gate == 0.0 && self->triggered) {
