@@ -1,0 +1,22 @@
+@prefix modgui: <http://moddevices.com/ns/modgui#> .
+@prefix lv2:    <http://lv2plug.in/ns/lv2core#> .
+
+<http://moddevices.com/plugins/mod-devel/mod-cv-random>
+    modgui:gui [
+        modgui:resourcesDirectory <modgui> ;
+        modgui:iconTemplate <modgui/icon-cv-random.html> ;
+        modgui:stylesheet <modgui/stylesheet-cv-random.css> ;
+        modgui:screenshot <modgui/mod_cv_random_ss.png> ;
+        modgui:thumbnail <modgui/mod_cv_random_tn.png> ;
+        modgui:brand "MOD" ;
+        modgui:label "Random CV Generator" ;
+        modgui:port [
+            lv2:index 0 ;
+            lv2:symbol "MaxValue" ;
+            lv2:name "MaxValue" ;
+        ] , [
+            lv2:index 1 ;
+            lv2:symbol "MinValue" ;
+            lv2:name "MinValue" ;
+        ] ;
+    ] .

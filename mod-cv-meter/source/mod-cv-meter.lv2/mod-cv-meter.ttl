@@ -4,7 +4,6 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 @prefix mod: <http://moddevices.com/ns/mod#>.
 @prefix modgui: <http://moddevices.com/ns/modgui#>.
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix atom: <http://lv2plug.in/ns/ext/atom#> .
 @prefix midi: <http://lv2plug.in/ns/ext/midi#> .
@@ -13,7 +12,8 @@
 <http://moddevices.com/plugins/mod-devel/mod-cv-meter>
 a lv2:Plugin, mod:ControlVoltagePlugin;
 
-doap:name "CV meter";
+    doap:name "CV meter";
+    doap:license "GPL v2+" ;
 
 doap:developer [
     foaf:name "Bram Giesen";
@@ -24,14 +24,16 @@ doap:developer [
 doap:maintainer [
     foaf:name "MOD";
     foaf:homepage <http://moddevices.com>;
-    foaf:mbox <mailto:bram@moddevices.com>;
     ];
 
-    lv2:minorVersion 0;
-    lv2:microVersion 1;
+    lv2:minorVersion 1;
+    lv2:microVersion 0;
 
 rdfs:comment """
-This plugins displays the value of the current incoming CV signal. Aside from this, it also shows the lowest and highest value measured. 
+The CV Meter displays the value of the current incoming CV signal and the lowest and highest measured value over time.
+
+Features:
+Plugin by MOD Devices
 """;
 
 lv2:port
@@ -86,5 +88,17 @@ lv2:port
     lv2:default 0.00000 ;
     lv2:minimum 0.00000 ;
     lv2:maximum 1.00000 ;
+],
+[
+     a lv2:InputPort ,
+     lv2:ControlPort ;
+     lv2:index 6 ;
+     lv2:symbol "PluginEnabled" ;
+     lv2:name "PluginEnabled" ;
+     lv2:default 1.0 ;
+     lv2:minimum 0.0 ;
+     lv2:maximum 1.0 ;
+     lv2:designation lv2:enabled;
+     lv2:portProperty lv2:toggled;
 ]
 .

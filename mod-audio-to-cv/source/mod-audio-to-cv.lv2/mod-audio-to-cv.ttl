@@ -14,9 +14,9 @@
 a lv2:Plugin, mod:ControlVoltagePlugin;
 
 doap:name "Audio to CV";
-
+doap:license "GPL v2+";
 doap:developer [
-    foaf:name "Jarno Verheesen";
+    foaf:name "Bram Giesen & Jarno Verheesen";
     foaf:homepage <>;
     foaf:mbox <mailto:j.verheesen@hotmail.nl>;
     ];

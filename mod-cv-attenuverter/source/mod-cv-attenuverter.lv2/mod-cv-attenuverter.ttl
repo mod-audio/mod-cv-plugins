@@ -14,7 +14,7 @@
 a lv2:Plugin, mod:ControlVoltagePlugin;
 
 doap:name "Attenuverter Booster";
-
+doap:license "GPL v2+";
 doap:developer [
     foaf:name "Jarno Verheesen & Bram Giesen";
     foaf:homepage <>;
@@ -56,5 +56,17 @@ lv2:port
     lv2:default 0.0 ;
     lv2:minimum -10.0 ;
     lv2:maximum 10.0 ;
+],
+[
+     a lv2:InputPort ,
+     lv2:ControlPort ;
+     lv2:index 3 ;
+     lv2:symbol "PluginEnabled" ;
+     lv2:name "PluginEnabled" ;
+     lv2:default 1.0 ;
+     lv2:minimum 0.0 ;
+     lv2:maximum 1.0 ;
+     lv2:designation lv2:enabled;
+     lv2:portProperty lv2:toggled;
 ]
 .

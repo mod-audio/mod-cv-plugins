@@ -14,17 +14,17 @@
 a lv2:Plugin, mod:ControlVoltagePlugin;
 
 doap:name "Control to CV";
-
+doap:license "GPL v2+";
 doap:developer [
-    foaf:name "Jarno Verheesen";
+    foaf:name "Bram Giesen & Jarno Verheesen";
     foaf:homepage <>;
-    foaf:mbox <mailto:j.verheesen@hotmail.nl>;
+    foaf:mbox <mailto:bram@moddevices.com>;
     ];
 
 doap:maintainer [
     foaf:name "MOD";
     foaf:homepage <http://moddevices.com>;
-    foaf:mbox <mailto:jarno@moddevices.com>;
+    foaf:mbox <mailto:bram@moddevices.com>;
     ];
 
     lv2:minorVersion 3;

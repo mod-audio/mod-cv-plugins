@@ -13,19 +13,19 @@
 ((void)((DEBUG) ? fprintf(stderr, __VA_ARGS__) : 0))
 
 typedef enum {
-	AUDIO_IN   = 0,
-	CV_OUT     = 1,
-	P_LEVEL	   = 2,
-	P_OFFSET   = 3,
-  BYPASS     = 4
+    AUDIO_IN   = 0,
+    CV_OUT     = 1,
+    P_LEVEL	   = 2,
+    P_OFFSET   = 3,
+    P_ENABLE   = 4
 } PortIndex;
 
 typedef struct {
-	float*       input;
-	float*       output;
-	float*		 level;
-	float*		 offset;
-  float*     bypass;
+    float*     input;
+    float*     output;
+    float*	   level;
+    float*	   offset;
+    float*     plugin_enabled;
 } Convert;
 
 static LV2_Handle
@@ -59,8 +59,8 @@ connect_port(LV2_Handle instance,
 	case P_OFFSET:
 		self->offset = (float*)data;
 		break;
-  case BYPASS:
-    self->bypass = (float*)data;
+  case P_ENABLE:
+    self->plugin_enabled = (float*)data;
     break;
 	}
 }
@@ -78,7 +78,7 @@ run(LV2_Handle instance, uint32_t n_samples)
     float oC = *self->offset;
     for ( uint32_t i = 0; i < n_samples; i++)
     {
-      if(*self->bypass == 1) {
+      if(*self->plugin_enabled == 1) {
         self->output[i] = ((self->input[i] * lC) + oC);
       } else {
         self->output[i] = 0.0f;

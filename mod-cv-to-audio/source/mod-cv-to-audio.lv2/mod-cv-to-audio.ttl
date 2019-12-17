@@ -10,11 +10,11 @@
 @prefix midi: <http://lv2plug.in/ns/ext/midi#> .
 @prefix urid: <http://lv2plug.in/ns/ext/urid#> .
 
-<http://moddevices.com/plugins/mod-devel/mod-cv-to-audio> 
+<http://moddevices.com/plugins/mod-devel/mod-cv-to-audio>
 a lv2:Plugin, mod:ControlVoltagePlugin;
 
 doap:name "CV to Audio";
-
+doap:license "GPL v2+" ;
 doap:developer [
     foaf:name "Jarno Verheesen";
     foaf:homepage <>;
