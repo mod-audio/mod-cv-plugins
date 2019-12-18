@@ -13,6 +13,7 @@ all:
 	$(MAKE) -C mod-cv-meter/source
 	$(MAKE) -C mod-cv-slew/source
 	$(MAKE) -C mod-cv-random/source
+	$(MAKE) -C mod-cv-range/source
 
 
 install: all
@@ -32,6 +33,7 @@ install: all
 	cp -r mod-cv-meter/source/mod-cv-meter.lv2 bundles/
 	cp -r mod-cv-slew/source/mod-cv-slew.lv2 bundles/
 	cp -r mod-cv-random/source/mod-cv-random.lv2 bundles/
+	cp -r mod-cv-range/source/mod-cv-range.lv2 bundles/
 
 
 clean:
@@ -49,3 +51,4 @@ clean:
 	$(MAKE) clean -C mod-cv-meter/source
 	$(MAKE) clean -C mod-cv-slew/source
 	$(MAKE) clean -C mod-cv-random/source
+	$(MAKE) clean -C mod-cv-range/source
