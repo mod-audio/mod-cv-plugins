@@ -22,7 +22,7 @@ typedef struct {
     float* output;
     float* compare_value;
     float* plugin_enabled;
-} Attenuverter;
+} LogicOperator;
 
 
 static LV2_Handle
@@ -31,7 +31,7 @@ instantiate(const LV2_Descriptor*     descriptor,
         const char*               bundle_path,
         const LV2_Feature* const* features)
 {
-    Attenuverter* self = (Attenuverter*)malloc(sizeof(Attenuverter));
+    LogicOperator* self = (LogicOperator*)malloc(sizeof(LogicOperator));
 
 
     return (LV2_Handle)self;
@@ -43,7 +43,7 @@ connect_port(LV2_Handle instance,
         uint32_t   port,
         void*      data)
 {
-    Attenuverter* self = (Attenuverter*)instance;
+    LogicOperator* self = (LogicOperator*)instance;
 
     switch ((PortIndex)port) {
         case L_INPUT1:
@@ -74,7 +74,7 @@ activate(LV2_Handle instance)
 static void
 run(LV2_Handle instance, uint32_t n_samples)
 {
-    Attenuverter* self = (Attenuverter*) instance;
+    LogicOperator* self = (LogicOperator*) instance;
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {

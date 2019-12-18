@@ -1,10 +1,10 @@
 #!/usr/bin/make -f
-# Makefile for cv-logic-equal.lv2 #
+# Makefile for cv-logic-larger.lv2 #
 # --------------------------------- #
 
 include Makefile.mk
 
-NAME = cv-logic-equal
+NAME = cv-logic-larger
 
 # --------------------------------------------------------------
 # Installation path
@@ -37,7 +37,7 @@ install: build
 	install -d $(DESTDIR)$(PREFIX)/lib/lv2/$(NAME).lv2
 
 	install -m 644 $(NAME).lv2/*.so  $(DESTDIR)$(PREFIX)/lib/lv2/$(NAME).lv2/
-	install -m 644 $(NAME).lv2/http://moddevices.com/plugins/mod-devel/cv-logic-larger $(DESTDIR)$(PREFIX)/lib/lv2/$(NAME).lv2/
+	install -m 644 $(NAME).lv2/*.ttl $(DESTDIR)$(PREFIX)/lib/lv2/$(NAME).lv2/
 	#cp -r $(NAME).lv2/modgui $(DESTDIR)$(PREFIX)/lib/lv2/$(NAME).lv2/
 
 # --------------------------------------------------------------
