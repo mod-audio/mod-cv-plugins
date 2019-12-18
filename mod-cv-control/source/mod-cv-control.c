@@ -6,13 +6,15 @@
 #define PLUGIN_URI "http://moddevices.com/plugins/mod-devel/mod-cv-control"
 
 typedef enum {
-	L_OUTPUT = 0,
-	L_LEVEL  = 1
+	L_OUTPUT    = 0,
+	L_LEVEL     = 1,
+	L_SMOOTHING = 2
 } PortIndex;
 
 typedef struct {
-  float*       output;
-  float*       level;
+  float* output;
+  float* level;
+  float* smoothing;
   double a0;
   double b1;
   double z1;
@@ -47,6 +49,10 @@ connect_port(LV2_Handle instance,
 		break;
 	case L_LEVEL:
 		self->level = (float*)data;
+        break;
+	case L_SMOOTHING:
+		self->smoothing = (float*)data;
+        break;
 	}
 }
 
@@ -66,11 +72,15 @@ run(LV2_Handle instance, uint32_t n_samples)
 {
   Control* self = (Control*) instance;
   float coef = *self->level;
-  coef = lowPassProcess(self, coef);
+  float smooth = lowPassProcess(self, coef);
+
+  if (*self->smoothing == 1) {
+      coef = smooth;
+  }
 
   for ( uint32_t i = 0; i < n_samples; i++)
   {
-    self->output[i] = (0.0f + coef );
+    self->output[i] = coef;
   }
 }
 

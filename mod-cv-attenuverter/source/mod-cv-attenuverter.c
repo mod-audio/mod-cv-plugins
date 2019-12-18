@@ -8,10 +8,12 @@
 
 
 typedef enum {
-    L_INPUT   = 0,
-    L_OUTPUT  = 1,
-    L_LEVEL   = 2,
-    L_ENABLE  = 3
+    L_INPUT     = 0,
+    L_OUTPUT    = 1,
+    L_LEVEL     = 2,
+    L_MODE      = 3,
+    L_SMOOTHING = 4,
+    L_ENABLE    = 5
 } PortIndex;
 
 
@@ -20,6 +22,8 @@ typedef struct {
     float* output;
     float* level;
     float* plugin_enabled;
+    float* mode;
+    float* smoothing;
     double a0;
     double b1;
     double z1;
@@ -60,6 +64,12 @@ connect_port(LV2_Handle instance,
         case L_LEVEL:
             self->level = (float*)data;
             break;
+        case L_MODE:
+            self->mode = (float*)data;
+            break;
+        case L_SMOOTHING:
+            self->smoothing = (float*)data;
+            break;
         case L_ENABLE:
             self->plugin_enabled = (float*)data;
             break;
@@ -88,7 +98,16 @@ run(LV2_Handle instance, uint32_t n_samples)
     float direction = (*self->level >= 0 ) ? 1 : -1;
     float coef = pow(fabs(*self->level), 2);
     coef = (coef * direction) / 10;
-    coef = lowPassProcess(self, coef);
+
+    if (*self->mode == 1) {
+        coef = *self->level;
+    }
+
+    float smooth = lowPassProcess(self, coef);
+
+    if (*self->smoothing == 1) {
+        coef = smooth;
+    }
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {
