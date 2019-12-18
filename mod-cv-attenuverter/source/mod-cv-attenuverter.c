@@ -99,13 +99,13 @@ run(LV2_Handle instance, uint32_t n_samples)
     float coef = pow(fabs(*self->level), 2);
     coef = (coef * direction) / 10;
 
-    if (*self->mode == 1) {
+    if (*self->mode == 0.0) {
         coef = *self->level;
     }
 
     float smooth = lowPassProcess(self, coef);
 
-    if (*self->smoothing == 1) {
+    if (*self->smoothing == 1.0) {
         coef = smooth;
     }
 
