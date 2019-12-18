@@ -1,0 +1,22 @@
+@prefix modgui: <http://moddevices.com/ns/modgui#> .
+@prefix lv2:    <http://lv2plug.in/ns/lv2core#> .
+
+<http://moddevices.com/plugins/mod-devel/mod-cv-range>
+    modgui:gui [
+        modgui:resourcesDirectory <modgui> ;
+        modgui:iconTemplate <modgui/icon-cv-range.html> ;
+        modgui:stylesheet <modgui/stylesheet-cv-range.css> ;
+        modgui:screenshot <modgui/mod_cv_range_ss.png> ;
+        modgui:thumbnail <modgui/mod_cv_range_tn.png> ;
+        modgui:brand "MOD" ;
+        modgui:label "CV Range Divider" ;
+        modgui:port [
+            lv2:index 0 ;
+            lv2:symbol "MinRange" ;
+            lv2:name "MinRange" ;
+        ] , [
+            lv2:index 1 ;
+            lv2:symbol "MaxRange" ;
+            lv2:name "MaxRange" ;
+        ] ;
+    ] .
