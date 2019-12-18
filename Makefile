@@ -47,5 +47,5 @@ clean:
 	$(MAKE) clean -C mod-midi-to-cv-mono/source
 	$(MAKE) clean -C mod-midi-to-cv-poly/source
 	$(MAKE) clean -C mod-cv-meter/source
-  $(MAKE) clean -C mod-cv-slew/source
+	$(MAKE) clean -C mod-cv-slew/source
 	$(MAKE) clean -C mod-cv-random/source
