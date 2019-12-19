@@ -80,14 +80,14 @@ run(LV2_Handle instance, uint32_t n_samples)
     {
         if ((int)*self->plugin_enabled == 1) {
 
-            if (*self->input2 != 0.0) {
-                if (*self->input1 < *self->input2) {
+            if (self->input2[i] != 0.0) {
+                if (self->input1[i] < self->input2[i]) {
                     self->output[i] = 1.0;
                 } else {
                     self->output[i] = 0.0;
                 }
             } else {
-                if (*self->input1 < *self->compare_value && (*self->input1 != 0.0 || *self->input2 != 0.0)) {
+                if (self->input1[i] < *self->compare_value && (self->input1[i] != 0.0 || self->input2[i] != 0.0)) {
                     self->output[i] = 1.0;
                 } else {
                     self->output[i] = 0.0;
