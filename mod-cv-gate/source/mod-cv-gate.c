@@ -80,7 +80,7 @@ run(LV2_Handle instance, uint32_t n_samples)
                 self->output[i] = 0.0;
             }
         } else {
-            self->output[i] = 0.0;
+            self->output[i] = self->input[i];
         }
     }
 }

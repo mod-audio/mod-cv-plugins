@@ -31,7 +31,7 @@ doap:maintainer [
     lv2:microVersion 0;
 
 rdfs:comment """
-logic operator plugin ' || '
+Plugin that outputs a 1 after the incomming signal has changed
 """;
 
 lv2:port
