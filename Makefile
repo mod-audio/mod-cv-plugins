@@ -16,6 +16,7 @@ all:
 	$(MAKE) -C mod-cv-range/source
 	$(MAKE) -C mod-cv-abs/source
 	$(MAKE) -C mod-cv-round/source
+	$(MAKE) -C mod-cv-gate/source
 
 
 install: all
@@ -38,6 +39,7 @@ install: all
 	cp -r mod-cv-range/source/mod-cv-range.lv2 bundles/
 	cp -r mod-cv-abs/source/mod-cv-abs.lv2 bundles/
 	cp -r mod-cv-round/source/mod-cv-round.lv2 bundles/
+	cp -r mod-cv-gate/source/mod-cv-gate.lv2 bundles/
 
 
 clean:
@@ -58,3 +60,4 @@ clean:
 	$(MAKE) clean -C mod-cv-range/source
 	$(MAKE) clean -C mod-cv-abs/source
 	$(MAKE) clean -C mod-cv-round/source
+	$(MAKE) clean -C mod-cv-gate/source
