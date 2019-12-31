@@ -6,4 +6,3 @@
     lv2:binary <mod-midi-to-cv-mono.so> ;
     rdfs:seeAlso <mod-midi-to-cv-mono.ttl> ;
 	lv2:optionalFeature lv2:hardRTCapable .
-<http://moddevices.com/plugins/mod-devel/midi-to-cv-mono> rdfs:seeAlso <modgui.ttl> .
