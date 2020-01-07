@@ -32,6 +32,8 @@ doap:maintainer [
 
 rdfs:comment """
 logic operator plugin ' || '
+
+When one (or both) of the two incoming signal is higher or equal to the set value the plugin will return a 1.
 """;
 
 lv2:port

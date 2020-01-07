@@ -32,6 +32,8 @@ doap:maintainer [
 
 rdfs:comment """
 logic operator plugin '>'
+
+When 'CV input1' and 'CV input2' are connected, the plugin will compare these incoming signals with each other. It can also be used to compare one incoming signal with the value set by the 'Compare Value' parameter, in this case only 'CV Input1' needs to be used.
 """;
 
 lv2:port
