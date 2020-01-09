@@ -13,7 +13,7 @@
 <http://moddevices.com/plugins/mod-devel/cv-logic-or>
 a lv2:Plugin, mod:ControlVoltagePlugin;
 
-doap:name "' || '";
+doap:name "Logic OR";
 doap:license "GPL v2+";
 doap:developer [
     foaf:name "Bram Giesen";
