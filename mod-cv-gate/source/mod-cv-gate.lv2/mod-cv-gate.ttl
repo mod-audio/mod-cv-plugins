@@ -57,6 +57,26 @@ lv2:port
     a lv2:InputPort ,
     lv2:ControlPort ;
     lv2:index 3 ;
+    lv2:symbol "OpeningThreshold" ;
+    lv2:name "OpeningThreshold";
+    lv2:default 1.0 ;
+    lv2:minimum -10.0 ;
+    lv2:maximum 10.0 ;
+],
+[
+    a lv2:InputPort ,
+    lv2:ControlPort ;
+    lv2:index 4 ;
+    lv2:symbol "ClosingThreshold" ;
+    lv2:name "ClosingThreshold";
+    lv2:default 0.9 ;
+    lv2:minimum -10.0 ;
+    lv2:maximum 10.0 ;
+],
+[
+    a lv2:InputPort ,
+    lv2:ControlPort ;
+    lv2:index 5 ;
     lv2:symbol "PluginEnabled" ;
     lv2:name "PluginEnabled" ;
     lv2:default 1.0 ;
