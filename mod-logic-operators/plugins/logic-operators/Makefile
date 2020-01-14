@@ -15,7 +15,7 @@ NAME = logic-operators
 
 FILES_DSP  = \
 	logic-operators.cpp \
-	operator.cpp
+	operators/operator.cpp
 
 # --------------------------------------------------------------
 # Do some magic

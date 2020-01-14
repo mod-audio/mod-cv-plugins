@@ -3,15 +3,15 @@
 
 #include "DistrhoPlugin.hpp"
 
-#include "AND.hpp"
-#include "INV.hpp"
 #include "logic-operators.hpp"
-#include "NAND.hpp"
-#include "NOR.hpp"
-#include "operator.hpp"
-#include "OR.hpp"
-#include "XNOR.hpp"
-#include "XOR.hpp"
+#include "operators/operator.hpp"
+#include "operators/AND.hpp"
+#include "operators/INV.hpp"
+#include "operators/NAND.hpp"
+#include "operators/NOR.hpp"
+#include "operators/OR.hpp"
+#include "operators/XNOR.hpp"
+#include "operators/XOR.hpp"
 
 START_NAMESPACE_DISTRHO
 
