@@ -1,5 +1,4 @@
 #include "logic-operators.hpp"
-#include <iostream>
 
 START_NAMESPACE_DISTRHO
 
@@ -13,7 +12,7 @@ LogicOperators::LogicOperators()
 
     sampleRate = (float)getSampleRate();
 
-    logicOperators = new Operator*[7];
+    logicOperators = new Operator*[NUM_OPERATORS];
 
     logicOperators[0] = new AND_Operator();
     logicOperators[1] = new NAND_Operator();
@@ -24,6 +23,9 @@ LogicOperators::LogicOperators()
     logicOperators[6] = new XNOR_Operator();
 
     selectOperator = 0.0;
+    paramHigh = 5.0;
+    paramLow = 0.0;
+    paramEqualOrHigher = 1.0;
 
     reset();
 }
@@ -48,6 +50,33 @@ void LogicOperators::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 6.f;
         break;
+    case paramSetLow:
+        parameter.hints      = kParameterIsAutomable;
+        parameter.name       = "Set Low";
+        parameter.symbol     = "SetLow";
+        parameter.unit       = "";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = -10.f;
+        parameter.ranges.max = 10.f;
+        break;
+    case paramSetHigh:
+        parameter.hints      = kParameterIsAutomable;
+        parameter.name       = "Set High";
+        parameter.symbol     = "SetHigh";
+        parameter.unit       = "";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = -10.f;
+        parameter.ranges.max = 10.f;
+        break;
+    case paramSetEqualOrHigher:
+        parameter.hints      = kParameterIsAutomable;
+        parameter.name       = "Equal and Higher";
+        parameter.symbol     = "EqualAndHigher";
+        parameter.unit       = "";
+        parameter.ranges.def = 1.0f;
+        parameter.ranges.min = 0.f;
+        parameter.ranges.max = 1.f;
+        break;
     }
 }
 
@@ -68,6 +97,12 @@ float LogicOperators::getParameterValue(uint32_t index) const
     {
     case paramSelectOperator:
         return selectOperator;
+    case paramSetLow:
+        return paramLow;
+    case paramSetHigh:
+        return paramHigh;
+    case paramSetEqualOrHigher:
+        return paramEqualOrHigher;
     }
 }
 
@@ -77,6 +112,15 @@ void LogicOperators::setParameterValue(uint32_t index, float value)
     {
     case paramSelectOperator:
         selectOperator = value;
+        break;
+    case paramSetLow:
+        paramLow = value;
+        break;
+    case paramSetHigh:
+        paramHigh = value;
+        break;
+    case paramSetEqualOrHigher:
+        paramEqualOrHigher = value;
         break;
     }
 }
@@ -109,10 +153,19 @@ void LogicOperators::run(const float** inputs, float** outputs, uint32_t frames)
     float* output = outputs[0];
 
     // Main processing body
+    for (unsigned l = 0; l < NUM_OPERATORS; l++) {
+        logicOperators[l]->setLow(paramLow);
+        logicOperators[l]->setHigh(paramHigh);
+    }
     for (uint32_t f = 0; f < frames; ++f)
     {
         float a = input1[f];
         float b = input2[f];
+
+        a = (a > paramHigh && (bool)paramEqualOrHigher) ? paramHigh : a;
+        a = (a < paramLow  && (bool)paramEqualOrHigher) ? paramLow  : a;
+        b = (b > paramHigh && (bool)paramEqualOrHigher) ? paramHigh : b;
+        b = (b < paramLow  && (bool)paramEqualOrHigher) ? paramLow  : b;
 
         output[f] = logicOperators[(int)selectOperator]->process(a, b);
     }

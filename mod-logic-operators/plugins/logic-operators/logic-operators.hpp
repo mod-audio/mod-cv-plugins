@@ -15,12 +15,17 @@
 
 START_NAMESPACE_DISTRHO
 
+#define NUM_OPERATORS 7
+
 class LogicOperators : public Plugin
 {
 public:
     enum Parameters
     {
         paramSelectOperator = 0,
+        paramSetHigh,
+        paramSetLow,
+        paramSetEqualOrHigher,
         paramCount
     };
 
@@ -91,6 +96,9 @@ private:
 
     float sampleRate;
     int selectOperator;
+    float paramHigh;
+    float paramLow;
+    float paramEqualOrHigher;
 
     Operator **logicOperators;
 
