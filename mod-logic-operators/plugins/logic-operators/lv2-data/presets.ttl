@@ -1,0 +1,10 @@
+@prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
+@prefix pset:  <http://lv2plug.in/ns/ext/presets#> .
+
+<http://moddevices.com/plugins/mod-devel/logic-operators#preset001>
+    lv2:port [
+        lv2:symbol "LogicOperator" ;
+        pset:value 0.000000 ;
+    ] .
+
+
