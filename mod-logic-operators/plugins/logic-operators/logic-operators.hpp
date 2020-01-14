@@ -23,8 +23,8 @@ public:
     enum Parameters
     {
         paramSelectOperator = 0,
-        paramSetHigh,
         paramSetLow,
+        paramSetHigh,
         paramSetEqualOrHigher,
         paramCount
     };

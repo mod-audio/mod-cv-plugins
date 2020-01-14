@@ -1,8 +1,6 @@
 #ifndef _H_OPERATOR_
 #define _H_OPERATOR_
 
-#include <iostream> 
-
 class Operator {
 public:
     Operator();
