@@ -9,6 +9,7 @@
 @prefix atom: <http://lv2plug.in/ns/ext/atom#> .
 @prefix midi: <http://lv2plug.in/ns/ext/midi#> .
 @prefix urid: <http://lv2plug.in/ns/ext/urid#> .
+@prefix units: <http://lv2plug.in/ns/extensions/units#> .
 
 <http://moddevices.com/plugins/mod-devel/mod-cv-slew>
 a lv2:Plugin, mod:ControlVoltagePlugin;
@@ -54,9 +55,11 @@ lv2:port
     lv2:index 2 ;
     lv2:symbol "RiseTime" ;
     lv2:name "Rise Time";
-    lv2:default 1.0 ;
-    lv2:minimum 1.0 ;
-    lv2:maximum 60000.0 ;
+    lv2:default 0.1 ;
+    lv2:minimum 0.1 ;
+    lv2:maximum 1000.0 ;
+    units:unit units:ms ;
+    lv2:portProperty  mod:tapTempo , mod:tempoRelatedDynamicScalePoints;
 ]
 ,
 [
@@ -65,9 +68,11 @@ lv2:port
     lv2:index 3 ;
     lv2:symbol "FallTime" ;
     lv2:name "Fall Time";
-    lv2:default 1.0 ;
-    lv2:minimum 1.0 ;
-    lv2:maximum 60000.0 ;
+    lv2:default 0.1 ;
+    lv2:minimum 0.1 ;
+    lv2:maximum 1000.0 ;
+    units:unit units:ms ;
+    lv2:portProperty  mod:tapTempo , mod:tempoRelatedDynamicScalePoints;
 ]
 ,
 [
