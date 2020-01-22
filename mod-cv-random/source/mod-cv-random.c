@@ -17,8 +17,8 @@
 typedef enum {
     GATE_IN  = 0,
     CV_OUT   = 1,
-    P_MAX	 = 2,
-    P_MIN    = 3,
+    P_MIN    = 2,
+    P_MAX	 = 3,
     P_ENABLE = 4
 } PortIndex;
 
@@ -59,15 +59,15 @@ connect_port(LV2_Handle instance,
 	case CV_OUT:
 		self->output = (float*)data;
 		break;
-	case P_MAX:
-		self->max = (float*)data;
-		break;
 	case P_MIN:
 		self->min = (float*)data;
 		break;
-  case P_ENABLE:
-    self->plugin_enabled = (float*)data;
-    break;
+	case P_MAX:
+		self->max = (float*)data;
+		break;
+    case P_ENABLE:
+        self->plugin_enabled = (float*)data;
+        break;
 	}
 }
 

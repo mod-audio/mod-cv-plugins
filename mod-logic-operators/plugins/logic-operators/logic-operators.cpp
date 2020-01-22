@@ -50,24 +50,6 @@ void LogicOperators::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 6.f;
         break;
-    case paramSetLow:
-        parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "Set Low";
-        parameter.symbol     = "SetLow";
-        parameter.unit       = "";
-        parameter.ranges.def = 0.0f;
-        parameter.ranges.min = -10.f;
-        parameter.ranges.max = 10.f;
-        break;
-    case paramSetHigh:
-        parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "Set High";
-        parameter.symbol     = "SetHigh";
-        parameter.unit       = "";
-        parameter.ranges.def = 0.0f;
-        parameter.ranges.min = -10.f;
-        parameter.ranges.max = 10.f;
-        break;
     case paramSetEqualOrHigher:
         parameter.hints      = kParameterIsAutomable;
         parameter.name       = "Equal and Higher";
@@ -97,10 +79,6 @@ float LogicOperators::getParameterValue(uint32_t index) const
     {
     case paramSelectOperator:
         return selectOperator;
-    case paramSetLow:
-        return paramLow;
-    case paramSetHigh:
-        return paramHigh;
     case paramSetEqualOrHigher:
         return paramEqualOrHigher;
     }
@@ -112,12 +90,6 @@ void LogicOperators::setParameterValue(uint32_t index, float value)
     {
     case paramSelectOperator:
         selectOperator = value;
-        break;
-    case paramSetLow:
-        paramLow = value;
-        break;
-    case paramSetHigh:
-        paramHigh = value;
         break;
     case paramSetEqualOrHigher:
         paramEqualOrHigher = value;
@@ -152,11 +124,6 @@ void LogicOperators::run(const float** inputs, float** outputs, uint32_t frames)
     const float* input2 = inputs[1];
     float* output = outputs[0];
 
-    // Main processing body
-    for (unsigned l = 0; l < NUM_OPERATORS; l++) {
-        logicOperators[l]->setLow(paramLow);
-        logicOperators[l]->setHigh(paramHigh);
-    }
     for (uint32_t f = 0; f < frames; ++f)
     {
         float a = input1[f];

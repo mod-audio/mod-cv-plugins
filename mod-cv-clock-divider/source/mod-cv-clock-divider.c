@@ -10,22 +10,24 @@
 #define NUM_DIVIDERS 8
 
 typedef enum {
-    P_ROTATE   = 0,
-    P_RESET    = 1,
-    P_CLOCK_IN = 2,
-    P_CLOCK_1  = 3,
-    P_CLOCK_2  = 4,
-    P_CLOCK_3  = 5,
-    P_CLOCK_4  = 6,
-    P_CLOCK_5  = 7,
-    P_CLOCK_6  = 8,
-    P_CLOCK_7  = 9,
-    P_CLOCK_8  = 10,
-    P_ENABLE   = 11
+    P_MODE     = 0,
+    P_ROTATE   = 1,
+    P_RESET    = 2,
+    P_CLOCK_IN = 3,
+    P_CLOCK_1  = 4,
+    P_CLOCK_2  = 5,
+    P_CLOCK_3  = 6,
+    P_CLOCK_4  = 7,
+    P_CLOCK_5  = 8,
+    P_CLOCK_6  = 9,
+    P_CLOCK_7  = 10,
+    P_CLOCK_8  = 11,
+    P_ENABLE   = 12
 } PortIndex;
 
 
 typedef struct {
+    float* mode;
     float* rotate;
     float* reset;
     float* clock_in;
@@ -51,6 +53,7 @@ typedef struct {
     bool counting;
     bool clock_started;
     bool first_clock;
+    bool tick;
 
     int frame_counter[NUM_DIVIDERS];
 
@@ -66,7 +69,7 @@ instantiate(const LV2_Descriptor*     descriptor,
         const LV2_Feature* const* features)
 {
     ClockDivider* self = (ClockDivider*)malloc(sizeof(ClockDivider));
-    self->clocks = (float**)malloc(1448000*sizeof(float*));
+    self->clocks = (float**)malloc(1448000*sizeof(float*)); //TODO take more sensible malloc size
 
     self->frames = 0;
     self->offset = 0;
@@ -78,7 +81,7 @@ instantiate(const LV2_Descriptor*     descriptor,
     self->first_clock = false;
     self->clock_started = false;
     self->offset_set = false;
-
+    self->tick = false;
 
     for (unsigned i = 0; i < NUM_DIVIDERS; i++) {
         self->frame_counter[i] = 0;
@@ -97,6 +100,9 @@ connect_port(LV2_Handle instance,
     ClockDivider* self = (ClockDivider*)instance;
 
     switch ((PortIndex)port) {
+        case P_MODE:
+            self->mode = (float*)data;
+            break;
         case P_ROTATE:
             self->rotate = (float*)data;
             break;
@@ -159,32 +165,37 @@ run(LV2_Handle instance, uint32_t n_samples)
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {
-        if (*self->reset > 0.0) {
+        if (self->reset[i] > 0.0) {
             self->offset = 0;
         }
 
-        if (*self->rotate > 0.0 && !self->offset_set) {
+        if (self->rotate[i] > 0.0 && !self->offset_set) {
             self->offset = (self->offset + 1) % NUM_DIVIDERS;
             self->offset_set = true;
-        } else if (*self->rotate <= 0.0 && self->offset_set) {
+        } else if (self->rotate[i] <= 0.0 && self->offset_set) {
             self->offset_set = false;
         }
 
-        if (*self->clock_in != self->prev_clock_in) {
+        if (self->clock_in[i] > 0.0 && !self->tick) {
 
-            if (*self->clock_in > 0.0) {
+            self->counting = true;
+            self->counted_frames = self->frames;
+            self->frames = 0;
 
-                self->counting = true;
-                self->counted_frames = self->frames;
-                self->frames = 0;
+            if (self->first_clock)
+                self->clock_started = true;
 
-                if (self->first_clock)
-                    self->clock_started = true;
+            self->first_clock = true;
+            self->tick = true;
 
-                self->first_clock = true;
+            if (*self->mode > 0.0) {
+                for (unsigned t = 0; t < NUM_DIVIDERS; t++) {
+                    //self->frame_counter[t] = 0;
+                }
             }
 
-            self->prev_clock_in = *self->clock_in;
+        } else if (self->clock_in[i] == 0.0 && self->tick) {
+            self->tick = false;
         }
 
         if (self->counting)
@@ -192,18 +203,26 @@ run(LV2_Handle instance, uint32_t n_samples)
 
         if ((int)*self->plugin_enabled == 1)
         {
-          self->clocks[0][i] = self->clock_in[i];
 
-            for (unsigned d = 1; d < NUM_DIVIDERS + 1; d++) {
-                if (self->frame_counter[d - 1] > (self->counted_frames / d) && self->clock_started) {
-                    self->clocks[((d - 1 ) + self->offset) % NUM_DIVIDERS][i] = 1.0;
-                    self->frame_counter[d - 1] = 0;
+            for (unsigned d = 0; d < NUM_DIVIDERS; d++) {
+
+                bool multiply = true;
+                float trigger_time;
+
+                if (*self->mode == 0.0) {
+                    trigger_time = self->counted_frames * (d + 1);
                 } else {
-                    self->clocks[((d - 1 ) + self->offset) % NUM_DIVIDERS][i] = 0.0;
-                    self->frame_counter[d - 1]++;
+                    trigger_time = self->counted_frames / (d + 1);
+                }
+
+                if (self->frame_counter[d] > trigger_time && self->clock_started) {
+                    self->clocks[(d + self->offset) % NUM_DIVIDERS][i] = 1.0;
+                    self->frame_counter[d] = 0;
+                } else {
+                    self->clocks[(d + self->offset) % NUM_DIVIDERS][i] = 0.0;
+                    self->frame_counter[d]++;
                 }
             }
-
         } else { // if plugin is not active;
             for (unsigned d = 0; d < NUM_DIVIDERS; d++) {
                 self->clocks[d][i] = 0.0;
