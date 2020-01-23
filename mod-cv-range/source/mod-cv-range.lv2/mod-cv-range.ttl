@@ -31,6 +31,8 @@ doap:maintainer [
     lv2:microVersion 0;
 
 rdfs:comment """
+The MIN and MAX controls on this plugin will determine the range of the first output.
+When the input signal goes out of that range it will be routed to the second output.
 """;
 
 lv2:port
