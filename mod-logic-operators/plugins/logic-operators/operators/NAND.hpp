@@ -14,7 +14,7 @@ public:
 
 inline float NAND_Operator::process(float A, float B)
 {
-    return (A == low || B == low) ? high : low;
+    return (A == low || B == low) ? true_value : false_value;
 }
 
 

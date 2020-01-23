@@ -14,7 +14,7 @@ public:
 
 inline float XOR_Operator::process(float A, float B)
 {
-    return ((A == high || B == high) && !(A == high && B == high)) ? high : low;
+    return ((A == high || B == high) && !(A == high && B == high)) ? true_value : false_value;
 }
 
 

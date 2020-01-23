@@ -13,6 +13,8 @@ public:
 protected:
     float high = 5.0;
     float low  = 0.0;
+    float true_value = 5.0;
+    float false_value = 0.0;
 private:
 };
 

@@ -14,7 +14,7 @@ public:
 
 inline float XNOR_Operator::process(float A, float B)
 {
-    return ((A == low && B == low) || (A == high && B == high)) ? high : low;
+    return ((A == low && B == low) || (A == high && B == high)) ? true_value : false_value;
 }
 
 

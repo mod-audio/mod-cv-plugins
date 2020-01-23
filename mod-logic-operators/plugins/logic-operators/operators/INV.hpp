@@ -14,7 +14,7 @@ public:
 
 inline float INV_Operator::process(float A, float B)
 {
-    return (A == high) ? low : high;
+    return (A == high) ? false_value : true_value;
 }
 
 
