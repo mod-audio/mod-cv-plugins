@@ -19,7 +19,6 @@ all:
 	$(MAKE) -C mod-cv-abs/source
 	$(MAKE) -C mod-cv-round/source
 	$(MAKE) -C mod-cv-gate/source
-	$(MAKE) -C logic-operators
 
 
 install: all
@@ -42,7 +41,6 @@ install: all
 	cp -r mod-cv-abs/source/mod-cv-abs.lv2 						$(DEST_DIR)
 	cp -r mod-cv-round/source/mod-cv-round.lv2 					$(DEST_DIR)
 	cp -r mod-cv-gate/source/mod-cv-gate.lv2 					$(DEST_DIR)
-	$(MAKE) install -C logic-operators
 
 
 clean:
@@ -64,4 +62,3 @@ clean:
 	$(MAKE) clean -C mod-cv-abs/source
 	$(MAKE) clean -C mod-cv-round/source
 	$(MAKE) clean -C mod-cv-gate/source
-	$(MAKE) clean -C logic-operators
