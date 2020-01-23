@@ -143,10 +143,10 @@ void LogicOperators::run(const float** inputs, float** outputs, uint32_t frames)
         float a = input1[f];
         float b = input2[f];
 
-        a = (a > paramHigh && (bool)paramEqualOrHigher) ? paramHigh : a;
-        a = (a < paramLow  && (bool)paramEqualOrHigher) ? paramLow  : a;
-        b = (b > paramHigh && (bool)paramEqualOrHigher) ? paramHigh : b;
-        b = (b < paramLow  && (bool)paramEqualOrHigher) ? paramLow  : b;
+        a = (a > paramHigh) ? paramHigh : a;
+        a = (a < paramLow) ? paramLow  : a;
+        b = (b > paramHigh) ? paramHigh : b;
+        b = (b < paramLow) ? paramLow  : b;
 
         output[f] = logicOperators[(int)selectOperator]->process(a, b);
     }
