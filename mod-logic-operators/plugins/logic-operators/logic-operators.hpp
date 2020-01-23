@@ -25,7 +25,6 @@ public:
         paramSelectOperator = 0,
         paramSetLow,
         paramSetHigh,
-        paramSetEqualOrHigher,
         paramCount
     };
 

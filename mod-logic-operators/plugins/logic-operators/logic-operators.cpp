@@ -50,10 +50,19 @@ void LogicOperators::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 6.f;
         break;
-    case paramSetEqualOrHigher:
+    case paramSetLow:
         parameter.hints      = kParameterIsAutomable;
-        parameter.name       = "Equal and Higher";
-        parameter.symbol     = "EqualAndHigher";
+        parameter.name       = "LogicLow";
+        parameter.symbol     = "LogicLow";
+        parameter.unit       = "";
+        parameter.ranges.def = 1.0f;
+        parameter.ranges.min = 0.f;
+        parameter.ranges.max = 1.f;
+        break;
+    case paramSetHigh:
+        parameter.hints      = kParameterIsAutomable;
+        parameter.name       = "Logic High";
+        parameter.symbol     = "LogicHigh";
         parameter.unit       = "";
         parameter.ranges.def = 1.0f;
         parameter.ranges.min = 0.f;
@@ -79,8 +88,10 @@ float LogicOperators::getParameterValue(uint32_t index) const
     {
     case paramSelectOperator:
         return selectOperator;
-    case paramSetEqualOrHigher:
-        return paramEqualOrHigher;
+    case paramSetLow:
+        return paramLow;
+    case paramSetHigh:
+        return paramHigh;
     }
 }
 
@@ -91,8 +102,11 @@ void LogicOperators::setParameterValue(uint32_t index, float value)
     case paramSelectOperator:
         selectOperator = value;
         break;
-    case paramSetEqualOrHigher:
-        paramEqualOrHigher = value;
+    case paramSetLow:
+        paramHigh = value;
+        break;
+    case paramSetHigh:
+        paramHigh = value;
         break;
     }
 }
