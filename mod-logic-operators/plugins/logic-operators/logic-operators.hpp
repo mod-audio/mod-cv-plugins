@@ -23,7 +23,6 @@ public:
     enum Parameters
     {
         paramSelectOperator = 0,
-        paramSetLow,
         paramSetHigh,
         paramCount
     };
@@ -98,6 +97,7 @@ private:
     float paramHigh;
     float paramLow;
     float paramEqualOrHigher;
+    float logicOut;
 
     Operator **logicOperators;
 
