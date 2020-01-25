@@ -24,6 +24,7 @@ public:
     {
         paramSelectOperator = 0,
         paramSetHigh,
+        paramSetHysteresis,
         paramCount
     };
 
@@ -86,6 +87,7 @@ protected:
     // Process
     void activate() override;
     void deactivate() override;
+    float setLogicInValue(float logicIn, float paramHigh, float paramHysteresis, bool logicBool);
     void run(const float** inputs, float** outputs, uint32_t frames) override;
 
 private:
@@ -95,9 +97,10 @@ private:
     float sampleRate;
     int selectOperator;
     float paramHigh;
-    float paramLow;
-    float paramEqualOrHigher;
+    float paramHysteresis;
     float logicOut;
+    bool  logicA;
+    bool  logicB;
 
     Operator **logicOperators;
 

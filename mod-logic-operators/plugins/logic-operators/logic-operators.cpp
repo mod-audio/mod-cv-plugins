@@ -26,10 +26,10 @@ LogicOperators::LogicOperators()
 
     selectOperator = 0.0;
     paramHigh = 5.0;
-    paramLow = 0.0;
-    paramEqualOrHigher = 1.0;
-
+    paramHysteresis = 0.0;
     logicOut = 0.0;
+    logicA = false;
+    logicB = false;
 
     reset();
 }
@@ -63,6 +63,15 @@ void LogicOperators::initParameter(uint32_t index, Parameter& parameter)
         parameter.ranges.min = 0.f;
         parameter.ranges.max = 1.f;
         break;
+    case paramSetHysteresis:
+        parameter.hints      = kParameterIsAutomable;
+        parameter.name       = "Hysteresis";
+        parameter.symbol     = "Hysteresis";
+        parameter.unit       = "";
+        parameter.ranges.def = 0.0f;
+        parameter.ranges.min = 0.f;
+        parameter.ranges.max = 5.f;
+        break;
     }
 }
 
@@ -85,6 +94,8 @@ float LogicOperators::getParameterValue(uint32_t index) const
         return selectOperator;
     case paramSetHigh:
         return paramHigh;
+    case paramSetHysteresis:
+        return paramHysteresis;
     }
 }
 
@@ -98,6 +109,8 @@ void LogicOperators::setParameterValue(uint32_t index, float value)
     case paramSetHigh:
         paramHigh = value;
         break;
+    case paramSetHysteresis:
+        paramHysteresis = value;
     }
 }
 
@@ -120,6 +133,22 @@ void LogicOperators::deactivate()
 {
 }
 
+float LogicOperators::setLogicInValue(float logicIn, float paramHigh, float paramHysteresis, bool logicBool)
+{
+    if (logicIn >= (paramHigh + paramHysteresis)) {
+        logicBool = true;
+    } else if (logicIn <= (paramHigh - paramHysteresis)) {
+        logicBool = false;
+    }
+
+    if (logicBool) {
+        logicIn = 5.0;
+    } else {
+        logicIn = 0.0;
+    }
+
+    return logicIn;
+}
 
 
 void LogicOperators::run(const float** inputs, float** outputs, uint32_t frames)
@@ -133,8 +162,8 @@ void LogicOperators::run(const float** inputs, float** outputs, uint32_t frames)
         float a = input1[f];
         float b = input2[f];
 
-        a = (a >= paramHigh) ? 5.0 : 0.0;
-        b = (b >= paramHigh) ? 5.0 : 0.0;
+        a = setLogicInValue(a, paramHigh, paramHysteresis, logicA);
+        b = setLogicInValue(b, paramHigh, paramHysteresis, logicB);
 
         logicOut = logicOperators[(int)selectOperator]->process(a, b);
 
