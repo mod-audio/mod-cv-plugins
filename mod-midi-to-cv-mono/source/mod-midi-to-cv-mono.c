@@ -3,7 +3,6 @@
 
 #include <math.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -19,9 +18,9 @@
 #define NUM_NOTESBUFFER 8
 
 typedef enum {
-  IN = 0, 
-  CV1, 
-  VELOCITY, 
+  IN = 0,
+  CV1,
+  VELOCITY,
   TRIGGER,
   OCTAVE,
   SEMITONE,
@@ -47,13 +46,13 @@ typedef struct {
     uint8_t activeNotesList[NUM_NOTESBUFFER];
     uint8_t reTriggerBuffer[NUM_NOTESBUFFER];
     uint8_t triggerIndex;
-    uint8_t activeNotes;
+    uint8_t activeNote;
     uint8_t activeVelocity;
     uint8_t reTriggered;
     size_t  notesIndex;
     bool activePorts;
 
-    
+
     float *pitch;
     float *velocity;
     float *trigger;
@@ -104,7 +103,7 @@ static LV2_Handle instantiate(const LV2_Descriptor*     descriptor,
     memset(self->reTriggerBuffer, 0, sizeof(uint8_t)*NUM_NOTESBUFFER);
     self->triggerIndex = 0;
     self->reTriggered = 200;
-    self->activeNotes = 0;
+    self->activeNote = 0;
     self->activeVelocity = 0;
     self->activePorts = false;
     self->notesPressed = 0;
@@ -165,7 +164,7 @@ static void panic(Data* self)
     }
     self->triggerIndex = 0;
     self->reTriggered = 200;
-    self->activeNotes = 0;
+    self->activeNote = 0;
     self->activeVelocity = 0;
     self->activePorts = false;
     self->notesPressed = 0;
@@ -217,9 +216,9 @@ static void run(LV2_Handle instance, uint32_t sample_count)
             }
             storeN++;
           }
-          self->activeNotes = msg[1];
+          self->activeNote = msg[1];
           self->activeVelocity = msg[2];
-          self->triggerIndex = (self->triggerIndex + 1) % 8;
+          self->triggerIndex = (self->triggerIndex + 1) % NUM_NOTESBUFFER;
           self->reTriggerBuffer[self->triggerIndex] = 1;
           self->reTriggered = msg[1];
           break;
@@ -232,8 +231,8 @@ static void run(LV2_Handle instance, uint32_t sample_count)
           }
           while (!noteFound && notesIndex >= 0) {
               if (self->activeNotesList[notesIndex] < 200){
-                  self->activeNotes = self->activeNotesList[notesIndex];
-                  if(retrigger && self->activeNotes != self->reTriggered){
+                  self->activeNote = self->activeNotesList[notesIndex];
+                  if(retrigger && self->activeNote != self->reTriggered){
                       self->reTriggered = msg[1];
                   }
                   noteFound = true;
@@ -263,8 +262,8 @@ static void run(LV2_Handle instance, uint32_t sample_count)
 
   for(uint32_t i=0;i<sample_count;i++)
   {
-    pitch[i] = (0.0f + (float)((oC) + (sC/12.0f)+(cC/1200.0f)) + ((float)self->activeNotes * 1/12.0f));
-    velocity[i] = (0.0f + ((float)self->activeVelocity * 1/12.0f));
+    pitch[i] = ((float)((oC) + (sC/12.0f)+(cC/1200.0f)) + ((float)self->activeNote * 1/12.0f));
+    velocity[i] = (((float)self->activeVelocity * 1/12.0f));
     trigger[i] = ((self->triggerState == true) ? 10.0f : 0.0f);
     if (self->reTriggerBuffer[self->triggerIndex] == 1 && *self->reTrigger == 1.0) {
       self->reTriggerBuffer[self->triggerIndex] = 0;

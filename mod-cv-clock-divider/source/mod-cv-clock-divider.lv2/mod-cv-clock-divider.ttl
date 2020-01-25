@@ -68,48 +68,64 @@ lv2:port
     lv2:index 4;
     lv2:symbol "ClockOut1";
     lv2:name "ClockOut1";
+    lv2:minimum 0.0 ;
+    lv2:maximum 2.0 ;
 ],
 [
     a lv2:OutputPort, lv2:CVPort;
     lv2:index 5;
     lv2:symbol "ClockOut2";
     lv2:name "ClockOut2";
+    lv2:minimum 0.0 ;
+    lv2:maximum 2.0 ;
 ],
 [
     a lv2:OutputPort, lv2:CVPort;
     lv2:index 6;
     lv2:symbol "ClockOut3";
     lv2:name "ClockOut3";
+    lv2:minimum 0.0 ;
+    lv2:maximum 2.0 ;
 ],
 [
     a lv2:OutputPort, lv2:CVPort;
     lv2:index 7;
     lv2:symbol "ClockOut4";
     lv2:name "ClockOut4";
+    lv2:minimum 0.0 ;
+    lv2:maximum 2.0 ;
 ],
 [
     a lv2:OutputPort, lv2:CVPort;
     lv2:index 8;
     lv2:symbol "ClockOut5";
     lv2:name "ClockOut5";
+    lv2:minimum 0.0 ;
+    lv2:maximum 2.0 ;
 ],
 [
     a lv2:OutputPort, lv2:CVPort;
     lv2:index 9;
     lv2:symbol "ClockOut6";
     lv2:name "ClockOut6";
+    lv2:minimum 0.0 ;
+    lv2:maximum 2.0 ;
 ],
 [
     a lv2:OutputPort, lv2:CVPort;
     lv2:index 10;
     lv2:symbol "ClockOut7";
     lv2:name "ClockOut7";
+    lv2:minimum 0.0 ;
+    lv2:maximum 2.0 ;
 ],
 [
     a lv2:OutputPort, lv2:CVPort;
     lv2:index 11;
     lv2:symbol "ClockOut8";
     lv2:name "ClockOut8";
+    lv2:minimum 0.0 ;
+    lv2:maximum 2.0 ;
 ],
 [
     a lv2:InputPort ,

@@ -58,38 +58,37 @@ typedef struct {
 } ClockURIs;
 
 typedef struct {
-	LV2_URID_Map*          map; // URID map feature
-	LV2_Log_Log* 	       log;
-	LV2_Log_Logger      logger; // Logger API
-	ClockURIs             uris; // Cache of mapped URIDs
+    LV2_URID_Map*          map; // URID map feature
+    LV2_Log_Log* 	       log;
+    LV2_Log_Logger      logger; // Logger API
+    ClockURIs             uris; // Cache of mapped URIDs
 
-	float*         pulseOutput;
-	float*           changeBpm;
-	float   	     divisions;
-	float*          changedDiv;
-	float 	     *squareOutput;
-  double          samplerate;
-	LV2_Atom_Sequence* control;
-	int*   		    	  sync;
-  int            prevSync;
-	// Variables to keep track of the tempo information sent by the host
-	float        	       bpm; // Beats per minute (tempo)
-	uint32_t    	       pos;
-	uint32_t   	        period;
-	uint32_t	  h_wavelength;
+    float*         pulseOutput;
+    float*           changeBpm;
+    float   	     divisions;
+    float*          changedDiv;
+    float 	     *squareOutput;
+    double          samplerate;
+    LV2_Atom_Sequence* control;
+    int*   		    	  sync;
+    int            prevSync;
+    // Variables to keep track of the tempo information sent by the host
+    float        	       bpm; // Beats per minute (tempo)
+    uint32_t    	       pos;
+    uint32_t   	        period;
+    uint32_t	  h_wavelength;
 
-  bool printed;
-	float   	         speed; // Transport speed (usually 0=stop, 1=play)
-  float              prevSpeed;
-  float              beatInMeasure;
+    float   	         speed; // Transport speed (usually 0=stop, 1=play)
+    float              prevSpeed;
+    float              beatInMeasure;
 
-	float 	   elapsed_len; // Frames since the start of the last click
-	uint32_t 	   wave_offset; // Current play offset in the wave
-	State    	         state; // Current play state
+    float 	   elapsed_len; // Frames since the start of the last click
+    uint32_t 	   wave_offset; // Current play offset in the wave
+    State    	         state; // Current play state
 
-	// Envelope parameters
-	uint32_t	    attack_len;
-	uint32_t 	     decay_len;
+    // Envelope parameters
+    uint32_t	    attack_len;
+    uint32_t 	     decay_len;
 } Clock;
 
 
@@ -178,16 +177,15 @@ instantiate(const LV2_Descriptor*     descriptor,
 	uris->time_beatsPerMinute = map->map(map->handle, LV2_TIME__beatsPerMinute);
 	uris->time_speed          = map->map(map->handle, LV2_TIME__speed);
 
-  debug_print("DEBUGING");
-	self->attack_len = (uint32_t)(attack_s * rate);
-	self->decay_len  = (uint32_t)(decay_s * rate);
-	self->state      = STATE_OFF;
-  self->samplerate = rate;
-  self->prevSync   = 0; 
-  self->beatInMeasure = 0;
-  self->printed = false;
-  self->prevSpeed = 0;
-	return (LV2_Handle)self;
+    self->attack_len = (uint32_t)(attack_s * rate);
+    self->decay_len  = (uint32_t)(decay_s * rate);
+    self->state      = STATE_OFF;
+    self->samplerate = rate;
+    self->prevSync   = 0;
+    self->beatInMeasure = 0;
+    self->prevSpeed = 0;
+
+    return (LV2_Handle)self;
 }
 
 
@@ -224,12 +222,12 @@ update_position(Clock* self, const LV2_Atom_Object* obj)
 			const float frames_per_beat = (self->samplerate * (60.0f / (self->bpm * self->divisions)));
 			const float bar_beats       = (((LV2_Atom_Float*)beat)->body * self->divisions);
 			const float beat_beats      = bar_beats - floorf(bar_beats);
-      self->beatInMeasure         = ((LV2_Atom_Float*)beat)->body; 
+      self->beatInMeasure         = ((LV2_Atom_Float*)beat)->body;
 			self->elapsed_len           = beat_beats * frames_per_beat;
 	}
 }
 
-static uint32_t 
+static uint32_t
 resetPhase(Clock* self)
 {
   uint32_t pos = (uint32_t)fmod(self->samplerate * (60.0f / self->bpm) * self->beatInMeasure, (self->samplerate * (60.0f / (self->bpm * (self->divisions / 2.0f)))));
@@ -241,75 +239,65 @@ resetPhase(Clock* self)
 static void
 run(LV2_Handle instance, uint32_t n_samples)
 {
-  Clock* self = (Clock*)instance;
+    Clock* self = (Clock*)instance;
 
-  const ClockURIs* uris = &self->uris;
-  const LV2_Atom_Sequence* in     = self->control;
+    const ClockURIs* uris = &self->uris;
+    const LV2_Atom_Sequence* in     = self->control;
 
-  for (const LV2_Atom_Event* ev = lv2_atom_sequence_begin(&in->body);
-      !lv2_atom_sequence_is_end(&in->body, in->atom.size, ev);
-      ev = lv2_atom_sequence_next(ev)) {
+    for (const LV2_Atom_Event* ev = lv2_atom_sequence_begin(&in->body);
+            !lv2_atom_sequence_is_end(&in->body, in->atom.size, ev);
+            ev = lv2_atom_sequence_next(ev)) {
 
-    if (ev->body.type == uris->atom_Object ||
-        ev->body.type == uris->atom_Blank) {
-      const LV2_Atom_Object* obj = (const LV2_Atom_Object*)&ev->body;
-      if (obj->body.otype == uris->time_Position) {
-        update_position(self, obj);
-      }
-    }
-  }
-
-
-  for(uint32_t i = 0; i < n_samples; i ++) {
-    //map bpm to host or to bpm parameter
-    if (!*self->sync) {
-      self->bpm = *self->changeBpm;
-    } else {
-      self->bpm = self->bpm;
-    }
-    //reset phase when playing starts or stops
-    if (self->speed != self->prevSpeed) {
-      self->pos = resetPhase(self);
-      self->prevSpeed = self->speed;
-      debug_print("transport changed\n");
-    }
-    //reset phase when sync is turned on
-    if (*self->sync != self->prevSync) {
-      self->pos = resetPhase(self);
-      self->prevSync = *self->sync;
-      debug_print("Sync changed\n");
-    }
-    //reset phase when there is a new division
-    if (self->divisions != *self->changedDiv) {
-      self->divisions = *self->changedDiv;
-      self->pos = resetPhase(self);
-      debug_print("Division changed\n");
-    }
-
-    self->period = (uint32_t)(self->samplerate * (60.0f / (self->bpm * (self->divisions / 2.0f))));
-    self->h_wavelength = (self->period/2.0f);
-
-    if(self->pos >= self->period && i < n_samples) {
-      self->printed = false;
-      self->squareOutput[i] = 2.0f;
-      self->pulseOutput[i] = 2.0f;
-      self->pos = 0;
-    } else {
-      if(self->pos < self->h_wavelength) {
-        self->squareOutput[i] = 2.0f;
-      } else {
-        if (!self->printed) {
-          //debug_print("self->h_waveLength = %i\n", self->h_wavelength);
-          //debug_print("self->period = %i\n", self->period);
-          //debug_print("pos in switch to zero = %i\n", self->pos);
-          self->printed = true;
+        if (ev->body.type == uris->atom_Object ||
+                ev->body.type == uris->atom_Blank) {
+            const LV2_Atom_Object* obj = (const LV2_Atom_Object*)&ev->body;
+            if (obj->body.otype == uris->time_Position) {
+                update_position(self, obj);
+            }
         }
-        self->squareOutput[i] = 0.0f;
-      }
-      self->pulseOutput[i] = 0.0f;
     }
-    self->pos += 1;
-  }
+
+
+    for(uint32_t i = 0; i < n_samples; i ++) {
+        //map bpm to host or to bpm parameter
+        if (!*self->sync) {
+            self->bpm = *self->changeBpm;
+        } else {
+            self->bpm = self->bpm;
+        }
+        //reset phase when playing starts or stops
+        if (self->speed != self->prevSpeed) {
+            self->pos = resetPhase(self);
+            self->prevSpeed = self->speed;
+        }
+        //reset phase when sync is turned on
+        if (*self->sync != self->prevSync) {
+            self->pos = resetPhase(self);
+            self->prevSync = *self->sync;
+        }
+        //reset phase when there is a new division
+        if (self->divisions != *self->changedDiv) {
+            self->divisions = *self->changedDiv;
+            self->pos = resetPhase(self);
+        }
+
+        self->period = (uint32_t)(self->samplerate * (60.0f / (self->bpm * (self->divisions / 2.0f))));
+        self->h_wavelength = (self->period/2.0f);
+
+        if(self->pos >= self->period && i < n_samples) {
+            self->squareOutput[i] = 2.0f;
+            self->pulseOutput[i] = 2.0f;
+            self->pos = 0;
+        } else {
+            if(self->pos < self->h_wavelength) {
+                self->squareOutput[i] = 2.0f;
+            } else {
+                self->squareOutput[i] = 0.0f;
+            }
+            self->pulseOutput[i] = 0.0f;
+        }
+        self->pos += 1;
+    }
 }
 
 static void

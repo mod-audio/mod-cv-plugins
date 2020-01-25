@@ -216,7 +216,7 @@ run(LV2_Handle instance, uint32_t n_samples)
                 }
 
                 if (self->frame_counter[d] > trigger_time && self->clock_started) {
-                    self->clocks[(d + self->offset) % NUM_DIVIDERS][i] = 1.0;
+                    self->clocks[(d + self->offset) % NUM_DIVIDERS][i] = 2.0;
                     self->frame_counter[d] = 0;
                 } else {
                     self->clocks[(d + self->offset) % NUM_DIVIDERS][i] = 0.0;
