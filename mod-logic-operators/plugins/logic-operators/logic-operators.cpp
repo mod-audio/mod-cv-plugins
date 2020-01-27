@@ -28,8 +28,6 @@ LogicOperators::LogicOperators()
     paramSwitchPoint = 5.0;
     paramHysteresis = 0.0;
     logicOut = 0.0;
-    logicA = false;
-    logicB = false;
 
     reset();
 }
@@ -133,12 +131,14 @@ void LogicOperators::deactivate()
 {
 }
 
-float* LogicOperators::setLogicInValue(float logicIn, float paramSwitchPoint, float paramHysteresis, float *out)
+float LogicOperators::setLogicInValue(float logicIn, float paramSwitchPoint, float paramHysteresis, float out)
 {
     if (logicIn >= (paramSwitchPoint + (paramHysteresis / 2))) {
-        *out = 5.0;
+        out = 5.0;
     } else if (logicIn <= (paramSwitchPoint - (paramHysteresis / 2))) {
-        *out = 0.0;
+        out = 0.0;
+    } else {
+        out = out;
     }
 
     return out;
@@ -157,8 +157,8 @@ void LogicOperators::run(const float** inputs, float** outputs, uint32_t frames)
         float b = input2[f];
 
         float logic1, logic2;
-        logic1 = *setLogicInValue(a, paramSwitchPoint, paramHysteresis, &logic1);
-        logic2 = *setLogicInValue(b, paramSwitchPoint, paramHysteresis, &logic2);
+        logic1 = setLogicInValue(a, paramSwitchPoint, paramHysteresis, logic1);
+        logic2 = setLogicInValue(b, paramSwitchPoint, paramHysteresis, logic2);
 
         logicOut = logicOperators[(int)selectOperator]->process(logic1, logic2);
 

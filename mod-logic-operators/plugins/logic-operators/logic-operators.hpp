@@ -87,7 +87,7 @@ protected:
     // Process
     void activate() override;
     void deactivate() override;
-    float* setLogicInValue(float logicIn, float paramHigh, float paramHysteresis, float *out);
+    float setLogicInValue(float logicIn, float paramHigh, float paramHysteresis, float out);
     void run(const float** inputs, float** outputs, uint32_t frames) override;
 
 private:
@@ -99,8 +99,6 @@ private:
     float paramSwitchPoint;
     float paramHysteresis;
     float logicOut;
-    bool  logicA;
-    bool  logicB;
 
     Operator **logicOperators;
 
