@@ -23,7 +23,7 @@ public:
     enum Parameters
     {
         paramSelectOperator = 0,
-        paramSetHigh,
+        paramSetSwitchPoint,
         paramSetHysteresis,
         paramCount
     };
@@ -87,7 +87,7 @@ protected:
     // Process
     void activate() override;
     void deactivate() override;
-    float setLogicInValue(float logicIn, float paramHigh, float paramHysteresis, bool logicBool);
+    float* setLogicInValue(float logicIn, float paramHigh, float paramHysteresis, float *out);
     void run(const float** inputs, float** outputs, uint32_t frames) override;
 
 private:
@@ -96,7 +96,7 @@ private:
 
     float sampleRate;
     int selectOperator;
-    float paramHigh;
+    float paramSwitchPoint;
     float paramHysteresis;
     float logicOut;
     bool  logicA;
