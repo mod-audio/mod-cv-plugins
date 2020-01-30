@@ -6,8 +6,6 @@
 @prefix modgui: <http://moddevices.com/ns/modgui#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-@prefix atom: <http://lv2plug.in/ns/ext/atom#> .
-@prefix midi: <http://lv2plug.in/ns/ext/midi#> .
 @prefix urid: <http://lv2plug.in/ns/ext/urid#> .
 
 <http://moddevices.com/plugins/mod-devel/mod-cv-to-audio>
@@ -16,22 +14,22 @@ a lv2:Plugin, mod:ControlVoltagePlugin;
 doap:name "CV to Audio";
 doap:license "GPL v2+" ;
 doap:developer [
-    foaf:name "Jarno Verheesen";
+    foaf:name "Bram Giesen & Jarno Verheesen";
     foaf:homepage <>;
-    foaf:mbox <mailto:j.verheesen@hotmail.nl>;
+    foaf:mbox <mailto:bram@moddevices.com>;
     ];
 
 doap:maintainer [
     foaf:name "MOD";
     foaf:homepage <http://moddevices.com>;
-    foaf:mbox <mailto:jarno@moddevices.com>;
+    foaf:mbox <mailto:bram@moddevices.com>;
     ];
 
     lv2:minorVersion 1;
     lv2:microVersion 0;
 
 rdfs:comment """
-Audio to CV converts an audio signal to a control voltage signal. 
+CV to audio converts an control voltage signal to an audio signal with DC Blocker. This blocker can be turned of if needed. This is NOT recommended when the plugin is connected to any kind of audio output!
 """;
 
 lv2:port
@@ -47,4 +45,42 @@ lv2:port
     lv2:symbol "AudioOut";
     lv2:name "Audio Output";
 ]
+,
+[
+    a lv2:InputPort ,
+    lv2:ControlPort ;
+    lv2:index 2 ;
+    lv2:symbol "Level" ;
+    lv2:name "Level";
+    lv2:default 0.5 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1.0 ;
+]
+,
+[
+    a lv2:InputPort ,
+    lv2:ControlPort ;
+    lv2:index 3 ;
+    lv2:symbol "DCBlock" ;
+    lv2:name "DC Blocker";
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1.0 ;
+    lv2:designation lv2:enabled;
+    lv2:portProperty lv2:toggled;
+]
+,
+[
+    a lv2:InputPort ,
+    lv2:ControlPort ;
+    lv2:index 4 ;
+    lv2:symbol "ENABLED" ;
+    lv2:name "ENABLED" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1.0 ;
+    lv2:designation lv2:enabled;
+    lv2:portProperty lv2:toggled;
+]
 .
+
