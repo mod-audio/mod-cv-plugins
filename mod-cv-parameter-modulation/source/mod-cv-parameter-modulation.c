@@ -4,7 +4,7 @@
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
 
-#define PLUGIN_URI "http://moddevices.com/plugins/mod-devel/mod-cv-to-parameter"
+#define PLUGIN_URI "http://moddevices.com/plugins/mod-devel/mod-cv-parameter-modulation"
 
 #ifndef DEBUG
 #define DEBUG 0

@@ -8,7 +8,7 @@
 @prefix urid: <http://lv2plug.in/ns/ext/urid#> .
 @prefix units: <http://lv2plug.in/ns/extensions/units#> .
 
-<http://moddevices.com/plugins/mod-devel/mod-cv-to-parameter>
+<http://moddevices.com/plugins/mod-devel/mod-cv-parameter-modulation>
 a lv2:Plugin, mod:ControlVoltagePlugin;
 
 doap:name "CV to Parameter";

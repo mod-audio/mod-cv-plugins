@@ -4,7 +4,7 @@
 
 include Makefile.mk
 
-NAME = mod-cv-to-parameter
+NAME = mod-cv-parameter-modulation
 
 # --------------------------------------------------------------
 # Installation path
