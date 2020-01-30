@@ -19,7 +19,7 @@ all:
 	$(MAKE) -C mod-cv-abs/source
 	$(MAKE) -C mod-cv-round/source
 	$(MAKE) -C mod-cv-gate/source
-	$(MAKE) -C mod-cv-to-parameter/source
+	$(MAKE) -C mod-cv-parameter-modulation/source
 
 
 install: all
@@ -42,7 +42,7 @@ install: all
 	cp -r mod-cv-abs/source/mod-cv-abs.lv2 						$(DEST_DIR)
 	cp -r mod-cv-round/source/mod-cv-round.lv2 					$(DEST_DIR)
 	cp -r mod-cv-gate/source/mod-cv-gate.lv2 					$(DEST_DIR)
-	cp -r mod-cv-to-parameter/source/mod-cv-to-parameter.lv2	$(DEST_DIR)
+	cp -r mod-cv-parameter-modulation/source/mod-cv-parameter-modulation.lv2	$(DEST_DIR)
 
 
 clean:
@@ -64,4 +64,4 @@ clean:
 	$(MAKE) clean -C mod-cv-abs/source
 	$(MAKE) clean -C mod-cv-round/source
 	$(MAKE) clean -C mod-cv-gate/source
-	$(MAKE) clean -C mod-cv-to-parameter/source
+	$(MAKE) clean -C mod-cv-parameter-modulation/source
