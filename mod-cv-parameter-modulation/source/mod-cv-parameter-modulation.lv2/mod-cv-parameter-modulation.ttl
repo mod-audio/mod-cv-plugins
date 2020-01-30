@@ -11,7 +11,7 @@
 <http://moddevices.com/plugins/mod-devel/mod-cv-parameter-modulation>
 a lv2:Plugin, mod:ControlVoltagePlugin;
 
-doap:name "CV to Parameter";
+doap:name "CV Parameter Modulation";
 doap:license "GPL v2+";
 doap:developer [
     foaf:name "Bram Giesen";
