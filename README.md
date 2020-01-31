@@ -1,6 +1,6 @@
 # MOD-CV-Plugins
 
-This repository contains the source code for the `mod-cv-plugins` and the `logic-operators`.
+This repository contains the source code for the `mod-cv-plugins`
 
 ##### MOD-CV-Plugins:
 * mod-cv-attenuverter
@@ -21,13 +21,8 @@ This repository contains the source code for the `mod-cv-plugins` and the `logic
 * mod-cv-round(beta)
 * mod-cv-slew(beta)
 * mod-audio-to-cv(beta)
-
-##### Logic operators:
-* cv-logic-change(beta)
-* cv-logic-equal(beta)
-* cv-logic-larger(beta)
-* cv-logic-or(beta)
-* cv-logic-smaller(beta)
+* mod-cv-change(beta)
+* mod-logic-operators(beta)
 
 ### installation
 

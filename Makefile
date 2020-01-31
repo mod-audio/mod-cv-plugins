@@ -1,65 +1,65 @@
 DEST_DIR=/usr/lib/lv2
 
 all:
-	$(MAKE) -C mod-cv-clock/source
-	$(MAKE) -C mod-audio-to-cv/source
-	$(MAKE) -C mod-cv-attenuverter/source
-	$(MAKE) -C mod-cv-clock/source
-	$(MAKE) -C mod-cv-control/source
-	$(MAKE) -C mod-cv-switch1/source
-	$(MAKE) -C mod-cv-switch2/source
-	$(MAKE) -C mod-cv-switch3/source
-	$(MAKE) -C mod-cv-switch4/source
-	$(MAKE) -C mod-midi-to-cv-mono/source
-	$(MAKE) -C mod-midi-to-cv-poly/source
-	$(MAKE) -C mod-cv-meter/source
-	$(MAKE) -C mod-cv-slew/source
-	$(MAKE) -C mod-cv-random/source
-	$(MAKE) -C mod-cv-range/source
-	$(MAKE) -C mod-cv-abs/source
-	$(MAKE) -C mod-cv-round/source
-	$(MAKE) -C mod-cv-gate/source
-	$(MAKE) -C mod-cv-parameter-modulation/source
+	$(MAKE) -C source/mod-cv-clock
+	$(MAKE) -C source/mod-audio-to-cv
+	$(MAKE) -C source/mod-cv-attenuverter
+	$(MAKE) -C source/mod-cv-clock
+	$(MAKE) -C source/mod-cv-control
+	$(MAKE) -C source/mod-cv-switch1
+	$(MAKE) -C source/mod-cv-switch2
+	$(MAKE) -C source/mod-cv-switch3
+	$(MAKE) -C source/mod-cv-switch4
+	$(MAKE) -C source/mod-midi-to-cv-mono
+	$(MAKE) -C source/mod-midi-to-cv-poly
+	$(MAKE) -C source/mod-cv-meter
+	$(MAKE) -C source/mod-cv-slew
+	$(MAKE) -C source/mod-cv-random
+	$(MAKE) -C source/mod-cv-range
+	$(MAKE) -C source/mod-cv-abs
+	$(MAKE) -C source/mod-cv-round
+	$(MAKE) -C source/mod-cv-gate
+	$(MAKE) -C source/mod-cv-parameter-modulation
 
 install: all
-	cp -r mod-cv-clock/source/mod-cv-clock.lv2 					$(DEST_DIR)
-	cp -r mod-cv-clock/source/mod-cv-clock.lv2 					$(DEST_DIR)
-	cp -r mod-audio-to-cv/source/mod-audio-to-cv.lv2 			$(DEST_DIR)
-	cp -r mod-cv-attenuverter/source/mod-cv-attenuverter.lv2 	$(DEST_DIR)
-	cp -r mod-cv-clock/source/mod-cv-clock.lv2 					$(DEST_DIR)
-	cp -r mod-cv-control/source/mod-cv-control.lv2 				$(DEST_DIR)
-	cp -r mod-cv-switch1/source/mod-cv-switch1.lv2 				$(DEST_DIR)
-	cp -r mod-cv-switch2/source/mod-cv-switch2.lv2 				$(DEST_DIR)
-	cp -r mod-cv-switch3/source/mod-cv-switch3.lv2 				$(DEST_DIR)
-	cp -r mod-cv-switch4/source/mod-cv-switch4.lv2 				$(DEST_DIR)
-	cp -r mod-midi-to-cv-mono/source/mod-midi-to-cv-mono.lv2 	$(DEST_DIR)
-	cp -r mod-midi-to-cv-poly/source/mod-midi-to-cv-poly.lv2 	$(DEST_DIR)
-	cp -r mod-cv-meter/source/mod-cv-meter.lv2 					$(DEST_DIR)
-	cp -r mod-cv-slew/source/mod-cv-slew.lv2 					$(DEST_DIR)
-	cp -r mod-cv-random/source/mod-cv-random.lv2 				$(DEST_DIR)
-	cp -r mod-cv-range/source/mod-cv-range.lv2 					$(DEST_DIR)
-	cp -r mod-cv-abs/source/mod-cv-abs.lv2 						$(DEST_DIR)
-	cp -r mod-cv-round/source/mod-cv-round.lv2 					$(DEST_DIR)
-	cp -r mod-cv-gate/source/mod-cv-gate.lv2 					$(DEST_DIR)
-	cp -r mod-cv-parameter-modulation/source/mod-cv-parameter-modulation.lv2	$(DEST_DIR)
+	cp -r source/mod-cv-clock/mod-cv-clock.lv2 					$(DEST_DIR)
+	cp -r source/mod-cv-clock/mod-cv-clock.lv2 					$(DEST_DIR)
+	cp -r source/mod-audio-to-cv/mod-audio-to-cv.lv2 			$(DEST_DIR)
+	cp -r source/mod-cv-attenuverter/mod-cv-attenuverter.lv2 	$(DEST_DIR)
+	cp -r source/mod-cv-clock/mod-cv-clock.lv2 					$(DEST_DIR)
+	cp -r source/mod-cv-control/mod-cv-control.lv2 				$(DEST_DIR)
+	cp -r source/mod-cv-switch1/mod-cv-switch1.lv2 				$(DEST_DIR)
+	cp -r source/mod-cv-switch2/mod-cv-switch2.lv2 				$(DEST_DIR)
+	cp -r source/mod-cv-switch3/mod-cv-switch3.lv2 				$(DEST_DIR)
+	cp -r source/mod-cv-switch4/mod-cv-switch4.lv2 				$(DEST_DIR)
+	cp -r source/mod-midi-to-cv-mono/mod-midi-to-cv-mono.lv2 	$(DEST_DIR)
+	cp -r source/mod-midi-to-cv-poly/mod-midi-to-cv-poly.lv2 	$(DEST_DIR)
+	cp -r source/mod-cv-meter/mod-cv-meter.lv2 					$(DEST_DIR)
+	cp -r source/mod-cv-slew/mod-cv-slew.lv2 					$(DEST_DIR)
+	cp -r source/mod-cv-random/mod-cv-random.lv2 				$(DEST_DIR)
+	cp -r source/mod-cv-range/mod-cv-range.lv2 					$(DEST_DIR)
+	cp -r source/mod-cv-abs/mod-cv-abs.lv2 						$(DEST_DIR)
+	cp -r source/mod-cv-round/mod-cv-round.lv2 					$(DEST_DIR)
+	cp -r source/mod-cv-gate/mod-cv-gate.lv2 					$(DEST_DIR)
+	cp -r source/mod-cv-parameter-modulation/mod-cv-parameter-modulation.lv2	$(DEST_DIR)
 
 clean:
-	$(MAKE) clean -C mod-cv-clock/source
-	$(MAKE) clean -C mod-audio-to-cv/source
-	$(MAKE) clean -C mod-cv-attenuverter/source
-	$(MAKE) clean -C mod-cv-clock/source
-	$(MAKE) clean -C mod-cv-control/source
-	$(MAKE) clean -C mod-cv-switch1/source
-	$(MAKE) clean -C mod-cv-switch2/source
-	$(MAKE) clean -C mod-cv-switch3/source
-	$(MAKE) clean -C mod-cv-switch4/source
-	$(MAKE) clean -C mod-midi-to-cv-mono/source
-	$(MAKE) clean -C mod-midi-to-cv-poly/source
-	$(MAKE) clean -C mod-cv-meter/source
-	$(MAKE) clean -C mod-cv-slew/source
-	$(MAKE) clean -C mod-cv-random/source
-	$(MAKE) clean -C mod-cv-range/source
-	$(MAKE) clean -C mod-cv-abs/source
-	$(MAKE) clean -C mod-cv-round/source
-	$(MAKE) clean -C mod-cv-gate/source
-	$(MAKE) clean -C mod-cv-parameter-modulation/source
+	$(MAKE) clean -C source/mod-cv-clock
+	$(MAKE) clean -C source/mod-audio-to-cv
+	$(MAKE) clean -C source/mod-cv-attenuverter
+	$(MAKE) clean -C source/mod-cv-clock
+	$(MAKE) clean -C source/mod-cv-control
+	$(MAKE) clean -C source/mod-cv-switch1
+	$(MAKE) clean -C source/mod-cv-switch2
+	$(MAKE) clean -C source/mod-cv-switch3
+	$(MAKE) clean -C source/mod-cv-switch4
+	$(MAKE) clean -C source/mod-midi-to-cv-mono
+	$(MAKE) clean -C source/mod-midi-to-cv-poly
+	$(MAKE) clean -C source/mod-cv-meter
+	$(MAKE) clean -C source/mod-cv-slew
+	$(MAKE) clean -C source/mod-cv-random
+	$(MAKE) clean -C source/mod-cv-range
+	$(MAKE) clean -C source/mod-cv-abs
+	$(MAKE) clean -C source/mod-cv-round
+	$(MAKE) clean -C source/mod-cv-gate
+	$(MAKE) clean -C source/mod-cv-parameter-modulation
