@@ -13,7 +13,7 @@
 a lv2:Plugin, mod:ControlVoltagePlugin;
         doap:name "MIDI to CV mono" ;
         rdfs:comment """
-MIDI to CV mono converts a midi message to monophonic control voltage, 1/12 volt per note. It also features a retrigger knob, which retriggers the gate when it switches back to a previous voice that is still active. This is particularly useful when combined with short envelopes. 
+MIDI to CV mono converts a midi message to monophonic control voltage, 1/12 volt per note. It also features a retrigger knob, which retriggers the gate when it switches back to a previous voice that is still active. This is particularly useful when combined with short envelopes.
 """ ;
         lv2:minorVersion 3 ;
         lv2:microVersion 1 ;
@@ -26,25 +26,31 @@ MIDI to CV mono converts a midi message to monophonic control voltage, 1/12 volt
           lv2:index 0 ;
           lv2:symbol "in" ;
           lv2:name "In" ;
-        ] , 
+        ] ,
         [
-          a lv2:OutputPort, lv2:CVPort;
-          lv2:index 1;
-          lv2:symbol "Pitch";
-          lv2:name "Pitch";
-        ] , 
+           a lv2:OutputPort, lv2:CVPort;
+           lv2:index 1;
+           lv2:symbol "Pitch";
+           lv2:name "Pitch";
+           lv2:minimum 0.0;
+           lv2:maximum 9.0;
+        ] ,
         [
            a lv2:OutputPort, lv2:CVPort;
            lv2:index 2;
            lv2:symbol "Velocity";
            lv2:name "Velocity";
-        ] , 
+           lv2:minimum 0.0;
+           lv2:maximum 10.583334;
+        ] ,
         [
            a lv2:OutputPort, lv2:CVPort;
            lv2:index 3;
            lv2:symbol "Gate";
            lv2:name "Gate";
-        ] , 
+           lv2:minimum 0.0;
+           lv2:maximum 10.0;
+        ] ,
         [
            a lv2:InputPort, lv2:ControlPort;
            lv2:index 4;
@@ -54,7 +60,7 @@ MIDI to CV mono converts a midi message to monophonic control voltage, 1/12 volt
            lv2:default 0;
            lv2:maximum 3;
            lv2:portProperty lv2:integer;
-        ] , 
+        ] ,
         [
            a lv2:InputPort, lv2:ControlPort;
            lv2:index 5;

@@ -11,22 +11,27 @@ typedef enum {
     L_INPUT     = 0,
     L_OUTPUT    = 1,
     L_LEVEL     = 2,
-    L_MODE      = 3,
-    L_SMOOTHING = 4,
-    L_ENABLE    = 5
+    L_OFFSET    = 3,
+    L_MODE      = 4,
+    L_SMOOTHING = 5,
+    L_ENABLE    = 6
 } PortIndex;
 
+typedef struct Filter {
+  double a0;
+  double b1;
+  double z1;
+}Filter;
 
 typedef struct {
     float* input;
     float* output;
     float* level;
+    float* offset;
     float* plugin_enabled;
     float* mode;
     float* smoothing;
-    double a0;
-    double b1;
-    double z1;
+    Filter   *lowpass;
 } Attenuverter;
 
 
@@ -38,10 +43,16 @@ instantiate(const LV2_Descriptor*     descriptor,
 {
     Attenuverter* self = (Attenuverter*)malloc(sizeof(Attenuverter));
 
-    self->z1 = 0.0;
+    self->lowpass = (Filter*)malloc(2*sizeof(Filter));
+
+
     double frequency = 440.0 / rate;
-    self->b1 = exp(-2.0 * M_PI * frequency);
-    self->a0 = 1.0 - self->b1;
+
+    for (unsigned channel = 0; channel < 2; channel++) {
+        self->lowpass[channel].z1 = 0.0;
+        self->lowpass[channel].b1 = exp(-2.0 * M_PI * frequency);
+        self->lowpass[channel].a0 = 1.0 - self->lowpass[channel].b1;
+    }
 
     return (LV2_Handle)self;
 }
@@ -64,6 +75,9 @@ connect_port(LV2_Handle instance,
         case L_LEVEL:
             self->level = (float*)data;
             break;
+        case L_OFFSET:
+            self->offset = (float*)data;
+            break;
         case L_MODE:
             self->mode = (float*)data;
             break;
@@ -84,9 +98,9 @@ activate(LV2_Handle instance)
 
 
 static double
-lowPassProcess(Attenuverter* self, float input)
+one_pole(Filter* lowpass, float input, int channel)
 {
-    return self->z1 = input * self->a0 + self->z1 * self->b1;
+  return lowpass[channel].z1 = input * lowpass[channel].a0 + lowpass[channel].z1 * lowpass[channel].b1;
 }
 
 
@@ -103,16 +117,20 @@ run(LV2_Handle instance, uint32_t n_samples)
         coef = *self->level;
     }
 
-    float smooth = lowPassProcess(self, coef);
+    float offset = *self->offset;
+
+    float smooth = (float)one_pole(self->lowpass, coef, 0);
+    float smooth_offset = (float)one_pole(self->lowpass, offset, 1);
 
     if (*self->smoothing == 1.0) {
         coef = smooth;
+        offset = smooth_offset;
     }
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {
         if ((int)*self->plugin_enabled == 1) {
-        self->output[i] = (self->input[i] * coef);
+        self->output[i] = (self->input[i] * coef) + offset;
         } else {
             self->output[i] = self->input[i];
         }

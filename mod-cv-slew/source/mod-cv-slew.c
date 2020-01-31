@@ -26,6 +26,7 @@ typedef struct {
 	float* rise_time;
 	float* fall_time;
     float* bypass;
+    float  sample_rate;
     float  out;
 } Convert;
 
@@ -38,6 +39,7 @@ instantiate(const LV2_Descriptor*     descriptor,
 	Convert* self = (Convert*)malloc(sizeof(Convert));
 
     self->out = 0.0;
+    self->sample_rate = rate;
 
 	return (LV2_Handle)self;
 }
@@ -76,15 +78,15 @@ activate(LV2_Handle instance)
 
 
 static float
-slider(float in, float out, float rise_time, float fall_time)
+slider(float in, float out, float rise_time, float fall_time, float sample_rate)
 {
     if (in > out)
     {
-        out += (in - out) / rise_time;
+        out += (in - out) / ((rise_time / 1000) * sample_rate);
     }
     else if (in < out)
     {
-        out += (in - out) / fall_time;
+        out += (in - out) / ((fall_time / 1000) * sample_rate);
     }
 
     return out;
@@ -98,7 +100,7 @@ run(LV2_Handle instance, uint32_t n_samples)
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {
-        self->out = slider(self->input[i], self->out, *self->rise_time, *self->fall_time);
+        self->out = slider(self->input[i], self->out, *self->rise_time, *self->fall_time, self->sample_rate);
 
         self->output[i] = self->out;
     }

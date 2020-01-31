@@ -1,10 +1,10 @@
 #!/usr/bin/make -f
-# Makefile for mod-cv-randoms.lv2 #
+# Makefile for mod-cv-gate.lv2 #
 # --------------------------------- #
 
 include Makefile.mk
 
-NAME = mod-cv-random
+NAME = mod-cv-clock-divider
 
 # --------------------------------------------------------------
 # Installation path

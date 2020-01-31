@@ -17,8 +17,8 @@
 typedef enum {
     GATE_IN  = 0,
     CV_OUT   = 1,
-    P_MAX	 = 2,
-    P_MIN    = 3,
+    P_MIN    = 2,
+    P_MAX	 = 3,
     P_ENABLE = 4
 } PortIndex;
 
@@ -59,15 +59,15 @@ connect_port(LV2_Handle instance,
 	case CV_OUT:
 		self->output = (float*)data;
 		break;
-	case P_MAX:
-		self->max = (float*)data;
-		break;
 	case P_MIN:
 		self->min = (float*)data;
 		break;
-  case P_ENABLE:
-    self->plugin_enabled = (float*)data;
-    break;
+	case P_MAX:
+		self->max = (float*)data;
+		break;
+    case P_ENABLE:
+        self->plugin_enabled = (float*)data;
+        break;
 	}
 }
 
@@ -97,11 +97,11 @@ run(LV2_Handle instance, uint32_t n_samples)
     for ( uint32_t i = 0; i < n_samples; i++)
     {
       if(*self->plugin_enabled == 1) {
-          if (*self->gate >= 1 && !self->triggered) {
+          if (self->gate[i] >= 1 && !self->triggered) {
               self->rand_value = random_number(*self->min, *self->max);
               self->triggered = true;
           }
-          else if (*self->gate == 0.0 && self->triggered) {
+          else if (self->gate[i] == 0.0 && self->triggered) {
               self->triggered = false;
           }
           self->output[i] = self->rand_value;
