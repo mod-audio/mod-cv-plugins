@@ -34,8 +34,10 @@ CV to audio converts an control voltage signal to an audio signal with DC Blocke
 
 lv2:port
 [
-    a lv2:InputPort, lv2:CVPort;
+    a lv2:InputPort, lv2:CVPort, mod:CVPort;
     lv2:index 0;
+    lv2:minimum -5.0 ;
+    lv2:maximum 5.0 ;
     lv2:symbol "CVIn";
     lv2:name "CV Input";
 ],

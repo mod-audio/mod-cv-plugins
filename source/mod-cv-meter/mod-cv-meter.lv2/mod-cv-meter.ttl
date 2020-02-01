@@ -38,14 +38,18 @@ Plugin by MOD Devices
 
 lv2:port
 [
-    a lv2:InputPort, lv2:CVPort;
+    a lv2:InputPort, lv2:CVPort, mod:CVPort;
     lv2:index 0;
+	lv2:minimum -5.0 ;
+	lv2:maximum 5.0  ;
     lv2:symbol "CvInput";
     lv2:name "CV input";
 ],
 [
-    a lv2:OutputPort, lv2:CVPort;
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
     lv2:index 1;
+	lv2:minimum -5.0 ;
+	lv2:maximum 5.0  ;
     lv2:symbol "CvOutput";
     lv2:name "CV Output";
 ],

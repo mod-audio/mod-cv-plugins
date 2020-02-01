@@ -80,11 +80,11 @@ activate(LV2_Handle instance)
 static float
 slider(float in, float out, float rise_time, float fall_time, float sample_rate)
 {
-    if (in > out)
+    if (in > out && rise_time != 0.0)
     {
         out += (in - out) / ((rise_time / 1000) * sample_rate);
     }
-    else if (in < out)
+    else if (in < out && fall_time != 0.0)
     {
         out += (in - out) / ((fall_time / 1000) * sample_rate);
     }

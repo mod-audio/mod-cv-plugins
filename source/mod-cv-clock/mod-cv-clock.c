@@ -285,12 +285,12 @@ run(LV2_Handle instance, uint32_t n_samples)
         self->h_wavelength = (self->period/2.0f);
 
         if(self->pos >= self->period && i < n_samples) {
-            self->squareOutput[i] = 2.0f;
-            self->pulseOutput[i] = 2.0f;
+            self->squareOutput[i] = 10.0f;
+            self->pulseOutput[i] = 10.0f;
             self->pos = 0;
         } else {
             if(self->pos < self->h_wavelength) {
-                self->squareOutput[i] = 2.0f;
+                self->squareOutput[i] = 10.0f;
             } else {
                 self->squareOutput[i] = 0.0f;
             }

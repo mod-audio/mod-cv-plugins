@@ -36,18 +36,20 @@ Random CV generator. It uses a gate input to trigger the next random value
 
 lv2:port
 [
-    a lv2:InputPort, lv2:CVPort;
+    a lv2:InputPort, lv2:CVPort, mod:CVPort;
     lv2:index 0;
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
     lv2:symbol "GateIn";
     lv2:name "Gate In";
 ],
 [
-    a lv2:OutputPort, lv2:CVPort;
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
     lv2:index 1;
+    lv2:minimum -5.0 ;
+    lv2:maximum 5.0 ;
     lv2:symbol "CVout";
     lv2:name "CV Output";
-    lv2:minimum -10.0 ;
-    lv2:maximum 10.0 ;
 ]
 ,
 [

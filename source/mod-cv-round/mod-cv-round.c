@@ -7,16 +7,21 @@
 
 
 typedef enum {
-    L_INPUT   = 0,
-    L_OUTPUT  = 1,
-    L_MODE    = 2,
-    L_ENABLE  = 3
+    L_INPUT    = 0,
+    L_ROUND    = 1,
+    L_CEIL     = 2,
+    L_FLOOR    = 3,
+    L_FRACTION = 4,
+    L_ENABLE   = 5
 } PortIndex;
 
 
 typedef struct {
     float* input;
-    float* output;
+    float* round;
+    float* ceil;
+    float* floor;
+    float* fraction;
     float* mode;
     float* plugin_enabled;
 } CvRound;
@@ -45,11 +50,17 @@ connect_port(LV2_Handle instance,
         case L_INPUT:
             self->input = (float*)data;
             break;
-        case L_OUTPUT:
-            self->output = (float*)data;
+        case L_ROUND:
+            self->round = (float*)data;
             break;
-        case L_MODE:
-            self->mode = (float*)data;
+        case L_CEIL:
+            self->ceil = (float*)data;
+            break;
+        case L_FLOOR:
+            self->floor = (float*)data;
+            break;
+        case L_FRACTION:
+            self->fraction = (float*)data;
             break;
         case L_ENABLE:
             self->plugin_enabled = (float*)data;
@@ -72,16 +83,16 @@ run(LV2_Handle instance, uint32_t n_samples)
     for ( uint32_t i = 0; i < n_samples; i++)
     {
         if ((int)*self->plugin_enabled == 1) {
-            if (*self->mode == 0) {
-                int input_int = (int)self->input[i];
-                self->output[i] = (float)input_int;
-            } else {
-                int input_int = (int)self->input[i];
-                float input_d = self->input[i] - (float)input_int;
-                self->output[i] = input_d;
-            }
+            float input_sample = self->input[i];
+            self->round[i] = floor(input_sample + 0.5);
+            self->ceil[i] = ceil(input_sample);
+            self->floor[i] = floor(input_sample);
+            self->fraction[i] = self->input[i] - (int)input_sample;
         } else {
-            self->output[i] = self->input[i];
+            self->round[i] = 0.0;
+            self->ceil[i] = 0.0;
+            self->floor[i] = 0.0;
+            self->fraction[i] = 0.0;
         }
     }
 }
