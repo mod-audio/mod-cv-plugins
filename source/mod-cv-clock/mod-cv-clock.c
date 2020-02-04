@@ -241,6 +241,8 @@ run(LV2_Handle instance, uint32_t n_samples)
 {
     Clock* self = (Clock*)instance;
 
+    float high_value = 10.0;
+
     const ClockURIs* uris = &self->uris;
     const LV2_Atom_Sequence* in     = self->control;
 
@@ -285,12 +287,12 @@ run(LV2_Handle instance, uint32_t n_samples)
         self->h_wavelength = (self->period/2.0f);
 
         if(self->pos >= self->period && i < n_samples) {
-            self->squareOutput[i] = 2.0f;
-            self->pulseOutput[i] = 2.0f;
+            self->squareOutput[i] = high_value;
+            self->pulseOutput[i] = high_value;
             self->pos = 0;
         } else {
             if(self->pos < self->h_wavelength) {
-                self->squareOutput[i] = 2.0f;
+                self->squareOutput[i] = high_value;
             } else {
                 self->squareOutput[i] = 0.0f;
             }
