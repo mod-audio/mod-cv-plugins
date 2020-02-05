@@ -36,20 +36,26 @@ CV Gate Plugin - if the incoming signal on input on is equal or higher then 1 it
 
 lv2:port
 [
-    a lv2:InputPort, lv2:CVPort;
+    a lv2:InputPort, lv2:CVPort, mod:CVPort;
     lv2:index 0;
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
     lv2:symbol "Gate";
     lv2:name "Gate";
 ],
 [
-    a lv2:InputPort, lv2:CVPort;
+    a lv2:InputPort, lv2:CVPort, mod:CVPort;
     lv2:index 1;
+    lv2:minimum -5.0 ;
+    lv2:maximum 5.0 ;
     lv2:symbol "CVin";
     lv2:name "CV Input";
 ],
 [
-    a lv2:OutputPort, lv2:CVPort;
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
     lv2:index 2;
+    lv2:minimum -5.0 ;
+    lv2:maximum 5.0 ;
     lv2:symbol "CVout";
     lv2:name "CV Output";
 ],

@@ -42,7 +42,7 @@ lv2:port
     lv2:name "Audio Input";
 ],
 [
-    a lv2:OutputPort, lv2:CVPort;
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
     lv2:index 1;
     lv2:symbol "CVout";
     lv2:name "CV Output";

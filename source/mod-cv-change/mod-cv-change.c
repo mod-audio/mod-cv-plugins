@@ -104,7 +104,7 @@ run(LV2_Handle instance, uint32_t n_samples)
 
             if (self->hold) {
 
-                self->output[i] = 5.0;
+                self->output[i] = 10.0;
 
                 float divider = ((int)*self->mode == 0) ? 1000.0 : 1.0;
                 float decrementor = ( 1 / self->samplerate * (*self->s_hold / divider));
