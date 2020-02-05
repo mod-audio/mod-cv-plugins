@@ -1,5 +1,4 @@
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
@@ -83,7 +82,6 @@ run(LV2_Handle instance, uint32_t n_samples)
         }
 
         self->output[i] = coef;
-        printf("output = %f\n", self->output[i]);
     }
 }
 
