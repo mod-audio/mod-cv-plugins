@@ -78,7 +78,7 @@ run(LV2_Handle instance, uint32_t n_samples)
     {
         float smooth = lowPassProcess(self, coef);
 
-        if (*self->smoothing == 1) {
+        if ((int)*self->smoothing == 1) {
             coef = smooth;
         }
 

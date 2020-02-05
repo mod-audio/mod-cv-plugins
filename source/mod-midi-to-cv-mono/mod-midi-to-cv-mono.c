@@ -190,7 +190,7 @@ static void run(LV2_Handle instance, uint32_t sample_count)
   float  cC = *self->cent;
   bool retrigger = true;
 
-  if (*self->panicParam == 1) {
+  if ((int)*self->panicParam == 1) {
       panic(self);
   }
   // Read incoming events

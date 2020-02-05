@@ -96,7 +96,7 @@ run(LV2_Handle instance, uint32_t n_samples)
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {
-      if(*self->plugin_enabled == 1) {
+      if((int)*self->plugin_enabled == 1) {
           if (self->gate[i] >= 1 && !self->triggered) {
               self->rand_value = random_number(*self->min, *self->max);
               self->triggered = true;

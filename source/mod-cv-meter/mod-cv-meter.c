@@ -110,8 +110,8 @@ run(LV2_Handle instance, uint32_t n_samples)
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {
-        if (*self->plugin_enabled == 1) {
-            if (self->input[i] != 0 && !self->calibrated) {
+        if ((int)*self->plugin_enabled == 1) {
+            if (self->input[i] != 0.0 && !self->calibrated) {
                 calibrate(self, i);
                 self->calibrated = true;
             }

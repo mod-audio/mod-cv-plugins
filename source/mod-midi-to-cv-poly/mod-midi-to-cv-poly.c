@@ -15,20 +15,20 @@
 #define PLUGIN_URI "http://moddevices.com/plugins/mod-devel/midi-to-cv-poly"
 #define MAX_NOTES 3
 #define NUM_PORTS 4
-typedef enum 
+typedef enum
 {
-    IN, 
-    CV1, 
-    CV2, 
-    CV3, 
-    CV4, 
-    VELOCITY, 
-    TRIGGER1, 
-    TRIGGER2, 
-    TRIGGER3, 
-    TRIGGER4, 
-    OCTAVE, 
-    PITCH, 
+    IN,
+    CV1,
+    CV2,
+    CV3,
+    CV4,
+    VELOCITY,
+    TRIGGER1,
+    TRIGGER2,
+    TRIGGER3,
+    TRIGGER4,
+    OCTAVE,
+    PITCH,
     SEMITONE,
     PANIC
 }PortIndex;
@@ -196,7 +196,7 @@ void run(LV2_Handle instance, uint32_t n_samples)
     float cB = *self->pitchC;
     float cC = *self->semitoneC;
 
-    if (*self->panicParam == 1) {
+    if ((int)*self->panicParam == 1) {
         panic(self);
     }
     // Read incoming events
@@ -211,7 +211,7 @@ void run(LV2_Handle instance, uint32_t n_samples)
             bool free_port_found = false;
             int search_port = 0;
             bool port_freed = false;
-            
+
             switch (status)
             {
                 case LV2_MIDI_MSG_NOTE_ON:
@@ -232,7 +232,7 @@ void run(LV2_Handle instance, uint32_t n_samples)
                         self->steal_voice = (self->steal_voice + 1) % NUM_PORTS;
                     }
                     break;
-                case LV2_MIDI_MSG_NOTE_OFF:  
+                case LV2_MIDI_MSG_NOTE_OFF:
                     while (!port_freed && search_port < NUM_PORTS) {
                         if (self->activeNotes[search_port] == msg[1])
                         {

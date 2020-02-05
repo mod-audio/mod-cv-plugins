@@ -69,7 +69,7 @@ run(LV2_Handle instance, uint32_t n_samples)
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {
-      if(*self->plugin_enabled == 1) {
+      if((int)*self->plugin_enabled == 1) {
         self->output[i] = self->input[i] + 5.0;
       } else {
         self->output[i] = 0.0f;

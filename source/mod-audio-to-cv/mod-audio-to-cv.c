@@ -78,7 +78,7 @@ run(LV2_Handle instance, uint32_t n_samples)
     float oC = *self->offset;
     for ( uint32_t i = 0; i < n_samples; i++)
     {
-      if(*self->plugin_enabled == 1) {
+      if(*self->plugin_enabled == 1.0) {
         self->output[i] = ((self->input[i] * lC) + oC);
       } else {
         self->output[i] = 0.0f;

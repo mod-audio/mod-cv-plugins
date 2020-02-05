@@ -110,7 +110,7 @@ run(LV2_Handle instance, uint32_t n_samples)
                 float decrementor = ( 1 / self->samplerate * (*self->s_hold / divider));
                 self->hold_time -= decrementor;
 
-                if (self->hold_time <= 0) {
+                if (self->hold_time <= 0.0) {
                     self->hold = false;
                 }
             } else {

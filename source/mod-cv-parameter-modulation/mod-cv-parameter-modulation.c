@@ -79,7 +79,7 @@ run(LV2_Handle instance, uint32_t n_samples)
     float out;
     for ( uint32_t i = 0; i < n_samples; i++)
     {
-      if(*self->plugin_enabled == 1) {
+      if((int)*self->plugin_enabled == 1) {
         out = ((self->input[i] * (mod_param * 0.01)) + (offset_param * 0.1));
         out = (out > 10.0) ? 10.0 : out;
         out = (out < 0.0) ? 0.0 : out;

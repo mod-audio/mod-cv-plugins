@@ -80,7 +80,7 @@ run(LV2_Handle instance, uint32_t n_samples)
 
   for ( uint32_t i = 0; i < n_samples; i++)
   {
-      if (*self->mode_zero == 1) {
+      if ((int)*self->mode_zero == 1) {
           self->output_value_1 = 0.0;
           self->output_value_2 = 0.0;
       }
