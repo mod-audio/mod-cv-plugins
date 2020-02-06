@@ -146,9 +146,14 @@ void LogicOperators::run(const float** inputs, float** outputs, uint32_t frames)
         float b = input2[f];
 
         logic1 = (a >= paramSwitchPoint + (paramHysteresis / 2)) ? 5.0 : logic1;
-        logic1 = (a <= paramSwitchPoint - (paramHysteresis / 2)) ? 0.0 : logic1;
         logic2 = (b >= paramSwitchPoint + (paramHysteresis / 2)) ? 5.0 : logic2;
-        logic2 = (b <= paramSwitchPoint - (paramHysteresis / 2)) ? 0.0 : logic2;
+        if (paramHysteresis == 0.0) {
+            logic1 = (a < paramSwitchPoint - (paramHysteresis / 2)) ? 0.0 : logic1;
+            logic2 = (b < paramSwitchPoint - (paramHysteresis / 2)) ? 0.0 : logic2;
+        } else {
+            logic1 = (a <= paramSwitchPoint - (paramHysteresis / 2)) ? 0.0 : logic1;
+            logic2 = (b <= paramSwitchPoint - (paramHysteresis / 2)) ? 0.0 : logic2;
+        }
 
         logicOut = logicOperators[(int)selectOperator]->process(logic1, logic2);
 
