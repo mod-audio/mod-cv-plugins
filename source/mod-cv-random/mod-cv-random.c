@@ -15,20 +15,23 @@
 ((void)((DEBUG) ? fprintf(stderr, __VA_ARGS__) : 0))
 
 typedef enum {
-    GATE_IN  = 0,
-    CV_OUT   = 1,
-    P_MIN    = 2,
-    P_MAX	 = 3,
-    P_ENABLE = 4
+    GATE_IN   = 0,
+    CV_OUT    = 1,
+    P_MIN     = 2,
+    P_MAX	  = 3,
+    P_TRIGGER = 4,
+    P_ENABLE  = 5
 } PortIndex;
 
 typedef struct {
-    bool    triggered;
+    bool    cv_triggered;
+    bool    p_triggered;
     float   rand_value;
-    float*  gate;
+    float*  cv_trigger;
     float*  output;
     float*	max;
     float*	min;
+    float*	p_trigger;
     float*  plugin_enabled;
 } Convert;
 
@@ -41,7 +44,8 @@ instantiate(const LV2_Descriptor*     descriptor,
 	Convert* self = (Convert*)malloc(sizeof(Convert));
 
 	return (LV2_Handle)self;
-    self->triggered = false;
+    self->cv_triggered = false;
+    self->p_triggered = false;
     self->rand_value = 0.0f;
 }
 
@@ -54,7 +58,7 @@ connect_port(LV2_Handle instance,
 
 	switch ((PortIndex)port) {
 	case GATE_IN:
-		self->gate = (float*)data;
+		self->cv_trigger = (float*)data;
 		break;
 	case CV_OUT:
 		self->output = (float*)data;
@@ -64,6 +68,9 @@ connect_port(LV2_Handle instance,
 		break;
 	case P_MAX:
 		self->max = (float*)data;
+		break;
+	case P_TRIGGER:
+		self->p_trigger = (float*)data;
 		break;
     case P_ENABLE:
         self->plugin_enabled = (float*)data;
@@ -96,13 +103,20 @@ run(LV2_Handle instance, uint32_t n_samples)
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {
-      if((int)*self->plugin_enabled == 1) {
-          if (self->gate[i] >= 1 && !self->triggered) {
+      if((int)*self->plugin_enabled == 1.0) {
+          if (self->cv_trigger[i] >= 1.0 && !self->cv_triggered) {
               self->rand_value = random_number(*self->min, *self->max);
-              self->triggered = true;
+              self->cv_triggered = true;
           }
-          else if (self->gate[i] == 0.0 && self->triggered) {
-              self->triggered = false;
+          else if (self->cv_trigger[i] == 0.0 && self->cv_triggered) {
+              self->cv_triggered = false;
+          }
+          if (*self->p_trigger >= 1.0 && !self->p_triggered) {
+              self->rand_value = random_number(*self->min, *self->max);
+              self->p_triggered = true;
+          }
+          else if (*self->p_trigger == 0.0 && self->p_triggered) {
+              self->p_triggered = false;
           }
           self->output[i] = self->rand_value;
       } else {
