@@ -49,7 +49,7 @@ install: all
 	cp -r source/mod-cv-bi-to-uni/mod-cv-bi-to-uni.lv2				$(DEST_DIR)
 	cp -r source/mod-cv-change/mod-cv-change.lv2					$(DEST_DIR)
 	cp -r source/mod-cv-clock-divider/mod-cv-clock-divider.lv2			$(DEST_DIR)
-	cp -r source/mod-logic-operators/mod-logic-operators.lv2			$(DEST_DIR)
+	cp -r source/mod-logic-operators/bin/logic-operators.lv2			$(DEST_DIR)
 clean:
 	$(MAKE) clean -C source/mod-cv-clock
 	$(MAKE) clean -C source/mod-audio-to-cv
