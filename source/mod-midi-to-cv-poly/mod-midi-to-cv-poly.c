@@ -41,7 +41,7 @@ typedef struct
     bool activePorts[NUM_PORTS];
     int steal_voice;
 
-    LV2_URID urid_midiEvent;    
+    LV2_URID urid_midiEvent;
     //ports
     const LV2_Atom_Sequence* port_events_in;
     float *cv1;
@@ -211,6 +211,10 @@ void run(LV2_Handle instance, uint32_t n_samples)
             bool free_port_found = false;
             int search_port = 0;
             bool port_freed = false;
+
+            if (msg[1] == 0x7b) {
+                panic(self);
+            }
 
             switch (status)
             {
