@@ -206,6 +206,10 @@ static void run(LV2_Handle instance, uint32_t sample_count)
       int notesIndex = NUM_NOTESBUFFER - 1;
       bool noteFound = false;
 
+      if (msg[1] == 0x7b) {
+          panic(self);
+      }
+
       switch (status)
       {
         case LV2_MIDI_MSG_NOTE_ON:
