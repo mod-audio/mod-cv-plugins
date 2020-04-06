@@ -64,8 +64,9 @@ lv2:port
     lv2:symbol "Offset" ;
     lv2:name "Offset";
     lv2:default 0.0 ;
-    lv2:minimum -5.0 ;
-    lv2:maximum 5.0 ;
+    lv2:minimum -10.0 ;
+    lv2:maximum 10.0 ;
+    mod:volts ;
 ],
 [
     a lv2:InputPort ,lv2:ControlPort ;

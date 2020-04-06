@@ -42,6 +42,7 @@ lv2:port
     lv2:maximum 10.0 ;
     lv2:symbol "Gate";
     lv2:name "Gate";
+    mod:volts ;
 ],
 [
     a lv2:InputPort, lv2:CVPort, mod:CVPort;
@@ -68,6 +69,7 @@ lv2:port
     lv2:default 1.0 ;
     lv2:minimum -10.0 ;
     lv2:maximum 10.0 ;
+    mod:volts ;
 ],
 [
     a lv2:InputPort ,
@@ -78,6 +80,7 @@ lv2:port
     lv2:default 0.9 ;
     lv2:minimum -10.0 ;
     lv2:maximum 10.0 ;
+    mod:volts ;
 ],
 [
     a lv2:InputPort ,

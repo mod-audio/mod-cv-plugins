@@ -36,6 +36,8 @@ LogicOperators::LogicOperators()
 
 LogicOperators::~LogicOperators()
 {
+    delete[] logicOperators;
+    logicOperators = nullptr;
 }
 
 // -----------------------------------------------------------------------

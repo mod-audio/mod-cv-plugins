@@ -23,8 +23,8 @@ plugins:
 
 ifneq ($(CROSS_COMPILING),true)
 gen: plugins dpf/utils/lv2_ttl_generator
-	@$(CURDIR)/dpf/utils/generate-ttl.sh
-	cp plugins/logic-operators/lv2-data/* bin/logic-operators.lv2/
+	#@$(CURDIR)/dpf/utils/generate-ttl.sh
+	cp -r plugins/logic-operators/lv2-data/* bin/logic-operators.lv2/
 ifeq ($(MACOS),true)
 	@$(CURDIR)/dpf/utils/generate-vst-bundles.sh
 endif

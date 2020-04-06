@@ -31,7 +31,7 @@ doap:maintainer [
     lv2:microVersion 0;
 
 rdfs:comment """
-Audio to CV converts an audio signal to a control voltage signal. 
+Audio to CV converts an audio signal to a control voltage signal.
 """;
 
 lv2:port
@@ -68,6 +68,7 @@ lv2:port
     lv2:default 0.0 ;
     lv2:minimum -10.0 ;
     lv2:maximum 10.0 ;
+    mod:volts ;
 ]
 ,
 [
