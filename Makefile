@@ -2,6 +2,7 @@ DEST_DIR=/usr/lib/lv2
 
 all:
 	$(MAKE) -C source/mod-audio-to-cv
+	$(MAKE) -C source/mod-cv-to-audio
 	$(MAKE) -C source/mod-cv-abs
 	$(MAKE) -C source/mod-cv-attenuverter
 	$(MAKE) -C source/mod-cv-clock
@@ -23,6 +24,7 @@ all:
 
 install: all
 	cp -r source/mod-audio-to-cv/mod-audio-to-cv.lv2 			$(DEST_DIR)
+	cp -r source/mod-audio-to-cv/mod-cv-to-audio.lv2 			$(DEST_DIR)
 	cp -r source/mod-cv-abs/mod-cv-abs.lv2 						$(DEST_DIR)
 	cp -r source/mod-cv-attenuverter/mod-cv-attenuverter.lv2 	$(DEST_DIR)
 	cp -r source/mod-cv-clock/mod-cv-clock.lv2 					$(DEST_DIR)
@@ -44,6 +46,7 @@ install: all
 
 clean:
 	$(MAKE) clean -C source/mod-audio-to-cv
+	$(MAKE) clean -C source/mod-cv-to-audio
 	$(MAKE) clean -C source/mod-cv-abs
 	$(MAKE) clean -C source/mod-cv-attenuverter
 	$(MAKE) clean -C source/mod-cv-clock
