@@ -8,7 +8,6 @@ all:
 	$(MAKE) -C source/mod-cv-clock-divider
 	$(MAKE) -C source/mod-cv-control
 	$(MAKE) -C source/mod-cv-gate
-	$(MAKE) -C source/mod-logic-operators
 	$(MAKE) -C source/mod-cv-meter
 	$(MAKE) -C source/mod-cv-parameter-modulation
 	$(MAKE) -C source/mod-cv-random
@@ -52,7 +51,6 @@ clean:
 	$(MAKE) clean -C source/mod-cv-control
 	$(MAKE) clean -C source/mod-cv-gate
 	$(MAKE) clean -C source/mod-cv-meter
-	$(MAKE) clean -C source/mod-logic-operators
 	$(MAKE) clean -C source/mod-cv-parameter-modulation
 	$(MAKE) clean -C source/mod-cv-random
 	$(MAKE) clean -C source/mod-cv-range
