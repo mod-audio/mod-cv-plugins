@@ -8,7 +8,6 @@ all:
 	$(MAKE) -C source/mod-cv-clock
 	$(MAKE) -C source/mod-cv-control
 	$(MAKE) -C source/mod-cv-gate
-	$(MAKE) -C source/mod-logic-operators
 	$(MAKE) -C source/mod-cv-meter
 	$(MAKE) -C source/mod-cv-parameter-modulation
 	$(MAKE) -C source/mod-cv-random
