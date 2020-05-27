@@ -17,7 +17,7 @@ typedef enum {
 	CV_OUT   = 1,
 	P_RISE	 = 2,
 	P_FALL   = 3,
-    BYPASS   = 4
+    ENABLED  = 4
 } PortIndex;
 
 typedef struct {
@@ -25,7 +25,7 @@ typedef struct {
 	float* output;
 	float* rise_time;
 	float* fall_time;
-    float* bypass;
+    float* plugin_enabled;
     float  sample_rate;
     float  out;
 } Convert;
@@ -64,8 +64,8 @@ connect_port(LV2_Handle instance,
         case P_FALL:
             self->fall_time = (float*)data;
             break;
-        case BYPASS:
-            self->bypass = (float*)data;
+        case ENABLED:
+            self->plugin_enabled = (float*)data;
             break;
     }
 }
@@ -100,9 +100,13 @@ run(LV2_Handle instance, uint32_t n_samples)
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {
-        self->out = slider(self->input[i], self->out, *self->rise_time, *self->fall_time, self->sample_rate);
+        if (*self->plugin_enabled == 1.0) {
+            self->out = slider(self->input[i], self->out, *self->rise_time, *self->fall_time, self->sample_rate);
+            self->output[i] = self->out;
+        } else {
+            self->output[i] = self->input[i];
 
-        self->output[i] = self->out;
+        }
     }
 }
 
