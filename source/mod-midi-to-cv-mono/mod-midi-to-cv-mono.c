@@ -206,7 +206,7 @@ static void run(LV2_Handle instance, uint32_t sample_count)
       int notesIndex = NUM_NOTESBUFFER - 1;
       bool noteFound = false;
 
-      if (msg[1] == 0x7b) {
+      if (msg[1] == 0x7b && ev->body.size == 3) {
           panic(self);
       }
 
