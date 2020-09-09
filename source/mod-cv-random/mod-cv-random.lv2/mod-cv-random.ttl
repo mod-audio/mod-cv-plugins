@@ -13,7 +13,7 @@
 <http://moddevices.com/plugins/mod-devel/mod-cv-random>
 a lv2:Plugin, mod:ControlVoltagePlugin;
 
-doap:name "Random CV Generator";
+doap:name "Random Generator";
 doap:license "GPL v2+";
 doap:developer [
     foaf:name "Bram Giesen";
