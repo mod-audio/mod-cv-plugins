@@ -16,7 +16,8 @@
 typedef enum {
     EVENTS_IN = 0,
     OUTPUT    = 1,
-    ENABLE    = 2
+	STATUS    = 2,
+    ENABLE    = 3
 } PortIndex;
 
 
@@ -43,6 +44,7 @@ typedef struct {
 
     float* input;
     float* output;
+    float* status;
     float* plugin_enabled;
 
     float speed;
@@ -133,6 +135,9 @@ connect_port(LV2_Handle instance,
         case OUTPUT:
             self->output = (float*)data;
             break;
+        case STATUS:
+            self->status = (float*)data;
+            break;
         case ENABLE:
             self->plugin_enabled = (float*)data;
             break;
@@ -168,8 +173,10 @@ run(LV2_Handle instance, uint32_t n_samples)
     {
         if ((int)*self->plugin_enabled == 1) {
             self->output[i] = self->speed * 10.0;
+			*self->status = 1.0;
         } else {
             self->output[i] = 0.0;
+			*self->status = 0.0;
         }
     }
 }
