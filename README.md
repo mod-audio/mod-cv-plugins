@@ -14,15 +14,15 @@ This repository contains the source code for the `mod-cv-plugins`
 * mod-cv-to-audio
 * mod-midi-to-cv-mono
 * mod-midi-to-cv-poly
-* mod-cv-abs(beta)
-* mod-cv-gate(beta)
-* mod-cv-random(beta)
-* mod-cv-range(beta)
-* mod-cv-round(beta)
-* mod-cv-slew(beta)
+* mod-cv-abs
+* mod-cv-gate
+* mod-cv-random
+* mod-cv-range
+* mod-cv-round
+* mod-cv-slew
+* mod-logic-operators
 * mod-audio-to-cv(beta)
 * mod-cv-change(beta)
-* mod-logic-operators(beta)
 
 ### installation
 
