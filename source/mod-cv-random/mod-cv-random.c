@@ -41,12 +41,13 @@ instantiate(const LV2_Descriptor*     descriptor,
             const char*               bundle_path,
             const LV2_Feature* const* features)
 {
-	Convert* self = (Convert*)malloc(sizeof(Convert));
+    Convert* self = (Convert*)malloc(sizeof(Convert));
 
-	return (LV2_Handle)self;
     self->cv_triggered = false;
     self->p_triggered = false;
     self->rand_value = 0.0f;
+
+    return (LV2_Handle)self;
 }
 
 static void
@@ -54,28 +55,28 @@ connect_port(LV2_Handle instance,
              uint32_t   port,
              void*      data)
 {
-	Convert* self = (Convert*)instance;
+    Convert* self = (Convert*)instance;
 
-	switch ((PortIndex)port) {
-	case GATE_IN:
-		self->cv_trigger = (float*)data;
-		break;
-	case CV_OUT:
-		self->output = (float*)data;
-		break;
-	case P_MIN:
-		self->min = (float*)data;
-		break;
-	case P_MAX:
-		self->max = (float*)data;
-		break;
-	case P_TRIGGER:
-		self->p_trigger = (float*)data;
-		break;
-    case P_ENABLE:
-        self->plugin_enabled = (float*)data;
-        break;
-	}
+    switch ((PortIndex)port) {
+        case GATE_IN:
+            self->cv_trigger = (float*)data;
+            break;
+        case CV_OUT:
+            self->output = (float*)data;
+            break;
+        case P_MIN:
+            self->min = (float*)data;
+            break;
+        case P_MAX:
+            self->max = (float*)data;
+            break;
+        case P_TRIGGER:
+            self->p_trigger = (float*)data;
+            break;
+        case P_ENABLE:
+            self->plugin_enabled = (float*)data;
+            break;
+    }
 }
 
 
@@ -103,25 +104,25 @@ run(LV2_Handle instance, uint32_t n_samples)
 
     for ( uint32_t i = 0; i < n_samples; i++)
     {
-      if((int)*self->plugin_enabled == 1.0) {
-          if (self->cv_trigger[i] >= 1.0 && !self->cv_triggered) {
-              self->rand_value = random_number(*self->min, *self->max);
-              self->cv_triggered = true;
-          }
-          else if (self->cv_trigger[i] == 0.0 && self->cv_triggered) {
-              self->cv_triggered = false;
-          }
-          if (*self->p_trigger >= 1.0 && !self->p_triggered) {
-              self->rand_value = random_number(*self->min, *self->max);
-              self->p_triggered = true;
-          }
-          else if (*self->p_trigger == 0.0 && self->p_triggered) {
-              self->p_triggered = false;
-          }
-          self->output[i] = self->rand_value;
-      } else {
-          self->output[i] = 0.0f;
-      }
+        if((int)*self->plugin_enabled == 1.0) {
+            if (self->cv_trigger[i] >= 1.0 && !self->cv_triggered) {
+                self->rand_value = random_number(*self->min, *self->max);
+                self->cv_triggered = true;
+            }
+            else if (self->cv_trigger[i] < 1.0 && self->cv_triggered) {
+                self->cv_triggered = false;
+            }
+            if (*self->p_trigger >= 1.0 && !self->p_triggered) {
+                self->rand_value = random_number(*self->min, *self->max);
+                self->p_triggered = true;
+            }
+            else if (*self->p_trigger == 0.0 && self->p_triggered) {
+                self->p_triggered = false;
+            }
+            self->output[i] = self->rand_value;
+        } else {
+            self->output[i] = 0.0f;
+        }
     }
 }
 

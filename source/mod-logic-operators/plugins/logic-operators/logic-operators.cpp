@@ -16,9 +16,9 @@ LogicOperators::LogicOperators()
 
     logicOperators = new Operator*[NUM_OPERATORS];
 
-    logicOperators[0] = new AND_Operator();
+    logicOperators[0] = new INV_Operator();
     logicOperators[1] = new NAND_Operator();
-    logicOperators[2] = new INV_Operator();
+    logicOperators[2] = new AND_Operator();
     logicOperators[3] = new OR_Operator();
     logicOperators[4] = new NOR_Operator();
     logicOperators[5] = new XOR_Operator();

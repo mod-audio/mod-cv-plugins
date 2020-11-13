@@ -13,18 +13,18 @@
 ((void)((DEBUG) ? fprintf(stderr, __VA_ARGS__) : 0))
 
 typedef enum {
-	AUDIO_IN = 0,
-	CV_OUT   = 1,
-	P_RISE	 = 2,
-	P_FALL   = 3,
+    AUDIO_IN = 0,
+    CV_OUT   = 1,
+    P_RISE	 = 2,
+    P_FALL   = 3,
     ENABLED  = 4
 } PortIndex;
 
 typedef struct {
-	float* input;
-	float* output;
-	float* rise_time;
-	float* fall_time;
+    float* input;
+    float* output;
+    float* rise_time;
+    float* fall_time;
     float* plugin_enabled;
     float  sample_rate;
     float  out;
@@ -36,12 +36,12 @@ instantiate(const LV2_Descriptor*     descriptor,
             const char*               bundle_path,
             const LV2_Feature* const* features)
 {
-	Convert* self = (Convert*)malloc(sizeof(Convert));
+    Convert* self = (Convert*)malloc(sizeof(Convert));
 
     self->out = 0.0;
     self->sample_rate = rate;
 
-	return (LV2_Handle)self;
+    return (LV2_Handle)self;
 }
 
 static void
@@ -119,32 +119,32 @@ deactivate(LV2_Handle instance)
 static void
 cleanup(LV2_Handle instance)
 {
-	free(instance);
+    free(instance);
 }
 
 static const void*
 extension_data(const char* uri)
 {
-	return NULL;
+    return NULL;
 }
 
 static const LV2_Descriptor descriptor = {
-	PLUGIN_URI,
-	instantiate,
-	connect_port,
-	activate,
-	run,
-	deactivate,
-	cleanup,
-	extension_data
+    PLUGIN_URI,
+    instantiate,
+    connect_port,
+    activate,
+    run,
+    deactivate,
+    cleanup,
+    extension_data
 };
 
 LV2_SYMBOL_EXPORT
 const LV2_Descriptor*
 lv2_descriptor(uint32_t index)
 {
-	switch (index) {
-	case 0:  return &descriptor;
-	default: return NULL;
-	}
+    switch (index) {
+        case 0:  return &descriptor;
+        default: return NULL;
+    }
 }

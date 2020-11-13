@@ -8,7 +8,7 @@
 # --------------------------------------------------------------
 # Project name, used for binaries
 
-NAME = mod-logic-operators
+NAME = logic-operators
 
 # --------------------------------------------------------------
 # Files to build
