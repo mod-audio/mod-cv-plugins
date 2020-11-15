@@ -124,7 +124,6 @@ run(LV2_Handle instance, uint32_t n_samples)
                 self->max_value = self->input[i];
                 self->min_value = self->input[i];
             }
-			debug_print("reset = %f\n", *self->reset);
             if (self->input[i] > self->max_value) {
                 self->max_value = *self->input;
             }
