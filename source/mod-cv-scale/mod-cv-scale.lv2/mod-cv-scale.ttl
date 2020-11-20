@@ -1,0 +1,102 @@
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#>.
+@prefix doap: <http://usefulinc.com/ns/doap#>.
+@prefix epp: <http://lv2plug.in/ns/ext/port-props#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix modgui: <http://moddevices.com/ns/modgui#>.
+@prefix mod: <http://moddevices.com/ns/mod#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix atom: <http://lv2plug.in/ns/ext/atom#> .
+@prefix midi: <http://lv2plug.in/ns/ext/midi#> .
+@prefix urid: <http://lv2plug.in/ns/ext/urid#> .
+
+<http://moddevices.com/plugins/mod-devel/mod-cv-scale>
+a lv2:Plugin, mod:ControlVoltagePlugin;
+
+doap:name "MOD CV Scale";
+doap:license "GPL v2+";
+doap:developer [
+    foaf:name "Bram Giesen";
+    foaf:homepage <>;
+    foaf:mbox <mailto:bram@moddevices.com>;
+    ];
+
+doap:maintainer [
+    foaf:name "MOD";
+    foaf:homepage <http://moddevices.com>;
+    foaf:mbox <mailto:bram@moddevices.com>;
+    ];
+
+    lv2:minorVersion 1;
+    lv2:microVersion 0;
+
+rdfs:comment """
+Plugin that converts incoming value to musical scale (twelve-tone equal temperament), to be used with oscillators that use 1v per octave.
+""";
+
+lv2:port
+[
+    a lv2:InputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 0;
+    lv2:symbol "CVin";
+    lv2:name "CV Input";
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 1;
+    lv2:symbol "CVout1";
+    lv2:name "CV Output";
+],
+[
+    a lv2:InputPort, lv2:ControlPort;
+    lv2:index 2;
+    lv2:symbol "RootNote";
+    lv2:name "Root Note";
+    lv2:minimum 0;
+    lv2:default 0;
+    lv2:maximum 11;
+    lv2:portProperty lv2:integer, lv2:enumeration, lv2:toggled;
+    lv2:scalePoint [ rdfs:label "C";  rdf:value 0 ; ] ;
+    lv2:scalePoint [ rdfs:label "C#"; rdf:value 1 ; ] ;
+    lv2:scalePoint [ rdfs:label "D";  rdf:value 2 ; ] ;
+    lv2:scalePoint [ rdfs:label "D#"; rdf:value 3 ; ] ;
+    lv2:scalePoint [ rdfs:label "E";  rdf:value 4 ; ] ;
+    lv2:scalePoint [ rdfs:label "F";  rdf:value 5 ; ] ;
+    lv2:scalePoint [ rdfs:label "F#"; rdf:value 6 ; ] ;
+    lv2:scalePoint [ rdfs:label "G";  rdf:value 7 ; ] ;
+    lv2:scalePoint [ rdfs:label "G#"; rdf:value 8 ; ] ;
+    lv2:scalePoint [ rdfs:label "A";  rdf:value 9 ; ] ;
+    lv2:scalePoint [ rdfs:label "A#"; rdf:value 10 ; ] ;
+    lv2:scalePoint [ rdfs:label "B";  rdf:value 11 ; ] ;
+],
+[
+    a lv2:InputPort, lv2:ControlPort;
+    lv2:index 3;
+    lv2:symbol "Scale";
+    lv2:name "Scale";
+    lv2:minimum -1;
+    lv2:default -1;
+    lv2:maximum 11;
+    lv2:portProperty lv2:integer, lv2:enumeration, lv2:toggled;
+    lv2:scalePoint [ rdfs:label "Chromatic";  rdf:value -1; ] ;
+    lv2:scalePoint [ rdfs:label "Ionian";     rdf:value 0 ; ] ;
+    lv2:scalePoint [ rdfs:label "Dorian";     rdf:value 2 ; ] ;
+    lv2:scalePoint [ rdfs:label "Phrygian";   rdf:value 4 ; ] ;
+    lv2:scalePoint [ rdfs:label "Lydian";     rdf:value 5 ; ] ;
+    lv2:scalePoint [ rdfs:label "Mixolydian"; rdf:value 7 ; ] ;
+    lv2:scalePoint [ rdfs:label "Aeolian";    rdf:value 9 ; ] ;
+    lv2:scalePoint [ rdfs:label "Locrian";    rdf:value 11; ] ;
+],
+[
+     a lv2:InputPort ,
+     lv2:ControlPort ;
+     lv2:index 4 ;
+     lv2:symbol "PluginEnabled" ;
+     lv2:name "PluginEnabled" ;
+     lv2:default 1.0 ;
+     lv2:minimum 0.0 ;
+     lv2:maximum 1.0 ;
+     lv2:designation lv2:enabled;
+     lv2:portProperty lv2:toggled;
+]
+.
