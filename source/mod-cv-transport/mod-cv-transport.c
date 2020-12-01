@@ -169,15 +169,18 @@ run(LV2_Handle instance, uint32_t n_samples)
         }
     }
 
-    for ( uint32_t i = 0; i < n_samples; i++)
-    {
-        if ((int)*self->plugin_enabled == 1) {
-            self->output[i] = self->speed * 10.0;
-			*self->status = 1.0;
-        } else {
-            self->output[i] = 0.0;
-			*self->status = 0.0;
+    if ((int)*self->plugin_enabled == 1) {
+
+        const float value = self->speed * 10.0;
+        *self->status = self->speed;
+
+        for ( uint32_t i = 0; i < n_samples; i++) {
+            self->output[i] = value;
         }
+
+    } else {
+        memset(self->output, 0, sizeof(float)*n_samples);
+        *self->status = 0.0;
     }
 }
 

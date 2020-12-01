@@ -4,5 +4,5 @@
 <http://moddevices.com/plugins/mod-devel/mod-cv-transport>
 	a lv2:Plugin ;
 	lv2:binary <mod-cv-transport.so> ;
-	rdfs:seeAlso <mod-cv-transport.ttl> ;
+	rdfs:seeAlso <mod-cv-transport.ttl> , <modgui.ttl> ;
 	lv2:optionalFeature lv2:hardRTCapable .

@@ -41,8 +41,8 @@ lv2:port
 	atom:bufferType atom:Sequence ;
 	atom:supports time:Position ;
 	lv2:index 0;
-	lv2:symbol "events_in" ;
-	lv2:name "events_in" ;
+	lv2:symbol "EventsIn" ;
+	lv2:name "Events In" ;
 ],
 [
 	a lv2:OutputPort, lv2:CVPort, mod:CVPort;
@@ -64,8 +64,8 @@ lv2:port
 [
 	a lv2:InputPort , lv2:ControlPort ;
 	lv2:index 3 ;
-	lv2:symbol "PluginEnabled" ;
-	lv2:name "PluginEnabled" ;
+	lv2:symbol "pluginEnabled" ;
+	lv2:name "Plugin Enabled" ;
 	lv2:default 1.0 ;
 	lv2:minimum 0.0 ;
 	lv2:maximum 1.0 ;
