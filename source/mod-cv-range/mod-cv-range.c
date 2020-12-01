@@ -85,7 +85,7 @@ run(LV2_Handle instance, uint32_t n_samples)
           self->output_value_2 = 0.0;
       }
 
-      if (*self->input > *self->min_range && *self->input < *self->max_range) {
+      if (*self->input >= *self->min_range && *self->input <= *self->max_range) {
           self->output_value_1 = *self->input;
       } else {
           self->output_value_2 = *self->input;
