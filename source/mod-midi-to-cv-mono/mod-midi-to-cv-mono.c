@@ -181,119 +181,99 @@ setPortState(Data* self, int status)
 
 static void run(LV2_Handle instance, uint32_t sample_count)
 {
-	Data* self = (Data*)instance;
-	float *pitch = self->pitch;
-	float *velocity = self->velocity;
-	float *trigger = self->trigger;
-	float  oC = *self->octave;
-	float  sC = *self->semitone;
-	float  cC = *self->cent;
-	bool retrigger = true;
+  Data* self = (Data*)instance;
+  float *pitch = self->pitch;
+  float *velocity = self->velocity;
+  float *trigger = self->trigger;
+  float  oC = *self->octave;
+  float  sC = *self->semitone;
+  float  cC = *self->cent;
+  bool retrigger = true;
 
-	if ((int)*self->panicParam == 1) {
-		panic(self);
-	}
-	// Read incoming events
-	LV2_ATOM_SEQUENCE_FOREACH(self->port_events_in, ev)
-	{
-		if (ev->body.type == self->urid_midiEvent)
-		{
-			const uint8_t* const msg = (const uint8_t*)(ev + 1);
-			const uint8_t status  = msg[0] & 0xF0;
+  if ((int)*self->panicParam == 1) {
+      panic(self);
+  }
+  // Read incoming events
+  LV2_ATOM_SEQUENCE_FOREACH(self->port_events_in, ev)
+  {
+    if (ev->body.type == self->urid_midiEvent)
+    {
+      const uint8_t* const msg = (const uint8_t*)(ev + 1);
+      const uint8_t status  = msg[0] & 0xF0;
 
-			int storeN = 0;
-			bool emptySlot = false;
-			int notesIndex = NUM_NOTESBUFFER - 1;
-			bool noteFound = false;
+      int storeN = 0;
+      bool emptySlot = false;
+      int notesIndex = NUM_NOTESBUFFER - 1;
+      bool noteFound = false;
 
-			if (msg[1] == 0x7b && ev->body.size == 3) {
-				panic(self);
-			}
+      if (msg[1] == 0x7b && ev->body.size == 3) {
+          panic(self);
+      }
 
+      switch (status)
+      {
+        case LV2_MIDI_MSG_NOTE_ON:
+          while (!emptySlot && storeN < NUM_NOTESBUFFER) {
+            if (self->activeNotesList[storeN] == 200) {
+              self->activeNotesList[storeN] = msg[1];
+              emptySlot = true;
+            }
+            storeN++;
+          }
+          self->activeNote = msg[1];
+          self->activeVelocity = msg[2];
+          self->triggerIndex = (self->triggerIndex + 1) % NUM_NOTESBUFFER;
+          self->reTriggerBuffer[self->triggerIndex] = 1;
+          self->reTriggered = msg[1];
+          break;
+        case LV2_MIDI_MSG_NOTE_OFF:
+          self->notesPressed--;
+          for (int notesIndex = 0; notesIndex < NUM_NOTESBUFFER; notesIndex++) {
+              if (msg[1] == self->activeNotesList[notesIndex]) {
+                  self->activeNotesList[notesIndex] = 200;
+              }
+          }
+          while (!noteFound && notesIndex >= 0) {
+              if (self->activeNotesList[notesIndex] < 200){
+                  self->activeNote = self->activeNotesList[notesIndex];
+                  if(retrigger && self->activeNote != self->reTriggered){
+                      self->reTriggered = msg[1];
+                  }
+                  noteFound = true;
+              }
+              notesIndex--;
+          }
+          break;
+        default:
+          break;
+      }
+    }
+  }
+  int checked_note = 0;
+  bool active_notes_found = false;
+  while(!active_notes_found && checked_note < NUM_NOTESBUFFER) {
+      if (self->activeNotesList[checked_note] != 200)
+          active_notes_found = true;
+      checked_note++;
+  }
 
-			switch (status)
-			{
-				case LV2_MIDI_MSG_NOTE_ON: {
-					int ai = 0;
-					int activeNotesIndexes[NUM_NOTESBUFFER];
-					for (unsigned s = 0; s < NUM_NOTESBUFFER; s++) {
-						if(self->activeNotesList[s] != 200) {
-							activeNotesIndexes[ai] = self->activeNotesList[s];
-							ai++;
-						}
+  if (active_notes_found) {
+      setPortState(self, 1);
+  } else {
+      setPortState(self, 0);
+      self->activeVelocity = 0;
+  }
 
-					}
-					for (unsigned s = 0; s < ai; s++) {
-						self->activeNotesList[s] = self->activeNotesList[activeNotesIndexes[s]];
-					}
-					while (!emptySlot && storeN < NUM_NOTESBUFFER) {
-						if (self->activeNotesList[storeN] == 200) {
-							self->activeNotesList[storeN] = msg[1];
-							emptySlot = true;
-						}
-						storeN++;
-					}
-					self->activeNote = msg[1];
-					self->activeVelocity = msg[2];
-					self->triggerIndex = (self->triggerIndex + 1) % NUM_NOTESBUFFER;
-					self->reTriggerBuffer[self->triggerIndex] = 1;
-					self->reTriggered = msg[1];
-					}
-					break;
-				case LV2_MIDI_MSG_NOTE_OFF:
-					self->notesPressed--;
-					for (int notesIndex = 0; notesIndex < NUM_NOTESBUFFER; notesIndex++) {
-						if (msg[1] == self->activeNotesList[notesIndex]) {
-							self->activeNotesList[notesIndex] = 200;
-						}
-					}
-					while (!noteFound && notesIndex >= 0) {
-						if (self->activeNotesList[notesIndex] < 200){
-							self->activeNote = self->activeNotesList[notesIndex];
-							if(retrigger && self->activeNote != self->reTriggered){
-								self->reTriggered = msg[1];
-							}
-							noteFound = true;
-						}
-						notesIndex--;
-					}
-					for (unsigned ind = 0; ind < NUM_NOTESBUFFER; ind++) {
-						if (self->activeNotesList[ind] != 200) {
-							printf("note at index %i = %i\n", ind, self->activeNotesList[ind]);
-							printf("========================\n");
-						}
-					}
-					break;
-				default:
-					break;
-			}
-		}
-	}
-	int checked_note = 0;
-	bool active_notes_found = false;
-	while(!active_notes_found && checked_note < NUM_NOTESBUFFER) {
-		if (self->activeNotesList[checked_note] != 200)
-			active_notes_found = true;
-		checked_note++;
-	}
-
-	if (active_notes_found) {
-		setPortState(self, 1);
-	} else {
-		setPortState(self, 0);
-		self->activeVelocity = 0;
-	}
-
-	for(uint32_t i=0;i<sample_count;i++)
-	{
-		pitch[i] = ((float)((oC) + (sC/12.0f)+(cC/1200.0f)) + ((float)self->activeNote * 1/12.0f));
-		velocity[i] = (((float)self->activeVelocity * 1/12.0f));
-		trigger[i] = ((self->triggerState == true) ? 10.0f : 0.0f);
-		if (self->reTriggerBuffer[self->triggerIndex] == 1 && *self->reTrigger == 1.0) {
-			self->reTriggerBuffer[self->triggerIndex] = 0;
-			trigger[i] = 0.0f;
-		}
-	}
+  for(uint32_t i=0;i<sample_count;i++)
+  {
+    pitch[i] = ((float)((oC) + (sC/12.0f)+(cC/1200.0f)) + ((float)self->activeNote * 1/12.0f));
+    velocity[i] = (((float)self->activeVelocity * 1/12.0f));
+    trigger[i] = ((self->triggerState == true) ? 10.0f : 0.0f);
+    if (self->reTriggerBuffer[self->triggerIndex] == 1 && *self->reTrigger == 1.0) {
+      self->reTriggerBuffer[self->triggerIndex] = 0;
+      trigger[i] = 0.0f;
+    }
+  }
 }
 
 static void cleanup(LV2_Handle instance)
