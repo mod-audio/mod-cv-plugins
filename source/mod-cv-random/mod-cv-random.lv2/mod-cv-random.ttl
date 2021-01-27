@@ -9,6 +9,7 @@
 @prefix atom: <http://lv2plug.in/ns/ext/atom#> .
 @prefix midi: <http://lv2plug.in/ns/ext/midi#> .
 @prefix urid: <http://lv2plug.in/ns/ext/urid#> .
+@prefix units:  <http://lv2plug.in/ns/extensions/units#> .
 
 <http://moddevices.com/plugins/mod-devel/mod-cv-random>
 a lv2:Plugin, mod:ControlVoltagePlugin;
@@ -61,7 +62,7 @@ lv2:port
     lv2:default 0.0 ;
     lv2:minimum -10.0 ;
     lv2:maximum 10.0 ;
-    mod:volts ;
+    units:unit mod:volts ;
 ]
 ,
 [
@@ -73,7 +74,7 @@ lv2:port
     lv2:default 1.0 ;
     lv2:minimum -10.0 ;
     lv2:maximum 10.0 ;
-    mod:volts ;
+    units:unit mod:volts ;
 ]
 ,
 [
