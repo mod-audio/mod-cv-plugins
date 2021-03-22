@@ -24,10 +24,27 @@ This repository contains the source code for the `mod-cv-plugins`
 * mod-audio-to-cv(beta)
 * mod-cv-change(beta)
 
-### installation
+### Building and installation
 
-To build and install the plugins run the following:
+The logic operators plugin uses [DPF](https://github.com/DISTRHO/DPF).
+This is included in a submodule, therefore this needs to be enabled before this can plugin be build. This can be enabled by running:
+```
+$ git submodule init
+$ git submodule update
+```
+
+Then all plugins can be build by running:
 ```
 $ make
+```
+
+To install all plugins run:
+```
 $ make install
+```
+
+To build an individual plugin, do:
+```
+$ cd source/<plugin-directory>
+$ make
 ```

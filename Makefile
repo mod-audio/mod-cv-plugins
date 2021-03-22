@@ -43,7 +43,7 @@ install: all
 	cp -r source/mod-cv-switch4/mod-cv-switch4.lv2 				 $(DEST_DIR)
 	cp -r source/mod-midi-to-cv-mono/mod-midi-to-cv-mono.lv2 	 $(DEST_DIR)
 	cp -r source/mod-midi-to-cv-poly/mod-midi-to-cv-poly.lv2 	 $(DEST_DIR)
-	cp -r source/mod-logic-operators/bin/mod-logic-operators.lv2 $(DEST_DIR)
+	cp -r source/mod-logic-operators/bin/logic-operators.lv2     $(DEST_DIR)
 
 clean:
 	$(MAKE) clean -C source/mod-audio-to-cv
