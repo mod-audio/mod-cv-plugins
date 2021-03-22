@@ -52,12 +52,12 @@ protected:
 
     const char* getHomePage() const override
     {
-        return "http://";
+        return "http://moddevices.com";
     }
 
     const char* getLicense() const noexcept override
     {
-        return "Custom";
+        return "GPLv2+";
     }
 
     uint32_t getVersion() const noexcept override

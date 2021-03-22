@@ -97,7 +97,7 @@ Logic operators
     mod:label "Logic Operators" ;
 
     doap:name """Logic Operators""" ;
-    doap:license """Custom""" ;
+    doap:license """GPLv2+""" ;
 
     doap:maintainer [
         foaf:name """MOD""" ;
