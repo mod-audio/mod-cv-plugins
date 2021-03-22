@@ -27,7 +27,7 @@ This repository contains the source code for the `mod-cv-plugins`
 ### Building and installation
 
 The logic operators plugin uses [DPF](https://github.com/DISTRHO/DPF).
-This is included in a submodule, therefore this needs to be enabled before this can plugin be build. This can be enabled by running:
+This is included in a submodule, therefore this needs to be enabled before this plugin can be build. To enabled this, run:
 ```
 $ git submodule init
 $ git submodule update
