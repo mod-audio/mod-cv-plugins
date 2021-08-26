@@ -109,7 +109,7 @@ const LV2_Feature* const* features)
     self->activeVelocity = 0;
     self->steal_voice = 0;
 
-    return self; 
+    return self;
 }
 
 /**********************************************************************************************************************************************************/
@@ -166,7 +166,6 @@ static void connect_port(LV2_Handle instance, uint32_t port, void *data)
 /**********************************************************************************************************************************************************/
 void activate(LV2_Handle instance)
 {
-    
 }
 
 static void panic(Midicv* self)
@@ -240,7 +239,6 @@ void run(LV2_Handle instance, uint32_t n_samples)
                     while (!port_freed && search_port < NUM_PORTS) {
                         if (self->activeNotes[search_port] == msg[1])
                         {
-                            self->activeNotes[search_port] = 0;
                             self->activePorts[search_port] = false;
                             port_freed = true;
                         }
@@ -270,8 +268,8 @@ void run(LV2_Handle instance, uint32_t n_samples)
     {
         cv1[z] = 0.0f + (cA + (cB * 1/12.0f) + (cC * 1/1200.0f) + (float)(self->activeNotes[0] * 1/12.0f));
         cv2[z] = 0.0f + (cA + (cB * 1/12.0f) + (cC * 1/1200.0f) + (float)(self->activeNotes[1] * 1/12.0f));
-        cv3[z] = 0.0f + (cA + (cB * 1/12.0f) + (cC * 1/1200.0f) + (float)(self->activeNotes[2] * 1/12.0f));  
-        cv4[z] = 0.0f + (cA + (cB * 1/12.0f) + (cC * 1/1200.0f) + (float)(self->activeNotes[3] * 1/12.0f));    
+        cv3[z] = 0.0f + (cA + (cB * 1/12.0f) + (cC * 1/1200.0f) + (float)(self->activeNotes[2] * 1/12.0f));
+        cv4[z] = 0.0f + (cA + (cB * 1/12.0f) + (cC * 1/1200.0f) + (float)(self->activeNotes[3] * 1/12.0f));
         trigger1[z] = ((self->activePorts[0] == true) ? 10.0f : 0.0f);
         trigger2[z] = ((self->activePorts[1] == true) ? 10.0f : 0.0f);
         trigger3[z] = ((self->activePorts[2] == true) ? 10.0f : 0.0f);
@@ -288,7 +286,7 @@ void deactivate(LV2_Handle instance)
 /**********************************************************************************************************************************************************/
 void cleanup(LV2_Handle instance)
 {
-  free(instance);   
+  free(instance);
 }
 /**********************************************************************************************************************************************************/
 const void* extension_data(const char* uri)
