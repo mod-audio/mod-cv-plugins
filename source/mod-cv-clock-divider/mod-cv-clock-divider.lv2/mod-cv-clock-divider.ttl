@@ -1,0 +1,148 @@
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#>.
+@prefix doap: <http://usefulinc.com/ns/doap#>.
+@prefix epp: <http://lv2plug.in/ns/ext/port-props#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix modgui: <http://moddevices.com/ns/modgui#>.
+@prefix mod: <http://moddevices.com/ns/mod#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix atom: <http://lv2plug.in/ns/ext/atom#> .
+@prefix midi: <http://lv2plug.in/ns/ext/midi#> .
+@prefix urid: <http://lv2plug.in/ns/ext/urid#> .
+
+<http://moddevices.com/plugins/mod-devel/mod-cv-clock-divider>
+a lv2:Plugin, mod:ControlVoltagePlugin;
+
+doap:name "Clock Divider";
+doap:license "GPL v2+";
+doap:developer [
+    foaf:name "Bram Giesen";
+    foaf:homepage <>;
+    foaf:mbox <mailto:bram@moddevices.com>;
+    ];
+
+doap:maintainer [
+    foaf:name "MOD";
+    foaf:homepage <http://moddevices.com>;
+    foaf:mbox <mailto:bram@moddevices.com>;
+    ];
+
+    lv2:minorVersion 1;
+    lv2:microVersion 0;
+
+rdfs:comment """
+""";
+
+lv2:port
+[
+    a lv2:InputPort ,
+    lv2:ControlPort ;
+    lv2:index 0 ;
+    lv2:symbol "Mode" ;
+    lv2:name "Mode" ;
+    lv2:default 0.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1.0 ;
+    lv2:portProperty lv2:toggled;
+],
+[
+    a lv2:InputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 1;
+    lv2:symbol "Rotate";
+    lv2:name "Rotate";
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+],
+[
+    a lv2:InputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 2;
+    lv2:symbol "Reset";
+    lv2:name "Reset";
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+],
+[
+    a lv2:InputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 3;
+    lv2:symbol "ClockIn";
+    lv2:name "ClockIn";
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 4;
+    lv2:symbol "ClockOut1";
+    lv2:name "ClockOut1";
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 5;
+    lv2:symbol "ClockOut2";
+    lv2:name "ClockOut2";
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 6;
+    lv2:symbol "ClockOut3";
+    lv2:name "ClockOut3";
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 7;
+    lv2:symbol "ClockOut4";
+    lv2:name "ClockOut4";
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 8;
+    lv2:symbol "ClockOut5";
+    lv2:name "ClockOut5";
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 9;
+    lv2:symbol "ClockOut6";
+    lv2:name "ClockOut6";
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 10;
+    lv2:symbol "ClockOut7";
+    lv2:name "ClockOut7";
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+],
+[
+    a lv2:OutputPort, lv2:CVPort, mod:CVPort;
+    lv2:index 11;
+    lv2:symbol "ClockOut8";
+    lv2:name "ClockOut8";
+    lv2:minimum 0.0 ;
+    lv2:maximum 10.0 ;
+],
+[
+    a lv2:InputPort ,
+    lv2:ControlPort ;
+    lv2:index 12 ;
+    lv2:symbol "PluginEnabled" ;
+    lv2:name "PluginEnabled" ;
+    lv2:default 1.0 ;
+    lv2:minimum 0.0 ;
+    lv2:maximum 1.0 ;
+    lv2:designation lv2:enabled;
+    lv2:portProperty lv2:toggled;
+]
+.
