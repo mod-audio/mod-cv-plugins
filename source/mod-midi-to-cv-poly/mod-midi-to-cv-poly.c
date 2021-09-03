@@ -212,7 +212,7 @@ void run(LV2_Handle instance, uint32_t n_samples)
             int search_port = 0;
             bool port_freed = false;
 
-            if (msg[1] == 0x7b) {
+            if (msg[1] == 0x7b && ev->body.size == 3) {
                 panic(self);
             }
 

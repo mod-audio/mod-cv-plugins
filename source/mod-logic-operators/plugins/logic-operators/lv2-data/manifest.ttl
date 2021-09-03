@@ -6,11 +6,3 @@
     a lv2:Plugin ;
     lv2:binary <logic-operators_dsp.so> ;
     rdfs:seeAlso <logic-operators_dsp.ttl>.
-
-<http://moddevices.com/plugins/mod-devel/logic-operators#preset001>
-    a pset:Preset ;
-    lv2:appliesTo <http://moddevices.com/plugins/mod-devel/logic-operators> ;
-    rdfs:label "Default" ;
-    rdfs:seeAlso <presets.ttl> .
-
-

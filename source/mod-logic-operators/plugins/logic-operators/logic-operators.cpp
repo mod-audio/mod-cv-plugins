@@ -8,10 +8,8 @@ START_NAMESPACE_DISTRHO
 // -----------------------------------------------------------------------
 
 LogicOperators::LogicOperators()
-    : Plugin(paramCount, 1, 0) // 1 program, 0 states
+    : Plugin(paramCount, 0, 0) // 0 programs, 0 states
 {
-    loadProgram(0);
-
     sampleRate = (float)getSampleRate();
 
     logicOperators = new Operator*[NUM_OPERATORS];
@@ -77,14 +75,6 @@ void LogicOperators::initParameter(uint32_t index, Parameter& parameter)
     }
 }
 
-void LogicOperators::initProgramName(uint32_t index, String& programName)
-{
-    if (index != 0)
-        return;
-
-    programName = "Default";
-}
-
 // -----------------------------------------------------------------------
 // Internal data
 
@@ -114,10 +104,6 @@ void LogicOperators::setParameterValue(uint32_t index, float value)
     case paramSetHysteresis:
         paramHysteresis = value;
     }
-}
-
-void LogicOperators::loadProgram(uint32_t index)
-{
 }
 
 void LogicOperators::reset()
