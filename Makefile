@@ -7,7 +7,6 @@ all:
 	$(MAKE) -C source/mod-cv-abs
 	$(MAKE) -C source/mod-cv-attenuverter
 	$(MAKE) -C source/mod-cv-clock
-	$(MAKE) -C source/mod-cv-clock-divider
 	$(MAKE) -C source/mod-cv-control
 	$(MAKE) -C source/mod-cv-gate
 	$(MAKE) -C source/mod-cv-meter
@@ -31,7 +30,6 @@ install: all
 	cp -r source/mod-cv-abs/mod-cv-abs.lv2 						 $(DEST_DIR)
 	cp -r source/mod-cv-attenuverter/mod-cv-attenuverter.lv2 	 $(DEST_DIR)
 	cp -r source/mod-cv-clock/mod-cv-clock.lv2 					 $(DEST_DIR)
-	cp -r source/mod-cv-clock/mod-cv-clock-divider.lv2 			 $(DEST_DIR)
 	cp -r source/mod-cv-control/mod-cv-control.lv2 				 $(DEST_DIR)
 	cp -r source/mod-cv-gate/mod-cv-gate.lv2 					 $(DEST_DIR)
 	cp -r source/mod-cv-meter/mod-cv-meter.lv2 					 $(DEST_DIR)
@@ -55,7 +53,6 @@ clean:
 	$(MAKE) clean -C source/mod-cv-abs
 	$(MAKE) clean -C source/mod-cv-attenuverter
 	$(MAKE) clean -C source/mod-cv-clock
-	$(MAKE) clean -C source/mod-cv-clock-divider
 	$(MAKE) clean -C source/mod-cv-control
 	$(MAKE) clean -C source/mod-cv-gate
 	$(MAKE) clean -C source/mod-cv-meter
