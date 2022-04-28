@@ -88,6 +88,8 @@ float LogicOperators::getParameterValue(uint32_t index) const
         return paramSwitchPoint;
     case paramSetHysteresis:
         return paramHysteresis;
+    default:
+        return 0.0f;
     }
 }
 

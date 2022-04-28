@@ -12,7 +12,7 @@ public:
 };
 
 
-inline float INV_Operator::process(float A, float B)
+inline float INV_Operator::process(float A, float)
 {
     return (A == high) ? false_value : true_value;
 }
