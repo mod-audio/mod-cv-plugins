@@ -78,6 +78,7 @@ instantiate(const LV2_Descriptor*     descriptor,
         free (self);
         return NULL;
     }
+
     // Map URIS
     ClockURIs* const    uris  = &self->uris;
     LV2_URID_Map* const map   = self->map;

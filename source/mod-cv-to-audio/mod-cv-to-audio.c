@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
@@ -91,23 +92,26 @@ run(LV2_Handle instance, uint32_t n_samples)
 {
     Convert* self = (Convert*)instance;
 
+    const bool plugin_enabled = (int)*self->plugin_enabled == 1;
+    const bool dc_block = (int)*self->dc_block == 1;
+
     for ( uint32_t i = 0; i < n_samples; i++)
     {
-        float x = self->input[i];
-        float y = x - self->xn1 + 0.995 * self->yn1;
+        float x = self->input[i] * 0.2f;
+        float y = x - self->xn1 + 0.995f * self->yn1;
         self->xn1 = x;
         self->yn1 = y;
 
         float smooth_level = lowPassProcess(self, *self->level);
 
-        if ((int)*self->plugin_enabled == 1) {
-            if ((int)*self->dc_block == 1) {
+        if (plugin_enabled) {
+            if (dc_block) {
                 self->output[i] = y * smooth_level;
             } else {
                 self->output[i] = self->input[i] * smooth_level;
             }
         } else {
-            self->output[i] = 0.0;
+            self->output[i] = 0.0f;
         }
     }
 }

@@ -29,7 +29,9 @@ doap:maintainer [
     lv2:microVersion 0;
 
 rdfs:comment """
-CV to audio converts an control voltage signal to an audio signal with DC Blocker. This blocker can be turned of if needed. This is NOT recommended when the plugin is connected to any kind of audio output!
+CV to audio converts an control voltage signal to an audio signal with DC Blocker.
+This blocker can be turned of if needed.
+This is NOT recommended when the plugin is connected to any kind of audio output!
 """;
 
 lv2:port
@@ -38,13 +40,13 @@ lv2:port
     lv2:index 0;
     lv2:minimum -5.0 ;
     lv2:maximum 5.0 ;
-    lv2:symbol "CVIn";
+    lv2:symbol "cv_in";
     lv2:name "CV Input";
 ],
 [
     a lv2:OutputPort, lv2:AudioPort;
     lv2:index 1;
-    lv2:symbol "AudioOut";
+    lv2:symbol "audio_out";
     lv2:name "Audio Output";
 ]
 ,
@@ -52,23 +54,22 @@ lv2:port
     a lv2:InputPort ,
     lv2:ControlPort ;
     lv2:index 2 ;
-    lv2:symbol "Level" ;
+    lv2:symbol "level" ;
     lv2:name "Level";
-    lv2:default 0.5 ;
+    lv2:default 1.0 ;
     lv2:minimum 0.0 ;
-    lv2:maximum 1.0 ;
+    lv2:maximum 2.0 ;
 ]
 ,
 [
     a lv2:InputPort ,
     lv2:ControlPort ;
     lv2:index 3 ;
-    lv2:symbol "DCBlock" ;
+    lv2:symbol "dc_block" ;
     lv2:name "DC Blocker";
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
     lv2:maximum 1.0 ;
-    lv2:designation lv2:enabled;
     lv2:portProperty lv2:toggled;
 ]
 ,
@@ -76,8 +77,8 @@ lv2:port
     a lv2:InputPort ,
     lv2:ControlPort ;
     lv2:index 4 ;
-    lv2:symbol "ENABLED" ;
-    lv2:name "ENABLED" ;
+    lv2:symbol "enabled" ;
+    lv2:name "Enabled" ;
     lv2:default 1.0 ;
     lv2:minimum 0.0 ;
     lv2:maximum 1.0 ;
