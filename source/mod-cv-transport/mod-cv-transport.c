@@ -25,12 +25,7 @@ typedef struct {
     LV2_URID atom_Blank;
     LV2_URID atom_Float;
     LV2_URID atom_Object;
-    LV2_URID atom_Path;
-    LV2_URID atom_Resource;
-    LV2_URID atom_Sequence;
     LV2_URID time_Position;
-    LV2_URID time_barBeat;
-    LV2_URID time_beatsPerMinute;
     LV2_URID time_speed;
 } ClockURIs;
 
@@ -90,12 +85,7 @@ instantiate(const LV2_Descriptor*     descriptor,
     uris->atom_Blank          = map->map(map->handle, LV2_ATOM__Blank);
     uris->atom_Float          = map->map(map->handle, LV2_ATOM__Float);
     uris->atom_Object         = map->map(map->handle, LV2_ATOM__Object);
-    uris->atom_Path           = map->map(map->handle, LV2_ATOM__Path);
-    uris->atom_Resource       = map->map(map->handle, LV2_ATOM__Resource);
-    uris->atom_Sequence       = map->map(map->handle, LV2_ATOM__Sequence);
     uris->time_Position       = map->map(map->handle, LV2_TIME__Position);
-    uris->time_barBeat        = map->map(map->handle, LV2_TIME__barBeat);
-    uris->time_beatsPerMinute = map->map(map->handle, LV2_TIME__beatsPerMinute);
     uris->time_speed          = map->map(map->handle, LV2_TIME__speed);
 
     return (LV2_Handle)self;
@@ -108,12 +98,9 @@ update_position(CVTransport* self, const LV2_Atom_Object* obj)
     const ClockURIs* uris = &self->uris;
 
     // Received new transport position/speed
-    LV2_Atom *beat = NULL, *bpm = NULL, *speed = NULL;
-    lv2_atom_object_get(obj,
-            uris->time_barBeat, &beat,
-            uris->time_beatsPerMinute, &bpm,
-            uris->time_speed, &speed,
-            NULL);
+    LV2_Atom *speed = NULL;
+    lv2_atom_object_get(obj, uris->time_speed, &speed, NULL);
+
     if (speed && speed->type == uris->atom_Float)
     {
         // Speed changed, e.g. 0 (stop) to 1 (play)
