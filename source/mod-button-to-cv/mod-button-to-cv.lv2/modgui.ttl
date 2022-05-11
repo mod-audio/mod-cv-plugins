@@ -1,0 +1,29 @@
+@prefix modgui: <http://moddevices.com/ns/modgui#> .
+@prefix lv2:    <http://lv2plug.in/ns/lv2core#> .
+
+<http://moddevices.com/plugins/mod-devel/mod-button-to-cv>
+    modgui:gui [
+        modgui:resourcesDirectory <modgui> ;
+        modgui:iconTemplate <modgui/icon-button-to-cv.html> ;
+        modgui:stylesheet <modgui/stylesheet-button-to-cv.css> ;
+        modgui:screenshot <modgui/screenshot-button-to-cv.png> ;
+        modgui:thumbnail <modgui/thumbnail-button-to-cv.png> ;
+        modgui:brand "MOD" ;
+        modgui:label "Button to CV" ;
+        modgui:model "boxy-small" ;
+        modgui:panel "1-footswitch" ;
+        modgui:color "white" ;
+        modgui:port [
+            lv2:index 0 ;
+            lv2:symbol "Button" ;
+            lv2:name "Button" ;
+        ] , [
+            lv2:index 1 ;
+            lv2:symbol "LongPressTime" ;
+            lv2:name "Hold Time" ;
+        ] , [
+            lv2:index 2 ;
+            lv2:symbol "DoublePressDebounce" ;
+            lv2:name "Double Time" ;
+        ] ;
+    ] .
