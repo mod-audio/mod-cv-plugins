@@ -174,8 +174,6 @@ void trigger_widget_change(Control* self, uint8_t port_index)
     //send to HMI
     self->hmi->set_label(self->hmi->handle, self->toggle_addressing, status_string);
 
-    self->hmi->popup_message(self->hmi->handle, self->toggle_addressing, LV2_HMI_Popup_Style_Inverted, "SINGLE_PRESS_TXT", "test");
-
     switch (port_index) {
         //reset state
         case 0:
