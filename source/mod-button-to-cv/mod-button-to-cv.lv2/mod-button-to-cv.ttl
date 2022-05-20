@@ -20,17 +20,17 @@
 
 plug:port1string
     a lv2:Parameter ;
-    rdfs:label "Port 1 Name" ;
+    rdfs:label "Single Press Text" ;
     rdfs:range atom:String .
 
 plug:port2string
     a lv2:Parameter ;
-    rdfs:label "Port 2 Name" ;
+    rdfs:label "Long Press Text" ;
     rdfs:range atom:String .
 
 plug:port3string
     a lv2:Parameter ;
-    rdfs:label "Port 3 Name" ;
+    rdfs:label "Double Press Text" ;
     rdfs:range atom:String .
 
 <http://moddevices.com/plugins/mod-devel/mod-button-to-cv>
