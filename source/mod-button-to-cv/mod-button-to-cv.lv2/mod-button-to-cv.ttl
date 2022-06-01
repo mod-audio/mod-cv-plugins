@@ -4,18 +4,18 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 @prefix mod: <http://moddevices.com/ns/mod#>.
 @prefix modgui: <http://moddevices.com/ns/modgui#>.
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix atom: <http://lv2plug.in/ns/ext/atom#> .
 @prefix midi: <http://lv2plug.in/ns/ext/midi#> .
 @prefix urid: <http://lv2plug.in/ns/ext/urid#> .
 @prefix pprop: <http://lv2plug.in/ns/ext/port-props#> .
-@prefix rsz:      <http://lv2plug.in/ns/ext/resize-port#> .
-@prefix patch:      <http://lv2plug.in/ns/ext/patch#> .
-@prefix log:            <http://lv2plug.in/ns/ext/log#> .
-@prefix state:      <http://lv2plug.in/ns/ext/state#> .
-@prefix units:      <http://lv2plug.in/ns/extensions/units#> .
-@prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
+@prefix rsz: <http://lv2plug.in/ns/ext/resize-port#> .
+@prefix patch: <http://lv2plug.in/ns/ext/patch#> .
+@prefix log: <http://lv2plug.in/ns/ext/log#> .
+@prefix state: <http://lv2plug.in/ns/ext/state#> .
+@prefix units: <http://lv2plug.in/ns/extensions/units#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix plug: <http://moddevices.com/plugins/mod-devel/mod-button-to-cv#> .
 
 plug:port1string
@@ -36,7 +36,7 @@ plug:port3string
 <http://moddevices.com/plugins/mod-devel/mod-button-to-cv>
     a lv2:Plugin, mod:ControlVoltagePlugin;
 
-    doap:name "Button to CV";
+    doap:name "Multi Button to CV";
     doap:license "GPL v2+";
     doap:developer [
         foaf:name "Jan Janssen";
@@ -98,15 +98,23 @@ A plugin that translates button actions to various CV signals
         lv2:default 500;
         lv2:minimum 100;
         lv2:maximum 1000;
+        units:unit units:ms
     ],
     [
         a lv2:InputPort, lv2:ControlPort;
         lv2:index 5;
         lv2:symbol "DoublePressDebounce";
         lv2:name "Double Time";
-        lv2:default 300;
+        lv2:default 300; mod:default_duox 150;
         lv2:minimum 100;
         lv2:maximum 500;
+        units:unit units:ms
+    ],
+    [
+        a lv2:OutputPort, lv2:ControlPort;
+        lv2:index 6;
+        lv2:symbol "ButtonStatusMask";
+        lv2:name "ButtonStatusMask";
     ],
     [
         a lv2:InputPort ,
@@ -114,7 +122,7 @@ A plugin that translates button actions to various CV signals
         atom:bufferType atom:Sequence ;
         atom:supports patch:Message ;
         lv2:designation lv2:control ;
-        lv2:index 6 ;
+        lv2:index 7 ;
         lv2:symbol "in" ;
         lv2:name "In"
     ],
@@ -124,7 +132,7 @@ A plugin that translates button actions to various CV signals
         atom:bufferType atom:Sequence ;
         atom:supports patch:Message ;
         lv2:designation lv2:control ;
-        lv2:index 7 ;
+        lv2:index 8;
         lv2:symbol "out" ;
         lv2:name "Out"
     ];
@@ -135,8 +143,8 @@ A plugin that translates button actions to various CV signals
         plug:port3string;
 
     state:state [
-        plug:port1string "Port 1" ;
-        plug:port2string "Port 2" ;
-        plug:port3string "Port 3" ;
+        plug:port1string "Single Press" ;
+        plug:port2string "Long Press" ;
+        plug:port3string "Double Press" ;
     ]
 .

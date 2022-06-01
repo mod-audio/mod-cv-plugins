@@ -8,22 +8,14 @@
         modgui:stylesheet <modgui/stylesheet-button-to-cv.css> ;
         modgui:screenshot <modgui/screenshot-button-to-cv.png> ;
         modgui:thumbnail <modgui/thumbnail-button-to-cv.png> ;
+        modgui:javascript <modgui/javascript-button-to-cv.js> ;
+        modgui:monitoredOutputs [ lv2:symbol "ButtonStatusMask" ] ;
         modgui:brand "MOD" ;
-        modgui:label "Button to CV" ;
-        modgui:model "boxy-small" ;
-        modgui:panel "1-footswitch" ;
-        modgui:color "white" ;
+        modgui:label "Multi Button to CV" ;
+        modgui:license "CC BY-NC-ND 4.0";
         modgui:port [
             lv2:index 0 ;
             lv2:symbol "Button" ;
             lv2:name "Button" ;
-        ] , [
-            lv2:index 1 ;
-            lv2:symbol "LongPressTime" ;
-            lv2:name "Hold Time" ;
-        ] , [
-            lv2:index 2 ;
-            lv2:symbol "DoublePressDebounce" ;
-            lv2:name "Double Time" ;
         ] ;
     ] .

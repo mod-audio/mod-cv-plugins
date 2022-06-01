@@ -21,6 +21,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdatomic.h>
 
 #include "state_map.h"
 
@@ -49,11 +50,11 @@
 #define N_PROPS             3
 #define MAX_STRING          1024
 
-#define SPECIAL_PORT_REST   UINT8_MAX
+#define SINGLE_PRESS_STRING_URI PLUGIN_URI "#port1string"
+#define LONG_PRESS_STRING_URI   PLUGIN_URI "#port2string"
+#define DOUBLE_PRESS_STRING_URI PLUGIN_URI "#port3string"
 
-#define PORT_1_DEF_NAME     "PORT 1"
-#define PORT_2_DEF_NAME     "PORT 2"
-#define PORT_3_DEF_NAME     "PORT 3"
+#define SPECIAL_PORT_REST   UINT8_MAX
 
 #define SINGLE_PRESS_TXT    "SINGLE PRESS"
 #define LONG_PRESS_TXT      "LONG PRESS"
@@ -62,13 +63,18 @@
 //timing configs
 #define CHANGE_COUNTER      1000
 
+//status bitmasks
+#define SINGLE_PRESS_ON     0x01
+#define DOUBLE_PRESS_ON     0x02
+#define LONG_PRESS_ON       0x04
+
 typedef struct {
     LV2_URID plugin;
     LV2_URID atom_Path;
     LV2_URID atom_Sequence;
     LV2_URID atom_URID;
     LV2_URID atom_eventTransfer;
-    LV2_URID eg_spring;
+    LV2_URID atom_String;
     LV2_URID midi_Event;
     LV2_URID patch_Get;
     LV2_URID patch_Set;
@@ -77,6 +83,10 @@ typedef struct {
     LV2_URID patch_subject;
     LV2_URID patch_property;
     LV2_URID patch_value;
+    LV2_URID state_StateChanged;
+    LV2_URID port1_string;
+    LV2_URID port2_string;
+    LV2_URID port3_string;
 } URIs;
 
 typedef struct {
@@ -88,6 +98,11 @@ typedef struct {
     char            port3string_data[MAX_STRING];
 } State;
 
+typedef struct {
+    uint32_t size;
+    void *body;
+} restore_value;
+
 static inline void
 map_uris(LV2_URID_Map* map, URIs* uris)
 {
@@ -97,6 +112,7 @@ map_uris(LV2_URID_Map* map, URIs* uris)
     uris->atom_Sequence      = map->map(map->handle, LV2_ATOM__Sequence);
     uris->atom_URID          = map->map(map->handle, LV2_ATOM__URID);
     uris->atom_eventTransfer = map->map(map->handle, LV2_ATOM__eventTransfer);
+    uris->atom_String        = map->map(map->handle, LV2_ATOM__String);
     uris->midi_Event         = map->map(map->handle, LV2_MIDI__MidiEvent);
     uris->patch_Get          = map->map(map->handle, LV2_PATCH__Get);
     uris->patch_Set          = map->map(map->handle, LV2_PATCH__Set);
@@ -105,6 +121,11 @@ map_uris(LV2_URID_Map* map, URIs* uris)
     uris->patch_subject      = map->map(map->handle, LV2_PATCH__subject);
     uris->patch_property     = map->map(map->handle, LV2_PATCH__property);
     uris->patch_value        = map->map(map->handle, LV2_PATCH__value);
+    uris->state_StateChanged = map->map(map->handle, LV2_STATE__StateChanged);
+
+    uris->port1_string       = map->map(map->handle, SINGLE_PRESS_STRING_URI);
+    uris->port2_string       = map->map(map->handle, LONG_PRESS_STRING_URI);
+    uris->port3_string       = map->map(map->handle, DOUBLE_PRESS_TXT);
 }
 
 typedef enum {
@@ -114,6 +135,7 @@ typedef enum {
     CV_DOUBLE_PRESS,
     LONG_PRESS_TIME_MS,
     DOUBLE_PRESS_DEBOUNCE_MS,
+    BUTTON_STATUS_MASK,
     PARAMS_IN,
     PARAMS_OUT
 } PortIndex;
@@ -132,6 +154,9 @@ typedef struct {
     float* long_press_time;
     float* double_press_debounce;
 
+    //control output mask
+    float* button_mask;
+
     float prev_button_value;
 
     float cv_single_value;
@@ -144,7 +169,6 @@ typedef struct {
 
     // Features
     LV2_URID_Map*  map;
-    LV2_URID_Unmap* unmap;
     LV2_Log_Logger logger;
     LV2_HMI_WidgetControl* hmi;
     
@@ -154,6 +178,7 @@ typedef struct {
     // Ports
     const LV2_Atom_Sequence* in_port;
     LV2_Atom_Sequence*       out_port;
+    LV2_Atom_Forge_Frame notify_frame;
 
     // URIs
     URIs uris;
@@ -162,13 +187,27 @@ typedef struct {
     StateMapItem props[N_PROPS];
     State        state;
 
-    // Buffer for making strings from URIDs if unmap is not provided
-    char urid_buf[1024];
-
     // HMI Widgets stuff
     LV2_HMI_Addressing toggle_addressing;
     LV2_HMI_LED_Colour colour;
 } Control;
+
+//MOD products only support ascii 32 to 126
+void check_popup_string(char *text)
+{
+    int char_lenght = strlen(text);
+    int ascii = 0;
+    for (int i = 0; i < char_lenght; i++) {
+        ascii = (int)text[i];
+
+        //replace chars with -
+        if (ascii < 32)
+            text[i] = '-';
+
+        if (ascii > 126)
+            text[i] = '-';
+    }
+}
 
 void trigger_widget_change(Control* self, uint8_t port_index)
 {
@@ -206,7 +245,10 @@ void trigger_widget_change(Control* self, uint8_t port_index)
             //send to HMI
             char *label = self->state.port1string_data;
             if ((label != NULL) && (label[0] == '\0')) 
-                label = PORT_1_DEF_NAME;
+                label = SINGLE_PRESS_TXT;
+
+            //sanity check for the chars we want to display
+            check_popup_string(label);
 
             if (self->hmi->size >= LV2_HMI_WIDGETCONTROL_SIZE_POPUP_MESSAGE) {
                 if (self->cv_single_value)
@@ -228,7 +270,10 @@ void trigger_widget_change(Control* self, uint8_t port_index)
             //send to HMI
             char *label = self->state.port2string_data;
             if ((label != NULL) && (label[0] == '\0'))
-                label = PORT_2_DEF_NAME;
+                label = LONG_PRESS_TXT;
+
+            //sanity check for the chars we want to display
+            check_popup_string(label);
 
             if (self->hmi->size >= LV2_HMI_WIDGETCONTROL_SIZE_POPUP_MESSAGE) {
                 if (self->cv_long_value)
@@ -250,7 +295,10 @@ void trigger_widget_change(Control* self, uint8_t port_index)
             //send to HMI
             char *label = self->state.port3string_data;
             if ((label != NULL) && (label[0] == '\0'))
-                label = PORT_3_DEF_NAME;
+                label = DOUBLE_PRESS_TXT;
+
+            //sanity check for the chars we want to display
+            check_popup_string(label);
 
             if (self->hmi->size >= LV2_HMI_WIDGETCONTROL_SIZE_POPUP_MESSAGE) {
                 if (self->cv_double_value)
@@ -283,7 +331,6 @@ instantiate(const LV2_Descriptor*     descriptor,
             features,
             LV2_LOG__log,           &self->logger.log,  false,
             LV2_URID__map,          &self->map,         true,
-            LV2_URID__unmap,        &self->unmap,       false,
             LV2_HMI__WidgetControl, &self->hmi,         true,
             NULL);
     // clang-format on
@@ -305,42 +352,15 @@ instantiate(const LV2_Descriptor*     descriptor,
     State* state = &self->state;
     state_map_init(
         self->props, self->map, self->map->handle,
-        PLUGIN_URI "#port1string", STATE_MAP_INIT(String, &state->port1string),
-        PLUGIN_URI "#port2string", STATE_MAP_INIT(String, &state->port2string),
-        PLUGIN_URI "#port3string", STATE_MAP_INIT(String, &state->port3string),
+        SINGLE_PRESS_STRING_URI, STATE_MAP_INIT(String, &state->port1string),
+        DOUBLE_PRESS_STRING_URI, STATE_MAP_INIT(String, &state->port2string),
+        LONG_PRESS_STRING_URI, STATE_MAP_INIT(String, &state->port3string),
         NULL);
     // clang-format on
 
     self->colour = LV2_HMI_LED_Colour_Off;
 
     return (LV2_Handle)self;
-}
-
-/** Helper function to unmap a URID if possible. */
-static const char*
-unmap(Control* self, LV2_URID urid)
-{
-    if (self->unmap) {
-        return self->unmap->unmap(self->unmap->handle, urid);
-    }
-    else {
-        snprintf(self->urid_buf, sizeof(self->urid_buf), "%u", urid);
-        return self->urid_buf;
-    }
-}
-
-static LV2_State_Status
-check_type(Control* self, LV2_URID key, LV2_URID type, LV2_URID required_type)
-{
-    if (type != required_type) {
-        lv2_log_trace(&self->logger,
-                      "Bad type <%s> for <%s> (needs <%s>)\n",
-                      unmap(self, type),
-                      unmap(self, key),
-                      unmap(self, required_type));
-        return LV2_STATE_ERR_BAD_TYPE;
-    }
-    return LV2_STATE_SUCCESS;
 }
 
 static LV2_State_Status
@@ -353,15 +373,6 @@ set_parameter(Control*     self,
 {
     // Look up property in state dictionary
     const StateMapItem* entry = state_map_find(self->props, N_PROPS, key);
-    if (!entry) {
-        lv2_log_trace(&self->logger, "Unknown parameter <%s>\n", unmap(self, key));
-        return LV2_STATE_ERR_NO_PROPERTY;
-    }
-
-    // Ensure given type matches property's type
-    if (check_type(self, key, type, entry->value->type)) {
-        return LV2_STATE_ERR_BAD_TYPE;
-    }
 
     // Set property value in state dictionary
     lv2_log_trace(&self->logger, "Set <%s>\n", entry->uri);
@@ -379,7 +390,6 @@ get_parameter(Control* self, LV2_URID key)
         return entry->value;
     }
 
-    lv2_log_trace(&self->logger, "Unknown parameter <%s>\n", unmap(self, key));
     return NULL;
 }
 
@@ -412,27 +422,15 @@ store_prop(Control*                  self,
            const LV2_Atom*          value)
 {
     LV2_State_Status st = LV2_STATE_SUCCESS;
-    if (map_path && value->type == self->uris.atom_Path) {
-        // Map path to abstract path for portable storage
-        const char* path  = (const char*)(value + 1);
-        char*       apath = map_path->abstract_path(map_path->handle, path);
-        st                = store(handle,
-                   key,
-                   apath,
-                   strlen(apath) + 1,
-                   self->uris.atom_Path,
-                   LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
-        free(apath);
-    }
-    else {
-        // Store simple property
-        st = store(handle,
-                   key,
-                   value + 1,
-                   value->size,
-                   value->type,
-                   LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
-  }
+    
+    // Store simple property
+    st = store(handle,
+               key,
+               value + 1,
+               value->size,
+               value->type,
+               LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
+  
 
     if (save_status && !*save_status) {
         *save_status = st;
@@ -465,12 +463,53 @@ save(LV2_Handle                instance,
     return st;
 }
 
+static LV2_Atom_Forge_Ref
+patch_set(Control*                     self,
+          LV2_Atom_Forge             *forge,
+          LV2_URID                      key,
+          size_t                       size,
+          uint32_t                     type,
+          const void                  *body)
+{
+    LV2_Atom_Forge_Frame obj_frame;
+
+    LV2_Atom_Forge_Ref ref = lv2_atom_forge_frame_time(forge, 0);
+
+    if(ref)
+        ref = lv2_atom_forge_object(forge, &obj_frame, 0, self->uris.patch_Set);
+    {
+        if(ref)
+            ref = lv2_atom_forge_key(forge, self->uris.patch_property);
+        if(ref)
+            ref = lv2_atom_forge_urid(forge, key);
+
+        if(ref)
+            lv2_atom_forge_key(forge, self->uris.patch_value);
+        if(ref)
+            ref = lv2_atom_forge_atom(forge, size, type);
+        if(ref)
+            ref = lv2_atom_forge_write(forge, body, size);
+    }
+    if(ref)
+        lv2_atom_forge_pop(forge, &obj_frame);
+
+    if(ref)
+        ref = lv2_atom_forge_frame_time(forge, 0);
+    if(ref)
+        ref = lv2_atom_forge_object(forge, &obj_frame, 0, self->uris.state_StateChanged);
+    if(ref)
+        lv2_atom_forge_pop(forge, &obj_frame);
+
+    return ref;
+}
+
 static void
 retrieve_prop(Control*                     self,
               LV2_State_Status*           restore_status,
               LV2_State_Retrieve_Function retrieve,
               LV2_State_Handle            handle,
-              LV2_URID                    key)
+              LV2_URID                    key,
+              const LV2_Feature* const*   features)
 {
     // Retrieve value from saved state
     size_t      vsize  = 0;
@@ -482,6 +521,10 @@ retrieve_prop(Control*                     self,
     const LV2_State_Status st =
         value ? set_parameter(self, key, vsize, vtype, value, true)
                 : LV2_STATE_ERR_NO_PROPERTY;
+
+    if (st != LV2_STATE_ERR_NO_PROPERTY) {
+        patch_set(self, &self->forge, key, vsize, vtype, value);
+    }
 
     if (!*restore_status) {
         *restore_status = st; // Set status if there has been no error yet
@@ -500,7 +543,7 @@ restore(LV2_Handle                  instance,
   LV2_State_Status st   = LV2_STATE_SUCCESS;
 
   for (unsigned i = 0; i < N_PROPS; ++i) {
-    retrieve_prop(self, &st, retrieve, handle, self->props[i].urid);
+    retrieve_prop(self, &st, retrieve, handle, self->props[i].urid, features);
   }
 
   return st;
@@ -540,6 +583,9 @@ connect_port(LV2_Handle instance,
         case DOUBLE_PRESS_DEBOUNCE_MS:
             self->double_press_debounce = (float*)data;
             break;
+        case BUTTON_STATUS_MASK:
+            self->button_mask = (float*)data;
+            break;
         case PARAMS_IN:
             self->in_port = (const LV2_Atom_Sequence*)data;
             break;
@@ -564,6 +610,7 @@ run(LV2_Handle instance, uint32_t n_samples)
     // Set up forge to write directly to output port
     const uint32_t out_capacity = self->out_port->atom.size;
     lv2_atom_forge_set_buffer(&self->forge, (uint8_t*)self->out_port, out_capacity);
+    lv2_atom_forge_sequence_head(&self->forge, &self->notify_frame, 0);
 
     // Start a sequence in the output port
     LV2_Atom_Forge_Frame out_frame;
@@ -654,9 +701,6 @@ run(LV2_Handle instance, uint32_t n_samples)
                 }
             }
         }
-        else {
-            lv2_log_trace(&self->logger, "Unknown object type <%s>\n", unmap(self, obj->body.otype));
-        }
     }
 
     float button_value = (float)*self->button;
@@ -725,6 +769,16 @@ run(LV2_Handle instance, uint32_t n_samples)
         self->cv_long_press[i] = self->cv_long_value;
         self->cv_double_press[i] = self->cv_double_value;
     }
+
+    int bitmask = 0;
+    if (self->cv_single_value)
+        bitmask |= SINGLE_PRESS_ON;
+    if (self->cv_long_value)
+        bitmask |= LONG_PRESS_ON;
+    if (self->cv_double_value)
+        bitmask |= DOUBLE_PRESS_ON; 
+
+    *self->button_mask = bitmask;
 
     lv2_atom_forge_pop(&self->forge, &out_frame);
 }
