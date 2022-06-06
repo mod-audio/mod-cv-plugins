@@ -167,6 +167,8 @@ typedef struct {
     uint32_t double_press_counter;
     uint32_t change_counter;
 
+    bool state_changed;
+
     // Features
     LV2_URID_Map*  map;
     LV2_Log_Logger logger;
@@ -244,8 +246,8 @@ void trigger_widget_change(Control* self, uint8_t port_index)
         {
             //send to HMI
             char *label = self->state.port1string_data;
-            if ((label != NULL) && (label[0] == '\0')) 
-                label = SINGLE_PRESS_TXT;
+            if (label[0] == '\0')
+                strcpy(label, SINGLE_PRESS_TXT);
 
             //sanity check for the chars we want to display
             check_popup_string(label);
@@ -269,8 +271,8 @@ void trigger_widget_change(Control* self, uint8_t port_index)
         {
             //send to HMI
             char *label = self->state.port2string_data;
-            if ((label != NULL) && (label[0] == '\0'))
-                label = LONG_PRESS_TXT;
+            if (label[0] == '\0')
+                strcpy(label, LONG_PRESS_TXT);
 
             //sanity check for the chars we want to display
             check_popup_string(label);
@@ -294,8 +296,8 @@ void trigger_widget_change(Control* self, uint8_t port_index)
         {
             //send to HMI
             char *label = self->state.port3string_data;
-            if ((label != NULL) && (label[0] == '\0'))
-                label = DOUBLE_PRESS_TXT;
+            if (label[0] == '\0')
+                strcpy(label, DOUBLE_PRESS_TXT);
 
             //sanity check for the chars we want to display
             check_popup_string(label);
@@ -413,7 +415,7 @@ write_param_to_forge(LV2_State_Handle handle,
 }
 
 static void
-store_prop(Control*                  self,
+store_prop(Control*                 self,
            LV2_State_Map_Path*      map_path,
            LV2_State_Status*        save_status,
            LV2_State_Store_Function store,
@@ -463,46 +465,6 @@ save(LV2_Handle                instance,
     return st;
 }
 
-static LV2_Atom_Forge_Ref
-patch_set(Control*                     self,
-          LV2_Atom_Forge             *forge,
-          LV2_URID                      key,
-          size_t                       size,
-          uint32_t                     type,
-          const void                  *body)
-{
-    LV2_Atom_Forge_Frame obj_frame;
-
-    LV2_Atom_Forge_Ref ref = lv2_atom_forge_frame_time(forge, 0);
-
-    if(ref)
-        ref = lv2_atom_forge_object(forge, &obj_frame, 0, self->uris.patch_Set);
-    {
-        if(ref)
-            ref = lv2_atom_forge_key(forge, self->uris.patch_property);
-        if(ref)
-            ref = lv2_atom_forge_urid(forge, key);
-
-        if(ref)
-            lv2_atom_forge_key(forge, self->uris.patch_value);
-        if(ref)
-            ref = lv2_atom_forge_atom(forge, size, type);
-        if(ref)
-            ref = lv2_atom_forge_write(forge, body, size);
-    }
-    if(ref)
-        lv2_atom_forge_pop(forge, &obj_frame);
-
-    if(ref)
-        ref = lv2_atom_forge_frame_time(forge, 0);
-    if(ref)
-        ref = lv2_atom_forge_object(forge, &obj_frame, 0, self->uris.state_StateChanged);
-    if(ref)
-        lv2_atom_forge_pop(forge, &obj_frame);
-
-    return ref;
-}
-
 static void
 retrieve_prop(Control*                     self,
               LV2_State_Status*           restore_status,
@@ -522,10 +484,6 @@ retrieve_prop(Control*                     self,
         value ? set_parameter(self, key, vsize, vtype, value, true)
                 : LV2_STATE_ERR_NO_PROPERTY;
 
-    if (st != LV2_STATE_ERR_NO_PROPERTY) {
-        patch_set(self, &self->forge, key, vsize, vtype, value);
-    }
-
     if (!*restore_status) {
         *restore_status = st; // Set status if there has been no error yet
     }
@@ -539,7 +497,7 @@ restore(LV2_Handle                  instance,
         uint32_t                    flags,
         const LV2_Feature* const*   features)
 {
-  Control*          self = (Control*)instance;
+  Control*         self = (Control*)instance;
   LV2_State_Status st   = LV2_STATE_SUCCESS;
 
   for (unsigned i = 0; i < N_PROPS; ++i) {
@@ -604,17 +562,18 @@ static void
 run(LV2_Handle instance, uint32_t n_samples)
 {
     Control* self = (Control*) instance;
-    URIs*   uris = &self->uris;
+    URIs*    uris = &self->uris;
+    LV2_Atom_Forge* forge = &self->forge;
 
     // Initially, self->out_port contains a Chunk with size set to capacity
     // Set up forge to write directly to output port
     const uint32_t out_capacity = self->out_port->atom.size;
-    lv2_atom_forge_set_buffer(&self->forge, (uint8_t*)self->out_port, out_capacity);
-    lv2_atom_forge_sequence_head(&self->forge, &self->notify_frame, 0);
+    lv2_atom_forge_set_buffer(forge, (uint8_t*)self->out_port, out_capacity);
+    lv2_atom_forge_sequence_head(forge, &self->notify_frame, 0);
 
     // Start a sequence in the output port
     LV2_Atom_Forge_Frame out_frame;
-    lv2_atom_forge_sequence_head(&self->forge, &out_frame, 0);
+    lv2_atom_forge_sequence_head(forge, &out_frame, 0);
 
     // Read incoming events
     LV2_ATOM_SEQUENCE_FOREACH (self->in_port, ev) {
@@ -665,17 +624,17 @@ run(LV2_Handle instance, uint32_t n_samples)
             }
             else if (!property) {
                 // Get with no property, emit complete state
-                lv2_atom_forge_frame_time(&self->forge, ev->time.frames);
+                lv2_atom_forge_frame_time(forge, ev->time.frames);
                 LV2_Atom_Forge_Frame pframe;
-                lv2_atom_forge_object(&self->forge, &pframe, 0, uris->patch_Put);
-                lv2_atom_forge_key(&self->forge, uris->patch_body);
+                lv2_atom_forge_object(forge, &pframe, 0, uris->patch_Put);
+                lv2_atom_forge_key(forge, uris->patch_body);
 
                 LV2_Atom_Forge_Frame bframe;
-                lv2_atom_forge_object(&self->forge, &bframe, 0, 0);
-                save(self, write_param_to_forge, &self->forge, 0, NULL);
+                lv2_atom_forge_object(forge, &bframe, 0, 0);
+                save(self, write_param_to_forge, forge, 0, NULL);
 
-                lv2_atom_forge_pop(&self->forge, &bframe);
-                lv2_atom_forge_pop(&self->forge, &pframe);
+                lv2_atom_forge_pop(forge, &bframe);
+                lv2_atom_forge_pop(forge, &pframe);
             }
             else if (property->atom.type != uris->atom_URID) {
                 lv2_log_error(&self->logger, "Get property is not a URID\n");
@@ -685,22 +644,62 @@ run(LV2_Handle instance, uint32_t n_samples)
                 const LV2_URID  key   = property->body;
                 const LV2_Atom* value = get_parameter(self, key);
                 if (value) {
-                    lv2_atom_forge_frame_time(&self->forge, ev->time.frames);
+                    lv2_atom_forge_frame_time(forge, ev->time.frames);
                     LV2_Atom_Forge_Frame frame;
-                    lv2_atom_forge_object(&self->forge, &frame, 0, uris->patch_Set);
-                    lv2_atom_forge_key(&self->forge, uris->patch_property);
-                    lv2_atom_forge_urid(&self->forge, property->body);
+                    lv2_atom_forge_object(forge, &frame, 0, uris->patch_Set);
+                    lv2_atom_forge_key(forge, uris->patch_property);
+                    lv2_atom_forge_urid(forge, property->body);
                     store_prop(self,
                                NULL,
                                NULL,
                                write_param_to_forge,
-                               &self->forge,
+                               forge,
                                uris->patch_value,
                                value);
-                    lv2_atom_forge_pop(&self->forge, &frame);
+                    lv2_atom_forge_pop(forge, &frame);
                 }
             }
         }
+    }
+
+    // notify of state change
+    if (self->state_changed) {
+        lv2_atom_forge_frame_time(forge, n_samples-1);
+
+        // string 1
+        {
+            LV2_Atom_Forge_Frame frame;
+            lv2_atom_forge_object(forge, &frame, 0, uris->patch_Set);
+            lv2_atom_forge_key(forge, uris->patch_property);
+            lv2_atom_forge_urid(forge, uris->port1_string);
+            lv2_atom_forge_key(forge, uris->patch_value);
+            lv2_atom_forge_string(forge, self->state.port1string_data, strlen(self->state.port1string_data)+1);
+            lv2_atom_forge_pop(forge, &frame);
+        }
+
+        // string 2
+        {
+            LV2_Atom_Forge_Frame frame;
+            lv2_atom_forge_object(forge, &frame, 0, uris->patch_Set);
+            lv2_atom_forge_key(forge, uris->patch_property);
+            lv2_atom_forge_urid(forge, uris->port1_string);
+            lv2_atom_forge_key(forge, uris->patch_value);
+            lv2_atom_forge_string(forge, self->state.port1string_data, strlen(self->state.port2string_data)+1);
+            lv2_atom_forge_pop(forge, &frame);
+        }
+
+        // string 3
+        {
+            LV2_Atom_Forge_Frame frame;
+            lv2_atom_forge_object(forge, &frame, 0, uris->patch_Set);
+            lv2_atom_forge_key(forge, uris->patch_property);
+            lv2_atom_forge_urid(forge, uris->port1_string);
+            lv2_atom_forge_key(forge, uris->patch_value);
+            lv2_atom_forge_string(forge, self->state.port1string_data, strlen(self->state.port3string_data)+1);
+            lv2_atom_forge_pop(forge, &frame);
+        }
+
+        self->state_changed = false;
     }
 
     float button_value = (float)*self->button;
@@ -780,7 +779,7 @@ run(LV2_Handle instance, uint32_t n_samples)
 
     *self->button_mask = bitmask;
 
-    lv2_atom_forge_pop(&self->forge, &out_frame);
+    lv2_atom_forge_pop(forge, &out_frame);
 }
 
 static void
