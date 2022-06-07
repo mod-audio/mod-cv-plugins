@@ -125,7 +125,7 @@ map_uris(LV2_URID_Map* map, URIs* uris)
 
     uris->port1_string       = map->map(map->handle, SINGLE_PRESS_STRING_URI);
     uris->port2_string       = map->map(map->handle, LONG_PRESS_STRING_URI);
-    uris->port3_string       = map->map(map->handle, DOUBLE_PRESS_TXT);
+    uris->port3_string       = map->map(map->handle, DOUBLE_PRESS_STRING_URI);
 }
 
 typedef enum {
@@ -508,6 +508,8 @@ restore(LV2_Handle                  instance,
     retrieve_prop(self, &st, retrieve, handle, self->props[i].urid, features);
   }
 
+  self->state_changed = true;
+
   return st;
 }
 
@@ -686,9 +688,9 @@ run(LV2_Handle instance, uint32_t n_samples)
             LV2_Atom_Forge_Frame frame;
             lv2_atom_forge_object(forge, &frame, 0, uris->patch_Set);
             lv2_atom_forge_key(forge, uris->patch_property);
-            lv2_atom_forge_urid(forge, uris->port1_string);
+            lv2_atom_forge_urid(forge, uris->port2_string);
             lv2_atom_forge_key(forge, uris->patch_value);
-            lv2_atom_forge_string(forge, self->state.port1string_data, strlen(self->state.port2string_data)+1);
+            lv2_atom_forge_string(forge, self->state.port2string_data, strlen(self->state.port2string_data)+1);
             lv2_atom_forge_pop(forge, &frame);
         }
 
@@ -697,9 +699,9 @@ run(LV2_Handle instance, uint32_t n_samples)
             LV2_Atom_Forge_Frame frame;
             lv2_atom_forge_object(forge, &frame, 0, uris->patch_Set);
             lv2_atom_forge_key(forge, uris->patch_property);
-            lv2_atom_forge_urid(forge, uris->port1_string);
+            lv2_atom_forge_urid(forge, uris->port3_string);
             lv2_atom_forge_key(forge, uris->patch_value);
-            lv2_atom_forge_string(forge, self->state.port1string_data, strlen(self->state.port3string_data)+1);
+            lv2_atom_forge_string(forge, self->state.port3string_data, strlen(self->state.port3string_data)+1);
             lv2_atom_forge_pop(forge, &frame);
         }
 
