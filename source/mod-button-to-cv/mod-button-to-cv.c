@@ -206,6 +206,10 @@ void check_popup_string(char *text)
         if (ascii < 32)
             text[i] = '-';
 
+        //dont do quotation marks as they are tricky
+        if (ascii == 34)
+            text[i] = '-';
+
         if (ascii > 126)
             text[i] = '-';
     }
