@@ -359,8 +359,8 @@ instantiate(const LV2_Descriptor*     descriptor,
     state_map_init(
         self->props, self->map, self->map->handle,
         SINGLE_PRESS_STRING_URI, STATE_MAP_INIT(String, &state->port1string),
-        DOUBLE_PRESS_STRING_URI, STATE_MAP_INIT(String, &state->port2string),
-        LONG_PRESS_STRING_URI, STATE_MAP_INIT(String, &state->port3string),
+        LONG_PRESS_STRING_URI, STATE_MAP_INIT(String, &state->port2string),
+        DOUBLE_PRESS_STRING_URI, STATE_MAP_INIT(String, &state->port3string),
         NULL);
     // clang-format on
 
