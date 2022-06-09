@@ -54,7 +54,7 @@
 #define LONG_PRESS_STRING_URI   PLUGIN_URI "#port2string"
 #define DOUBLE_PRESS_STRING_URI PLUGIN_URI "#port3string"
 
-#define SPECIAL_PORT_REST   UINT8_MAX
+#define SPECIAL_PORT_RESET  UINT8_MAX
 
 #define SINGLE_PRESS_TXT    "SINGLE PRESS"
 #define LONG_PRESS_TXT      "LONG PRESS"
@@ -143,7 +143,7 @@ typedef enum {
 typedef struct {
     
     //main button
-    float* button;
+    const float* button;
 
     // CV signals
     float* cv_single_press;
@@ -151,8 +151,8 @@ typedef struct {
     float* cv_double_press;
 
     //controls
-    float* long_press_time;
-    float* double_press_debounce;
+    const float* long_press_time;
+    const float* double_press_debounce;
 
     //control output mask
     float* button_mask;
@@ -218,7 +218,7 @@ void check_popup_string(char *text)
 void trigger_widget_change(Control* self, uint8_t port_index)
 {
     //if we dont reset, set counter
-    if (port_index != SPECIAL_PORT_REST)
+    if (port_index != SPECIAL_PORT_RESET)
         self->change_counter = (CHANGE_COUNTER * 48000) / 1000;
 
     self->hmi->set_led_with_brightness(self->hmi->handle, self->toggle_addressing, LV2_HMI_LED_Colour_Off, LV2_HMI_LED_Brightness_High);
@@ -239,7 +239,7 @@ void trigger_widget_change(Control* self, uint8_t port_index)
 
     switch (port_index) {
         //reset state
-        case SPECIAL_PORT_REST:
+        case SPECIAL_PORT_RESET:
         {
             //reset LED
             self->hmi->set_led_with_brightness(self->hmi->handle, self->toggle_addressing, LV2_HMI_LED_Colour_White, LV2_HMI_LED_Brightness_Low);
@@ -530,7 +530,7 @@ connect_port(LV2_Handle instance,
 
     switch ((PortIndex)port) {
         case BUTTON:
-            self->button = (float*)data;
+            self->button = (const float*)data;
             break;
         case CV_SINGLE_PRESS:
             self->cv_single_press = (float*)data;
@@ -542,10 +542,10 @@ connect_port(LV2_Handle instance,
             self->cv_double_press = (float*)data;
             break;
         case LONG_PRESS_TIME_MS:
-            self->long_press_time = (float*)data;
+            self->long_press_time = (const float*)data;
             break;
         case DOUBLE_PRESS_DEBOUNCE_MS:
-            self->double_press_debounce = (float*)data;
+            self->double_press_debounce = (const float*)data;
             break;
         case BUTTON_STATUS_MASK:
             self->button_mask = (float*)data;
@@ -766,7 +766,7 @@ run(LV2_Handle instance, uint32_t n_samples)
             self->change_counter--;
 
             if (self->change_counter == 0) {
-                trigger_widget_change(self, SPECIAL_PORT_REST);
+                trigger_widget_change(self, SPECIAL_PORT_RESET);
             }
         }
 
@@ -806,7 +806,7 @@ addressed(LV2_Handle handle, uint32_t index, LV2_HMI_Addressing addressing, cons
 
     if (index == 0) {
         self->toggle_addressing = addressing;
-        trigger_widget_change(self, SPECIAL_PORT_REST);
+        trigger_widget_change(self, SPECIAL_PORT_RESET);
     }
 }
 
