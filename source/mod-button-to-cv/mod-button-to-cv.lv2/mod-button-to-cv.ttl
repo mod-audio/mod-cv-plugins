@@ -67,7 +67,7 @@ A plugin that translates button actions to various CV signals
         lv2:index 0;
         lv2:symbol "Button";
         lv2:name "Button";
-        lv2:portProperty lv2:integer, lv2:toggled, lv2:preferMomentaryOnByDefault;
+        lv2:portProperty lv2:integer, lv2:toggled, mod:preferMomentaryOnByDefault;
         lv2:default 0;
         lv2:minimum 0;
         lv2:maximum 1;
