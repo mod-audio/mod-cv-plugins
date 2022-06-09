@@ -36,6 +36,8 @@ plug:port3string
 <http://moddevices.com/plugins/mod-devel/mod-button-to-cv>
     a lv2:Plugin, mod:ControlVoltagePlugin;
 
+    mod:brand "MOD";
+    mod:label "Multi Button CV";
     doap:name "Multi Button to CV";
     doap:license "GPL v2+";
     doap:developer [
