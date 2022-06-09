@@ -675,10 +675,11 @@ run(LV2_Handle instance, uint32_t n_samples)
 
     // notify of state change
     if (self->state_changed) {
-        lv2_atom_forge_frame_time(forge, n_samples-1);
+        const uint32_t last_frame = n_samples-1;
 
         // string 1
         {
+            lv2_atom_forge_frame_time(forge, last_frame);
             LV2_Atom_Forge_Frame frame;
             lv2_atom_forge_object(forge, &frame, 0, uris->patch_Set);
             lv2_atom_forge_key(forge, uris->patch_property);
@@ -690,6 +691,7 @@ run(LV2_Handle instance, uint32_t n_samples)
 
         // string 2
         {
+            lv2_atom_forge_frame_time(forge, last_frame);
             LV2_Atom_Forge_Frame frame;
             lv2_atom_forge_object(forge, &frame, 0, uris->patch_Set);
             lv2_atom_forge_key(forge, uris->patch_property);
@@ -701,6 +703,7 @@ run(LV2_Handle instance, uint32_t n_samples)
 
         // string 3
         {
+            lv2_atom_forge_frame_time(forge, last_frame);
             LV2_Atom_Forge_Frame frame;
             lv2_atom_forge_object(forge, &frame, 0, uris->patch_Set);
             lv2_atom_forge_key(forge, uris->patch_property);
