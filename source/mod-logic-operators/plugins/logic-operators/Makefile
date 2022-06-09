@@ -22,28 +22,9 @@ FILES_DSP  = \
 
 include ../../dpf/Makefile.plugins.mk
 
-ifeq ($(WIN32),true)
-LINK_OPTS += -static -static-libgcc -static-libstdc++
-endif
-
-BUILD_CXX_FLAGS +=
 # --------------------------------------------------------------
-# Enable all possible plugin types
+# Enable only LV2
 
-ifeq ($(HAVE_DGL),true)
-ifeq ($(HAVE_JACK),true)
-TARGETS += jack
-endif
-endif
-
-ifeq ($(HAVE_DGL),true)
-TARGETS += lv2_sep
-else
-TARGETS += lv2_dsp
-endif
-
-TARGETS += vst
-
-all: $(TARGETS)
+all: lv2_sep
 
 # --------------------------------------------------------------
