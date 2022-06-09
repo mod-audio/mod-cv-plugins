@@ -6,4 +6,3 @@
 	lv2:binary <mod-button-to-cv.so> ;
 	rdfs:seeAlso <mod-button-to-cv.ttl> ;
 	lv2:optionalFeature lv2:hardRTCapable .
-<http://moddevices.com/plugins/mod-devel/mod-button-to-cv> rdfs:seeAlso <modgui.ttl> .
