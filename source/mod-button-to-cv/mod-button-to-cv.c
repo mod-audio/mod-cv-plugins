@@ -222,6 +222,9 @@ void trigger_widget_change(Control* self, uint8_t port_index)
     if (port_index != SPECIAL_PORT_RESET)
         self->change_counter = (CHANGE_COUNTER * self->sample_rate) / 1000;
 
+    if (!self->hmi)
+        return;
+
     self->hmi->set_led_with_brightness(self->hmi->handle, self->toggle_addressing, LV2_HMI_LED_Colour_Off, LV2_HMI_LED_Brightness_High);
 
     //update label
@@ -338,7 +341,7 @@ instantiate(const LV2_Descriptor*     descriptor,
             features,
             LV2_LOG__log,           &self->logger.log,  false,
             LV2_URID__map,          &self->map,         true,
-            LV2_HMI__WidgetControl, &self->hmi,         true,
+            LV2_HMI__WidgetControl, &self->hmi,         false,
             NULL);
     // clang-format on
 

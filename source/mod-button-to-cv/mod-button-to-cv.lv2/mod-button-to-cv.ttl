@@ -50,8 +50,8 @@ plug:port3string
         foaf:mbox <mailto:jan@moddevices.com>;
     ];
 
-    lv2:requiredFeature <http://moddevices.com/ns/hmi#WidgetControl>, urid:map;
-    lv2:optionalFeature lv2:hardRTCapable , state:loadDefaultState;
+    lv2:requiredFeature urid:map;
+    lv2:optionalFeature lv2:hardRTCapable, state:loadDefaultState, <http://moddevices.com/ns/hmi#WidgetControl>;
     lv2:extensionData <http://moddevices.com/ns/hmi#PluginNotification>, state:interface;
 
     lv2:minorVersion 1;
