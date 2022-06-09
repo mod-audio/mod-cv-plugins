@@ -168,6 +168,7 @@ typedef struct {
     uint32_t change_counter;
 
     bool state_changed;
+    double sample_rate;
 
     // Features
     LV2_URID_Map*  map;
@@ -219,7 +220,7 @@ void trigger_widget_change(Control* self, uint8_t port_index)
 {
     //if we dont reset, set counter
     if (port_index != SPECIAL_PORT_RESET)
-        self->change_counter = (CHANGE_COUNTER * 48000) / 1000;
+        self->change_counter = (CHANGE_COUNTER * self->sample_rate) / 1000;
 
     self->hmi->set_led_with_brightness(self->hmi->handle, self->toggle_addressing, LV2_HMI_LED_Colour_Off, LV2_HMI_LED_Brightness_High);
 
@@ -365,6 +366,7 @@ instantiate(const LV2_Descriptor*     descriptor,
     // clang-format on
 
     self->colour = LV2_HMI_LED_Colour_Off;
+    self->sample_rate = rate;
 
     return (LV2_Handle)self;
 }
@@ -710,8 +712,8 @@ run(LV2_Handle instance, uint32_t n_samples)
 
     float button_value = (float)*self->button;
 
-    float LP_time = ((float)*self->long_press_time * 48000) / 1000;
-    float DP_debounce = ((float)*self->double_press_debounce * 48000) / 1000;
+    float LP_time = ((float)*self->long_press_time * self->sample_rate) / 1000;
+    float DP_debounce = ((float)*self->double_press_debounce * self->sample_rate) / 1000;
 
     if (self->prev_button_value != button_value) {
         //button pressed
