@@ -61,7 +61,7 @@
 #define DOUBLE_PRESS_TXT    "DOUBLE PRESS"
 
 //timing configs
-#define CHANGE_COUNTER      1000
+#define CHANGE_COUNTER      1400
 
 //status bitmasks
 #define SINGLE_PRESS_ON     0x01
@@ -135,6 +135,7 @@ typedef enum {
     CV_DOUBLE_PRESS,
     LONG_PRESS_TIME_MS,
     DOUBLE_PRESS_DEBOUNCE_MS,
+    LONG_PRESS_MODE,
     BUTTON_STATUS_MASK,
     PARAMS_IN,
     PARAMS_OUT
@@ -153,6 +154,8 @@ typedef struct {
     //controls
     const float* long_press_time;
     const float* double_press_debounce;
+
+    const float* long_press_mode;
 
     //control output mask
     float* button_mask;
@@ -552,6 +555,9 @@ connect_port(LV2_Handle instance,
         case DOUBLE_PRESS_DEBOUNCE_MS:
             self->double_press_debounce = (const float*)data;
             break;
+        case LONG_PRESS_MODE:
+            self->long_press_mode = (const float*)data;
+            break;
         case BUTTON_STATUS_MASK:
             self->button_mask = (float*)data;
             break;
@@ -721,6 +727,8 @@ run(LV2_Handle instance, uint32_t n_samples)
     float LP_time = ((float)*self->long_press_time * self->sample_rate) / 1000;
     float DP_debounce = ((float)*self->double_press_debounce * self->sample_rate) / 1000;
 
+    uint8_t LP_mode = (int)*self->long_press_mode;
+
     if (self->prev_button_value != button_value) {
         //button pressed
         if (button_value > 0) {
@@ -743,6 +751,11 @@ run(LV2_Handle instance, uint32_t n_samples)
                //also start double press counter
                self->double_press_counter = DP_debounce;
                self->long_press_counter = 0;
+            }
+            //long press is in momentary mode and on, so turn off
+            if (self->cv_long_value && LP_mode) {
+                self->cv_long_value = 0.f;
+                trigger_widget_change(self, CV_LONG_PRESS);
             }
         }
 

@@ -113,8 +113,26 @@ A plugin that translates button actions to various CV signals
         units:unit units:ms
     ],
     [
-        a lv2:OutputPort, lv2:ControlPort;
+        a lv2:InputPort, lv2:ControlPort;
         lv2:index 6;
+        lv2:symbol "LongPressMode";
+        lv2:name "Long Press Mode";
+        lv2:portProperty lv2:enumeration , lv2:integer ;
+        lv2:default 0 ;
+        lv2:minimum 0 ;
+        lv2:maximum 1 ;
+        lv2:scalePoint
+        [
+            rdfs:label "Latching" ;
+            rdf:value 0
+        ] , [
+            rdfs:label "Momentary" ;
+            rdf:value 1
+        ]
+    ],
+    [
+        a lv2:OutputPort, lv2:ControlPort;
+        lv2:index 7;
         lv2:symbol "ButtonStatusMask";
         lv2:name "ButtonStatusMask";
     ],
@@ -124,7 +142,7 @@ A plugin that translates button actions to various CV signals
         atom:bufferType atom:Sequence ;
         atom:supports patch:Message ;
         lv2:designation lv2:control ;
-        lv2:index 7 ;
+        lv2:index 8 ;
         lv2:symbol "in" ;
         lv2:name "In"
     ],
@@ -134,7 +152,7 @@ A plugin that translates button actions to various CV signals
         atom:bufferType atom:Sequence ;
         atom:supports patch:Message ;
         lv2:designation lv2:control ;
-        lv2:index 8;
+        lv2:index 9;
         lv2:symbol "out" ;
         lv2:name "Out"
     ];
