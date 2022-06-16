@@ -120,14 +120,17 @@ A plugin that translates button actions to various CV signals
         lv2:portProperty lv2:enumeration , lv2:integer ;
         lv2:default 0 ;
         lv2:minimum 0 ;
-        lv2:maximum 1 ;
+        lv2:maximum 2 ;
         lv2:scalePoint
         [
             rdfs:label "Latching" ;
             rdf:value 0
         ] , [
-            rdfs:label "Momentary" ;
+            rdfs:label "Momentary On" ;
             rdf:value 1
+        ] , [
+            rdfs:label "Momentary Off" ;
+            rdf:value 2
         ]
     ],
     [
