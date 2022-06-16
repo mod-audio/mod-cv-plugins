@@ -141,6 +141,12 @@ typedef enum {
     PARAMS_OUT
 } PortIndex;
 
+enum LP_MODES{
+    LATCHING = 0,
+    MOMENTARY_ON,
+    MOMENTARY_OFF
+};
+
 typedef struct {
     
     //main button
@@ -752,9 +758,14 @@ run(LV2_Handle instance, uint32_t n_samples)
                self->double_press_counter = DP_debounce;
                self->long_press_counter = 0;
             }
+
             //long press is in momentary mode and on, so turn off
-            if (self->cv_long_value && LP_mode) {
-                self->cv_long_value = 0.f;
+            if (LP_mode) {
+                if (LP_mode == MOMENTARY_OFF)
+                    self->cv_long_value = 10.f;
+                else
+                    self->cv_long_value = 0.f;
+
                 trigger_widget_change(self, CV_LONG_PRESS);
             }
         }
@@ -768,7 +779,20 @@ run(LV2_Handle instance, uint32_t n_samples)
 
             //reached longpress, toggle  long port
             if (self->long_press_counter == 0) {
-                self->cv_long_value = 10.f - self->cv_long_value;
+                switch (LP_mode) {
+                    case LATCHING:
+                        self->cv_long_value = 10.f - self->cv_long_value;
+                    break;
+
+                    case MOMENTARY_ON:
+                        self->cv_long_value = 10.f;
+                    break;
+
+                    case MOMENTARY_OFF:
+                        self->cv_long_value = 0.f;
+                    break;
+                }
+
                 trigger_widget_change(self, CV_LONG_PRESS);
             }
         }
