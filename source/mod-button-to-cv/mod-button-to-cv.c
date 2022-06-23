@@ -53,20 +53,21 @@
 #define SINGLE_PRESS_STRING_URI PLUGIN_URI "#port1string"
 #define LONG_PRESS_STRING_URI   PLUGIN_URI "#port2string"
 #define DOUBLE_PRESS_STRING_URI PLUGIN_URI "#port3string"
+#define CV_STATE_URI            PLUGIN_URI "#CVStateMask"
 
-#define SPECIAL_PORT_RESET  UINT8_MAX
+#define SPECIAL_PORT_RESET      UINT8_MAX
 
-#define SINGLE_PRESS_TXT    "SINGLE PRESS"
-#define LONG_PRESS_TXT      "LONG PRESS"
-#define DOUBLE_PRESS_TXT    "DOUBLE PRESS"
+#define SINGLE_PRESS_TXT        "SINGLE PRESS"
+#define LONG_PRESS_TXT          "LONG PRESS"
+#define DOUBLE_PRESS_TXT        "DOUBLE PRESS"
 
 //timing configs
-#define CHANGE_COUNTER      1400
+#define CHANGE_COUNTER          1400
 
 //status bitmasks
-#define SINGLE_PRESS_ON     0x01
-#define DOUBLE_PRESS_ON     0x02
-#define LONG_PRESS_ON       0x04
+#define SINGLE_PRESS_ON         0x01
+#define DOUBLE_PRESS_ON         0x02
+#define LONG_PRESS_ON           0x04
 
 typedef struct {
     LV2_URID plugin;
@@ -75,6 +76,7 @@ typedef struct {
     LV2_URID atom_URID;
     LV2_URID atom_eventTransfer;
     LV2_URID atom_String;
+    LV2_URID atom_Int;
     LV2_URID midi_Event;
     LV2_URID patch_Get;
     LV2_URID patch_Set;
@@ -87,6 +89,7 @@ typedef struct {
     LV2_URID port1_string;
     LV2_URID port2_string;
     LV2_URID port3_string;
+    LV2_URID CV_stateMask;
 } URIs;
 
 typedef struct {
@@ -113,6 +116,7 @@ map_uris(LV2_URID_Map* map, URIs* uris)
     uris->atom_URID          = map->map(map->handle, LV2_ATOM__URID);
     uris->atom_eventTransfer = map->map(map->handle, LV2_ATOM__eventTransfer);
     uris->atom_String        = map->map(map->handle, LV2_ATOM__String);
+    uris->atom_Int           = map->map(map->handle, LV2_ATOM__Int);
     uris->midi_Event         = map->map(map->handle, LV2_MIDI__MidiEvent);
     uris->patch_Get          = map->map(map->handle, LV2_PATCH__Get);
     uris->patch_Set          = map->map(map->handle, LV2_PATCH__Set);
@@ -126,6 +130,8 @@ map_uris(LV2_URID_Map* map, URIs* uris)
     uris->port1_string       = map->map(map->handle, SINGLE_PRESS_STRING_URI);
     uris->port2_string       = map->map(map->handle, LONG_PRESS_STRING_URI);
     uris->port3_string       = map->map(map->handle, DOUBLE_PRESS_STRING_URI);
+
+    uris->CV_stateMask       = map->map(map->handle, CV_STATE_URI);
 }
 
 typedef enum {
@@ -176,6 +182,7 @@ typedef struct {
     uint32_t double_press_counter;
     uint32_t change_counter;
 
+    int restore_mask;
     bool state_changed;
     double sample_rate;
 
@@ -474,6 +481,10 @@ save(LV2_Handle                instance,
     LV2_State_Map_Path* map_path =
         (LV2_State_Map_Path*)lv2_features_data(features, LV2_STATE__mapPath);
 
+    void *body = &self->restore_mask;
+    store(handle, self->uris.CV_stateMask, body, sizeof(int),
+           self->uris.atom_Int, LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
+
     LV2_State_Status st = LV2_STATE_SUCCESS;
     for (unsigned i = 0; i < N_PROPS; ++i) {
         StateMapItem* prop = &self->props[i];
@@ -517,6 +528,21 @@ restore(LV2_Handle                  instance,
 {
   Control*         self = (Control*)instance;
   LV2_State_Status st   = LV2_STATE_SUCCESS;
+
+  size_t   size;
+  uint32_t type;
+  uint32_t valflags;
+  const void* button_mask = retrieve(handle, self->uris.CV_stateMask, &size, &type, &valflags);
+
+  if ((button_mask) && (size == sizeof(int)) && (type == self->uris.CV_stateMask))
+      self->restore_mask = *(int*)button_mask;
+
+  if (self->restore_mask & SINGLE_PRESS_ON)
+      self->cv_single_value = 10.f;
+  if (self->restore_mask & LONG_PRESS_ON)
+      self->cv_long_value = 10.f;
+  if (self->restore_mask & DOUBLE_PRESS_ON)
+      self->cv_double_value = 10.f;
 
   for (unsigned i = 0; i < N_PROPS; ++i) {
     retrieve_prop(self, &st, retrieve, handle, self->props[i].urid, features);
@@ -725,6 +751,8 @@ run(LV2_Handle instance, uint32_t n_samples)
             lv2_atom_forge_pop(forge, &frame);
         }
 
+        *self->button_mask = self->restore_mask;
+
         self->state_changed = false;
     }
 
@@ -829,6 +857,7 @@ run(LV2_Handle instance, uint32_t n_samples)
         bitmask |= DOUBLE_PRESS_ON; 
 
     *self->button_mask = bitmask;
+    self->restore_mask = bitmask;
 
     lv2_atom_forge_pop(forge, &out_frame);
 }
