@@ -47,7 +47,7 @@
 
 #define PLUGIN_URI "http://moddevices.com/plugins/mod-devel/mod-button-to-cv"
 
-#define N_PROPS             3
+#define N_PROPS             4
 #define MAX_STRING          1024
 
 #define SINGLE_PRESS_STRING_URI PLUGIN_URI "#port1string"
@@ -99,6 +99,8 @@ typedef struct {
     char            port2string_data[MAX_STRING];
     LV2_Atom        port3string;
     char            port3string_data[MAX_STRING];
+    LV2_Atom        CV_mask;
+    char            CV_mask_value;
 } State;
 
 typedef struct {
@@ -182,7 +184,6 @@ typedef struct {
     uint32_t double_press_counter;
     uint32_t change_counter;
 
-    int restore_mask;
     bool state_changed;
     double sample_rate;
 
@@ -381,6 +382,7 @@ instantiate(const LV2_Descriptor*     descriptor,
         SINGLE_PRESS_STRING_URI, STATE_MAP_INIT(String, &state->port1string),
         LONG_PRESS_STRING_URI, STATE_MAP_INIT(String, &state->port2string),
         DOUBLE_PRESS_STRING_URI, STATE_MAP_INIT(String, &state->port3string),
+        CV_STATE_URI, STATE_MAP_INIT(Int, &state->CV_mask),
         NULL);
     // clang-format on
 
@@ -481,10 +483,6 @@ save(LV2_Handle                instance,
     LV2_State_Map_Path* map_path =
         (LV2_State_Map_Path*)lv2_features_data(features, LV2_STATE__mapPath);
 
-    void *body = &self->restore_mask;
-    store(handle, self->uris.CV_stateMask, body, sizeof(int),
-           self->uris.atom_Int, LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE);
-
     LV2_State_Status st = LV2_STATE_SUCCESS;
     for (unsigned i = 0; i < N_PROPS; ++i) {
         StateMapItem* prop = &self->props[i];
@@ -529,24 +527,16 @@ restore(LV2_Handle                  instance,
   Control*         self = (Control*)instance;
   LV2_State_Status st   = LV2_STATE_SUCCESS;
 
-  size_t   size;
-  uint32_t type;
-  uint32_t valflags;
-  const void* button_mask = retrieve(handle, self->uris.CV_stateMask, &size, &type, &valflags);
-
-  if ((button_mask) && (size == sizeof(int)) && (type == self->uris.CV_stateMask))
-      self->restore_mask = *(int*)button_mask;
-
-  if (self->restore_mask & SINGLE_PRESS_ON)
-      self->cv_single_value = 10.f;
-  if (self->restore_mask & LONG_PRESS_ON)
-      self->cv_long_value = 10.f;
-  if (self->restore_mask & DOUBLE_PRESS_ON)
-      self->cv_double_value = 10.f;
-
   for (unsigned i = 0; i < N_PROPS; ++i) {
     retrieve_prop(self, &st, retrieve, handle, self->props[i].urid, features);
   }
+
+  if (self->state.CV_mask_value & SINGLE_PRESS_ON)
+      self->cv_single_value = 10.f;
+  if (self->state.CV_mask_value & LONG_PRESS_ON)
+      self->cv_long_value = 10.f;
+  if (self->state.CV_mask_value & DOUBLE_PRESS_ON)
+      self->cv_double_value = 10.f;
 
   self->state_changed = true;
 
@@ -751,7 +741,7 @@ run(LV2_Handle instance, uint32_t n_samples)
             lv2_atom_forge_pop(forge, &frame);
         }
 
-        *self->button_mask = self->restore_mask;
+        *self->button_mask = self->state.CV_mask_value;
 
         self->state_changed = false;
     }
@@ -857,7 +847,7 @@ run(LV2_Handle instance, uint32_t n_samples)
         bitmask |= DOUBLE_PRESS_ON; 
 
     *self->button_mask = bitmask;
-    self->restore_mask = bitmask;
+    self->state.CV_mask_value = bitmask;
 
     lv2_atom_forge_pop(forge, &out_frame);
 }
