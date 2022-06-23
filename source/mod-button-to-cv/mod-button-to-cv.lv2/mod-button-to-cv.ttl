@@ -98,7 +98,7 @@ A plugin that translates button actions to various CV signals
         lv2:symbol "LongPressTime";
         lv2:name "Hold Time";
         lv2:default 500;
-        lv2:minimum 100;
+        lv2:minimum 1;
         lv2:maximum 1000;
         units:unit units:ms
     ],
@@ -108,7 +108,7 @@ A plugin that translates button actions to various CV signals
         lv2:symbol "DoublePressDebounce";
         lv2:name "Double Time";
         lv2:default 300; mod:default_duox 150;
-        lv2:minimum 100;
+        lv2:minimum 1;
         lv2:maximum 500;
         units:unit units:ms
     ],
