@@ -144,7 +144,6 @@ typedef enum {
     LONG_PRESS_TIME_MS,
     DOUBLE_PRESS_DEBOUNCE_MS,
     LONG_PRESS_MODE,
-    BUTTON_STATUS_MASK,
     PARAMS_IN,
     PARAMS_OUT
 } PortIndex;
@@ -171,9 +170,6 @@ typedef struct {
 
     const float* long_press_mode;
 
-    //control output mask
-    float* button_mask;
-
     float prev_button_value;
 
     float cv_single_value;
@@ -186,6 +182,7 @@ typedef struct {
 
     bool state_changed;
     double sample_rate;
+    int button_mask;
 
     // Features
     LV2_URID_Map*  map;
@@ -580,9 +577,6 @@ connect_port(LV2_Handle instance,
         case LONG_PRESS_MODE:
             self->long_press_mode = (const float*)data;
             break;
-        case BUTTON_STATUS_MASK:
-            self->button_mask = (float*)data;
-            break;
         case PARAMS_IN:
             self->in_port = (const LV2_Atom_Sequence*)data;
             break;
@@ -741,8 +735,6 @@ run(LV2_Handle instance, uint32_t n_samples)
             lv2_atom_forge_pop(forge, &frame);
         }
 
-        *self->button_mask = self->state.CV_mask_value;
-
         self->state_changed = false;
     }
 
@@ -752,6 +744,27 @@ run(LV2_Handle instance, uint32_t n_samples)
     float DP_debounce = ((float)*self->double_press_debounce * self->sample_rate) / 1000;
 
     uint8_t LP_mode = (int)*self->long_press_mode;
+
+    //value restored from somewhere else
+    if (self->button_mask != self->state.CV_mask_value) {
+        if (self->state.CV_mask_value & SINGLE_PRESS_ON)
+            self->cv_single_value = 10.f;
+        else
+            self->cv_single_value = 0.f;
+
+        if (self->state.CV_mask_value & LONG_PRESS_ON)
+            self->cv_long_value = 10.f;
+        else
+            self->cv_long_value = 0.f;
+
+        if (self->state.CV_mask_value & DOUBLE_PRESS_ON)
+            self->cv_double_value = 10.f;
+        else
+            self->cv_double_value = 0.f;
+
+        self->button_mask = self->state.CV_mask_value;
+    }
+
 
     if (self->prev_button_value != button_value) {
         //button pressed
@@ -838,16 +851,28 @@ run(LV2_Handle instance, uint32_t n_samples)
         self->cv_double_press[i] = self->cv_double_value;
     }
 
-    int bitmask = 0;
+    self->button_mask = 0;
     if (self->cv_single_value)
-        bitmask |= SINGLE_PRESS_ON;
+        self->button_mask |= SINGLE_PRESS_ON;
     if (self->cv_long_value)
-        bitmask |= LONG_PRESS_ON;
+        self->button_mask |= LONG_PRESS_ON;
     if (self->cv_double_value)
-        bitmask |= DOUBLE_PRESS_ON; 
+        self->button_mask |= DOUBLE_PRESS_ON;
 
-    *self->button_mask = bitmask;
-    self->state.CV_mask_value = bitmask;
+    if (self->state.CV_mask_value != self->button_mask) {
+        const uint32_t last_frame = n_samples-1;
+
+        lv2_atom_forge_frame_time(forge, last_frame);
+        LV2_Atom_Forge_Frame frame;
+        lv2_atom_forge_object(forge, &frame, 0, uris->patch_Set);
+        lv2_atom_forge_key(forge, uris->patch_property);
+        lv2_atom_forge_urid(forge, uris->CV_stateMask);
+        lv2_atom_forge_key(forge, uris->patch_value);
+        lv2_atom_forge_int(forge, self->button_mask);
+        lv2_atom_forge_pop(forge, &frame);
+
+        self->state.CV_mask_value = self->button_mask;
+    }
 
     lv2_atom_forge_pop(forge, &out_frame);
 }

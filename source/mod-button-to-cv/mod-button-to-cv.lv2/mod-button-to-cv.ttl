@@ -33,6 +33,13 @@ plug:port3string
     rdfs:label "Double Press Text" ;
     rdfs:range atom:String .
 
+plug:CVStateMask
+    a lv2:Parameter ;
+    rdfs:label "StateMask" ;
+    lv2:minimum 0;
+    lv2:maximum 8;
+    rdfs:range atom:Int .
+
 <http://moddevices.com/plugins/mod-devel/mod-button-to-cv>
     a lv2:Plugin, mod:ControlVoltagePlugin;
 
@@ -134,18 +141,12 @@ A plugin that translates button actions to various CV signals
         ]
     ],
     [
-        a lv2:OutputPort, lv2:ControlPort;
-        lv2:index 7;
-        lv2:symbol "ButtonStatusMask";
-        lv2:name "ButtonStatusMask";
-    ],
-    [
         a lv2:InputPort ,
             atom:AtomPort ;
         atom:bufferType atom:Sequence ;
         atom:supports patch:Message ;
         lv2:designation lv2:control ;
-        lv2:index 8 ;
+        lv2:index 7 ;
         lv2:symbol "in" ;
         lv2:name "In"
     ],
@@ -155,7 +156,7 @@ A plugin that translates button actions to various CV signals
         atom:bufferType atom:Sequence ;
         atom:supports patch:Message ;
         lv2:designation lv2:control ;
-        lv2:index 9;
+        lv2:index 8;
         lv2:symbol "out" ;
         lv2:name "Out"
     ];
@@ -165,9 +166,13 @@ A plugin that translates button actions to various CV signals
         plug:port2string,
         plug:port3string;
 
+    patch:readable
+        plug:CVStateMask;
+
     state:state [
         plug:port1string "Single Press" ;
         plug:port2string "Long Press" ;
         plug:port3string "Double Press" ;
+        plug:CVStateMask "0" ;
     ]
 .
