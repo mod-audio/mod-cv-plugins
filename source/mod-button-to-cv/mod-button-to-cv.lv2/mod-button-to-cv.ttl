@@ -46,7 +46,7 @@ plug:CVStateMask
     mod:brand "MOD";
     mod:label "Multi Button CV";
     doap:name "Multi Button to CV";
-    doap:license "GPL v2+";
+    doap:license "http://spdx.org/licenses/GPL-2.0-or-later.html";
     doap:developer [
         foaf:name "Jan Janssen";
         foaf:homepage <>;

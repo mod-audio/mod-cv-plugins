@@ -103,7 +103,7 @@ MIDI to CV mono converts a midi message to monophonic control voltage, 1/12 volt
            lv2:portProperty lv2:integer, lv2:toggled, epp:trigger ;
         ] ;
 
-        doap:license "GPL v2+" ;
+        doap:license "http://spdx.org/licenses/GPL-2.0-or-later.html" ;
         doap:developer [
             foaf:name "Bram Giesen & Jarno Verheesen" ;
             foaf:homepage <> ;
